@@ -22,7 +22,39 @@ A mobile app for tracking your reading: book shelves, a reading timer that works
 
 ## Getting started
 
-_Coming soon._
+```bash
+nvm use                                    # Node 22
+pnpm install
+cp apps/api/.env.example apps/api/.env     # local config (never committed)
+pnpm db:up                                 # start PostgreSQL in Docker (port 5433)
+pnpm db:migrate                            # create the tables
+pnpm dev                                   # start API + Expo
+```
+
+- API: http://localhost:3000 (health check: `/health`)
+- Mobile: in the Expo panel, press `i` for the iOS Simulator or scan the QR code with Expo Go
+
+## Project structure
+
+```
+apps/
+  api/        NestJS + Prisma
+  mobile/     Expo (React Native)
+packages/
+  shared/     types and enums shared by both apps
+docs/
+  FEATURES.md requirements and user stories
+```
+
+## Useful scripts
+
+| Command | What it does |
+|---|---|
+| `pnpm dev` | Start all apps (Turborepo TUI) |
+| `pnpm build` | Build all packages |
+| `pnpm db:up` / `pnpm db:down` | Start / stop the database container |
+| `pnpm db:migrate --name <name>` | Create and apply a migration after changing `schema.prisma` |
+| `pnpm db:studio` | Browse the database in the browser |
 
 ## License
 

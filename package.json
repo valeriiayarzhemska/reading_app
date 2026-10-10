@@ -9,7 +9,11 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
-    "lint": "turbo lint"
+    "lint": "turbo lint",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose stop",
+    "db:migrate": "pnpm --filter @reading/api exec prisma migrate dev",
+    "db:studio": "pnpm --filter @reading/api exec prisma studio"
   },
   "devDependencies": {
     "turbo": "^2.11.7"
