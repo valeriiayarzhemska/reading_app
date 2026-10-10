@@ -1,6 +1,7 @@
 {
   "name": "reading-app",
   "private": true,
+  "license": "UNLICENSED",
   "packageManager": "pnpm@11.23.0",
   "engines": {
     "node": ">=22"

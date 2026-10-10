@@ -23,3 +23,7 @@ A mobile app for tracking your reading: book shelves, a reading timer that works
 ## Getting started
 
 _Coming soon._
+
+## License
+
+© 2026 Valeriia Yarzhemska. All rights reserved. This code is published for viewing only; no permission is granted to use, copy, modify, or distribute it.
