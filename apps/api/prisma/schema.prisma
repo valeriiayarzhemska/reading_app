@@ -1,0 +1,113 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Keep in sync with packages/shared/src/enums.ts
+enum ShelfStatus {
+  WANT_TO_READ
+  READING
+  READ
+  ABANDONED
+}
+
+enum BookFormat {
+  PAPER
+  EBOOK
+  AUDIO
+}
+
+enum ProgressUnit {
+  PAGES
+  PERCENT
+  MINUTES
+}
+
+model User {
+  id          String   @id @default(uuid())
+  email       String?  @unique
+  nickname    String   @unique
+  displayName String
+  avatarUrl   String?
+  timezone    String   @default("Europe/Kyiv")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  accounts  AuthAccount[]
+  userBooks UserBook[]
+  sessions  ReadingSession[]
+}
+
+model AuthAccount {
+  id             String @id @default(uuid())
+  provider       String // "apple" | "google"
+  providerUserId String
+  userId         String
+  user           User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerUserId])
+  @@index([userId])
+}
+
+model Book {
+  id               String   @id @default(uuid())
+  googleBooksId    String?  @unique
+  openLibraryId    String?  @unique
+  title            String
+  authors          String[]
+  coverUrl         String?
+  pageCount        Int?
+  audioDurationMin Int?
+  language         String?
+  createdAt        DateTime @default(now())
+
+  userBooks UserBook[]
+}
+
+model UserBook {
+  id              String       @id @default(uuid())
+  userId          String
+  bookId          String
+  status          ShelfStatus
+  format          BookFormat
+  progressUnit    ProgressUnit
+  currentProgress Int          @default(0)
+  rating          Int? // 1–10
+  startedAt       DateTime?
+  finishedAt      DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book     Book             @relation(fields: [bookId], references: [id])
+  sessions ReadingSession[]
+
+  @@unique([userId, bookId, format])
+  @@index([userId, status])
+}
+
+model ReadingSession {
+  id           String       @id @default(uuid())
+  clientId     String       @unique // idempotency key for offline sync
+  userId       String
+  userBookId   String
+  startedAt    DateTime // UTC
+  endedAt      DateTime // UTC
+  durationSec  Int
+  unit         ProgressUnit
+  progressFrom Int
+  progressTo   Int
+  createdAt    DateTime     @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userBook UserBook @relation(fields: [userBookId], references: [id], onDelete: Cascade)
+
+  @@index([userId, startedAt]) // calendar queries
+  @@index([userBookId])
+}
