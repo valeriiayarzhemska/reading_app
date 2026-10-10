@@ -1,0 +1,115 @@
+import type { BookSearchResult } from '@reading/shared';
+import {
+  dedupe,
+  isUseful,
+  refineResults,
+  sortByCompleteness,
+} from './search-results.js';
+
+// Builds a result with sensible defaults; each test overrides what it cares about.
+function book(overrides: Partial<BookSearchResult>): BookSearchResult {
+  return {
+    googleBooksId: 'id',
+    title: 'A Court of Wings and Ruin',
+    authors: ['Sarah J. Maas'],
+    coverUrl: 'https://example.com/cover.jpg',
+    pageCount: 700,
+    language: 'en',
+    ...overrides,
+  };
+}
+
+describe('isUseful', () => {
+  it('drops a result with no cover and no page count', () => {
+    expect(isUseful(book({ coverUrl: null, pageCount: null }))).toBe(false);
+  });
+
+  it('keeps a result with only a cover', () => {
+    expect(isUseful(book({ pageCount: null }))).toBe(true);
+  });
+
+  it('keeps a result with only a page count', () => {
+    expect(isUseful(book({ coverUrl: null }))).toBe(true);
+  });
+});
+
+describe('dedupe', () => {
+  it('merges editions with the same title and author, keeping the most complete', () => {
+    const result = dedupe([
+      book({ googleBooksId: 'noPages', pageCount: null }),
+      book({ googleBooksId: 'full' }),
+    ]);
+    expect(result.map((b) => b.googleBooksId)).toEqual(['full']);
+  });
+
+  it('ignores case, spaces and punctuation in title and author', () => {
+    const result = dedupe([
+      book({ googleBooksId: 'a', authors: ['Sarah J. Maas'] }),
+      book({
+        googleBooksId: 'b',
+        title: 'a court of wings and ruin',
+        authors: ['Sarah J Maas'],
+      }),
+    ]);
+    expect(result).toHaveLength(1);
+  });
+
+  it('keeps books with the same title by different authors', () => {
+    const result = dedupe([
+      book({ googleBooksId: 'real' }),
+      book({ googleBooksId: 'study-guide', authors: ['Perfection Learning'] }),
+    ]);
+    expect(result).toHaveLength(2);
+  });
+
+  it('works with Cyrillic titles', () => {
+    const result = dedupe([
+      book({ googleBooksId: 'a', title: 'Двір крил і руїн' }),
+      book({ googleBooksId: 'b', title: 'ДВІР КРИЛ І РУЇН!' }),
+    ]);
+    expect(result).toHaveLength(1);
+  });
+
+  it('keeps the position where the book first appeared', () => {
+    const result = dedupe([
+      book({ googleBooksId: 'first', pageCount: null }),
+      book({ googleBooksId: 'other', title: 'Another book' }),
+      book({ googleBooksId: 'better' }),
+    ]);
+    expect(result.map((b) => b.googleBooksId)).toEqual(['better', 'other']);
+  });
+});
+
+describe('sortByCompleteness', () => {
+  it('puts books with cover and pages first, keeping order among equals', () => {
+    const result = sortByCompleteness([
+      book({ googleBooksId: 'pagesOnly', coverUrl: null }),
+      book({ googleBooksId: 'full1' }),
+      book({ googleBooksId: 'coverOnly', pageCount: null }),
+      book({ googleBooksId: 'full2' }),
+    ]);
+    expect(result.map((b) => b.googleBooksId)).toEqual([
+      'full1',
+      'full2',
+      'coverOnly',
+      'pagesOnly',
+    ]);
+  });
+});
+
+describe('refineResults', () => {
+  it('filters, merges and sorts in one pass', () => {
+    const result = refineResults([
+      book({
+        googleBooksId: 'junk',
+        title: 'Notebook',
+        coverUrl: null,
+        pageCount: null,
+      }),
+      book({ googleBooksId: 'edition1', pageCount: null }),
+      book({ googleBooksId: 'other', title: 'Another', coverUrl: null }),
+      book({ googleBooksId: 'edition2' }),
+    ]);
+    expect(result.map((b) => b.googleBooksId)).toEqual(['edition2', 'other']);
+  });
+});
