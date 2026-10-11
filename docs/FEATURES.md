@@ -20,7 +20,6 @@ Based on an analysis of the Readroom app screens. The design follows its visual 
 | Tab | Screens |
 |---|---|
 | **Shelves** (Полиці) | Social feed of posts, "who to read" suggestions, notifications |
-| **Trends** (Тренди) | Not captured, skipped for now |
 | **Library** (Бібліотека) | Currently reading card, in-progress list, "want / read" tiles, search, add book, book details, reading timer |
 | **Clubs** (Клуби) | My/all clubs, club chat, club info |
 | **Profile** (Профіль) | Public profile ("Profile") + private stats ("Mine"): calendar, goals, achievements, collections, settings |
@@ -33,7 +32,7 @@ Based on an analysis of the Readroom app screens. The design follows its visual 
 - **Primary button:** peach → orange gradient, fully rounded, dark text.
 - **Cards:** translucent, lighter purple, large radius (~20), subtle border ("glass").
 - **Typography:** serif display font for titles (screen titles, book titles, big numbers); sans-serif for body text; small spaced uppercase labels ("ЗАРАЗ ЧИТАЮ", "ЦІЛІ").
-- **Tab bar:** floating pill at the bottom, 5 icons with labels, the active one highlighted in peach.
+- **Tab bar:** floating pill at the bottom, 4 icons with labels, the active one highlighted in peach.
 - **Bottom sheets** for quick input (start session, day details, edit session).
 - **Book covers** are the main visual element everywhere: lists, calendar cells, collections.
 
@@ -54,7 +53,7 @@ As a developer, I want all colors, fonts, spacing and radii in one place so that
 - AC: Each component is used on at least one real screen (no unused components).
 
 **DS-3 — App shell & navigation** (P0)
-- AC: Floating tab bar with 5 tabs (Shelves, Trends, Library, Clubs, Profile). Unbuilt tabs show a "coming soon" placeholder.
+- AC: Floating tab bar with 4 tabs (Shelves, Library, Clubs, Profile). Unbuilt tabs show a "coming soon" placeholder.
 - AC: Library is the default tab until the social features exist.
 - 📚 Learn: Expo Router tabs + stacks, custom tab bar.
 
@@ -283,7 +282,7 @@ As a reader, I want a calendar with the covers of the books I read each day.
 | Feature | Why |
 |---|---|
 | PLUS subscription / paywall | Payments add a lot of complexity and teach little at this stage |
-| Trends tab | Not captured in the screenshots; needs lots of user data |
+| Trends tab | Dropped entirely (no tab, no placeholder); needs lots of user data |
 | Wishlist / price / "my copy" price / cart | Shopping features, not reading |
 | Book types Fanfic / Samizdat | Edge case; "manual book" covers it |
 | Alternative app icons, tab reordering, gendered forms of address, haptics setting | Polish; low learning value |

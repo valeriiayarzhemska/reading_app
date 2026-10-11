@@ -18,6 +18,8 @@ const COLORS = {
   accentDark: '#E2834F',
   accentFg: '#2A1A12',
 
+  tabBar: 'rgba(30, 22, 69, 0.96)',
+
   danger: '#FF8A8A',
   success: '#8EE0B0',
 };
@@ -45,6 +47,7 @@ const tailwindColors = {
     dark: COLORS.accentDark,
     fg: COLORS.accentFg,
   },
+  'tab-bar': COLORS.tabBar,
   danger: COLORS.danger,
   success: COLORS.success,
 };

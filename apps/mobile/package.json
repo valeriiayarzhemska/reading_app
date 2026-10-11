@@ -6,6 +6,7 @@
     "@expo-google-fonts/lora": "^0.4.2",
     "@expo-google-fonts/nunito-sans": "^0.4.2",
     "@expo/ui": "~57.0.22",
+    "@expo/vector-icons": "^15.1.1",
     "@reading/shared": "workspace:*",
     "@tanstack/react-query": "^5.104.1",
     "expo": "~57.0.27",

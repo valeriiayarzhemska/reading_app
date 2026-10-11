@@ -49,11 +49,13 @@ export default function RootLayout() {
           headerTintColor: COLORS.fg,
           headerTitleStyle: { fontFamily: 'Lora_500Medium' },
           headerShadowVisible: false,
+          // Otherwise iOS shows the previous route's name, here "(tabs)"
+          headerBackButtonDisplayMode: 'minimal',
           // Prevents a white flash during screen transitions
           contentStyle: { backgroundColor: COLORS.backgroundBottom },
         }}
       >
-        <Stack.Screen name="index" options={{ title: 'My shelf' }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="search" options={{ title: 'Search' }} />
         <Stack.Screen name="design" options={{ title: 'Design system' }} />
       </Stack>

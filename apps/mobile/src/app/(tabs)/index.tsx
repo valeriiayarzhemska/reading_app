@@ -1,8 +1,9 @@
 import { ShelfStatus, type UserBookWithBook } from '@reading/shared';
 import { router } from 'expo-router';
-import { ActivityIndicator, Pressable, SectionList, View } from 'react-native';
+import { ActivityIndicator, SectionList, View } from 'react-native';
 import { useShelf } from '@/api/shelf';
 import { BookRow } from '@/components/book-row';
+import { useTabBarInset } from '@/components/tab-bar';
 import { Button } from '@/components/ui/button';
 import { Screen } from '@/components/ui/screen';
 import { Text } from '@/components/ui/text';
@@ -45,23 +46,13 @@ function progressLabel(userBook: UserBookWithBook): string | undefined {
     : `page ${userBook.currentProgress}`;
 }
 
-function DesignLink() {
-  return (
-    <Pressable
-      onPress={() => router.push('/design')}
-      className="mt-8 items-center py-2"
-    >
-      <Text variant="label">Design system →</Text>
-    </Pressable>
-  );
-}
-
-export default function ShelfScreen() {
+export default function LibraryScreen() {
   const { data, isPending, error, refetch, isRefetching } = useShelf();
+  const tabBarInset = useTabBarInset();
 
   if (isPending) {
     return (
-      <Screen className="items-center justify-center">
+      <Screen edges={['top']} className="items-center justify-center">
         <ActivityIndicator color={COLORS.fg} />
       </Screen>
     );
@@ -69,22 +60,25 @@ export default function ShelfScreen() {
 
   if (error) {
     return (
-      <Screen className="items-center justify-center gap-3 px-6">
+      <Screen
+        edges={['top']}
+        className="items-center justify-center gap-3 px-6"
+      >
         <Text className="text-center">
           Could not load your shelf: {error.message}
         </Text>
         <Button title="Retry" variant="secondary" onPress={() => refetch()} />
-        {__DEV__ ? <DesignLink /> : null}
       </Screen>
     );
   }
 
   return (
-    <Screen>
+    <Screen edges={['top']}>
       <SectionList
         sections={toSections(data)}
         keyExtractor={(userBook) => userBook.id}
-        contentContainerClassName="px-4 pb-8"
+        contentContainerClassName="px-4"
+        contentContainerStyle={{ paddingBottom: tabBarInset }}
         stickySectionHeadersEnabled={false}
         onRefresh={refetch}
         refreshing={isRefetching}
@@ -97,7 +91,6 @@ export default function ShelfScreen() {
             />
           </View>
         }
-        ListFooterComponent={__DEV__ ? <DesignLink /> : null}
         ListEmptyComponent={
           <Text variant="muted" className="mt-6 text-center">
             Your shelf is empty.
