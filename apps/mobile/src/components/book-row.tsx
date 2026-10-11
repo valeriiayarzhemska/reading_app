@@ -26,9 +26,11 @@ export function BookRow({
         <Text className="font-serif text-base" numberOfLines={2}>
           {title}
         </Text>
+
         <Text variant="muted" numberOfLines={1}>
           {authors.join(', ')}
         </Text>
+
         {subtitle ? (
           <Text variant="muted" className="mt-0.5 text-xs text-fg-faint">
             {subtitle}

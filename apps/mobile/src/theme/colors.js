@@ -19,6 +19,8 @@ const COLORS = {
   accentFg: '#2A1A12',
 
   tabBar: 'rgba(30, 22, 69, 0.96)',
+  sheet: '#241B55',
+  backdrop: 'rgba(8, 5, 20, 0.6)',
 
   danger: '#FF8A8A',
   success: '#8EE0B0',
@@ -48,6 +50,7 @@ const tailwindColors = {
     fg: COLORS.accentFg,
   },
   'tab-bar': COLORS.tabBar,
+  sheet: COLORS.sheet,
   danger: COLORS.danger,
   success: COLORS.success,
 };

@@ -13,11 +13,14 @@ export function ComingSoon({ title, description, children }: ComingSoonProps) {
   return (
     <Screen edges={['top']} className="px-4 pt-2">
       <Text variant="title">{title}</Text>
+
       <View className="flex-1 items-center justify-center gap-2 px-6">
         <Text variant="heading">Coming soon</Text>
+
         <Text variant="muted" className="text-center">
           {description}
         </Text>
+
         {children}
       </View>
     </Screen>

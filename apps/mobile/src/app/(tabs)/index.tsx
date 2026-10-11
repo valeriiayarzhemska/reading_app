@@ -67,6 +67,7 @@ export default function LibraryScreen() {
         <Text className="text-center">
           Could not load your shelf: {error.message}
         </Text>
+
         <Button title="Retry" variant="secondary" onPress={() => refetch()} />
       </Screen>
     );
@@ -85,6 +86,7 @@ export default function LibraryScreen() {
         ListHeaderComponent={
           <View className="gap-4 pt-2">
             <Text variant="title">Library</Text>
+
             <Button
               title="+ Add a book"
               onPress={() => router.push('/search')}

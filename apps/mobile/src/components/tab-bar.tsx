@@ -78,6 +78,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
                   color={isFocused ? COLORS.accent : COLORS.fgFaint}
                 />
               </View>
+
               <Text
                 className={cn(
                   'text-[10px]',

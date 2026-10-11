@@ -50,6 +50,7 @@ export function ProgressRing({
           strokeWidth={strokeWidth}
           fill="none"
         />
+
         <Circle
           cx={center}
           cy={center}
@@ -62,6 +63,7 @@ export function ProgressRing({
           fill="none"
         />
       </Svg>
+
       {children}
     </View>
   );

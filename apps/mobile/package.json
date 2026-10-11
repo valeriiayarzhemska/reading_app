@@ -7,6 +7,7 @@
     "@expo-google-fonts/nunito-sans": "^0.4.2",
     "@expo/ui": "~57.0.22",
     "@expo/vector-icons": "^15.1.1",
+    "@gorhom/bottom-sheet": "^5.2.14",
     "@reading/shared": "workspace:*",
     "@tanstack/react-query": "^5.104.1",
     "expo": "~57.0.27",
@@ -34,7 +35,8 @@
     "react-native-screens": "~4.26.0",
     "react-native-svg": "15.15.4",
     "react-native-web": "~0.21.0",
-    "react-native-worklets": "0.10.1"
+    "react-native-worklets": "0.10.1",
+    "tailwind-merge": "^2.6.1"
   },
   "devDependencies": {
     "@types/react": "~19.2.2",

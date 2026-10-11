@@ -67,6 +67,7 @@ function ButtonLabel({
   return (
     <View className="flex-1 flex-row items-center justify-center gap-2 px-6">
       {loading ? <ActivityIndicator color={color} /> : null}
+
       <Text
         className={cn(
           'font-sans-bold text-base',

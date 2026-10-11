@@ -6,12 +6,14 @@ import {
   NunitoSans_600SemiBold,
   NunitoSans_700Bold,
 } from '@expo-google-fonts/nunito-sans';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { createQueryClient } from '@/api/query-client';
 import { COLORS } from '@/theme/colors';
 
@@ -41,24 +43,32 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <StatusBar style="light" />
-      <Stack
-        screenOptions={{
-          headerStyle: { backgroundColor: COLORS.backgroundTop },
-          headerTintColor: COLORS.fg,
-          headerTitleStyle: { fontFamily: 'Lora_500Medium' },
-          headerShadowVisible: false,
-          // Otherwise iOS shows the previous route's name, here "(tabs)"
-          headerBackButtonDisplayMode: 'minimal',
-          // Prevents a white flash during screen transitions
-          contentStyle: { backgroundColor: COLORS.backgroundBottom },
-        }}
-      >
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="search" options={{ title: 'Search' }} />
-        <Stack.Screen name="design" options={{ title: 'Design system' }} />
-      </Stack>
-    </QueryClientProvider>
+    // Gestures (sheet dragging) silently do nothing without this root view
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryClientProvider client={queryClient}>
+        <BottomSheetModalProvider>
+          <StatusBar style="light" />
+
+          <Stack
+            screenOptions={{
+              headerStyle: { backgroundColor: COLORS.backgroundTop },
+              headerTintColor: COLORS.fg,
+              headerTitleStyle: { fontFamily: 'Lora_500Medium' },
+              headerShadowVisible: false,
+              // Otherwise iOS shows the previous route's name, here "(tabs)"
+              headerBackButtonDisplayMode: 'minimal',
+              // Prevents a white flash during screen transitions
+              contentStyle: { backgroundColor: COLORS.backgroundBottom },
+            }}
+          >
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
+            <Stack.Screen name="search" options={{ title: 'Search' }} />
+
+            <Stack.Screen name="design" options={{ title: 'Design system' }} />
+          </Stack>
+        </BottomSheetModalProvider>
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 }
