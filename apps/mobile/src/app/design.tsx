@@ -14,6 +14,8 @@ import {
 } from '@/components/ui/segmented-control';
 import { Text } from '@/components/ui/text';
 import { TextField } from '@/components/ui/text-field';
+import { i18n } from '@/i18n';
+import { formatDate } from '@/lib/format';
 import { COLORS } from '@/theme/colors';
 
 const FORMAT_OPTIONS: SegmentOption<BookFormat>[] = [
@@ -28,6 +30,37 @@ const UNIT_OPTIONS: SegmentOption<ProgressUnit>[] = [
 ];
 
 const SAMPLE_COVER = 'https://covers.openlibrary.org/b/id/14315081-M.jpg';
+
+const PLURAL_SAMPLES = [1, 2, 5, 11, 21, 22, 25];
+const SAMPLE_DATE = '2026-10-08T12:00:00.000Z';
+
+// Fixed-language translators: shows both languages whatever is active
+function TranslationsDemo() {
+  const en = i18n.getFixedT('en');
+  const uk = i18n.getFixedT('uk');
+
+  return (
+    <View className="gap-1">
+      {PLURAL_SAMPLES.map((count) => (
+        <View key={count} className="flex-row">
+          <Text className="flex-1">{en('library.bookCount', { count })}</Text>
+
+          <Text className="flex-1">{uk('library.bookCount', { count })}</Text>
+        </View>
+      ))}
+
+      <View className="mt-2 flex-row">
+        <Text variant="muted" className="flex-1">
+          {formatDate(SAMPLE_DATE, 'en')}
+        </Text>
+
+        <Text variant="muted" className="flex-1">
+          {formatDate(SAMPLE_DATE, 'uk')}
+        </Text>
+      </View>
+    </View>
+  );
+}
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -117,6 +150,10 @@ export default function DesignScreen() {
   return (
     <Screen>
       <ScrollView contentContainerClassName="gap-8 px-4 pb-12 pt-2">
+        <Section title="Plurals & dates (EN / UK)">
+          <TranslationsDemo />
+        </Section>
+
         <Section title="Typography">
           <Text variant="title">Library</Text>
 

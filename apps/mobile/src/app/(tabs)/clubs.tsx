@@ -1,10 +1,10 @@
+import { useTranslation } from 'react-i18next';
 import { ComingSoon } from '@/components/coming-soon';
 
 export default function ClubsScreen() {
+  const { t } = useTranslation();
+
   return (
-    <ComingSoon
-      title="Clubs"
-      description="Reading clubs with real-time chat."
-    />
+    <ComingSoon title={t('tabs.clubs')} description={t('placeholders.clubs')} />
   );
 }

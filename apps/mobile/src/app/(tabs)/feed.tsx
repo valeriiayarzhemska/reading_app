@@ -1,7 +1,10 @@
+import { useTranslation } from 'react-i18next';
 import { ComingSoon } from '@/components/coming-soon';
 
 export default function FeedScreen() {
+  const { t } = useTranslation();
+
   return (
-    <ComingSoon title="Shelves" description="Posts from readers you follow." />
+    <ComingSoon title={t('tabs.feed')} description={t('placeholders.feed')} />
   );
 }

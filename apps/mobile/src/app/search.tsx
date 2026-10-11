@@ -1,5 +1,6 @@
 import { bookMatchKey, type BookSearchResult } from '@reading/shared';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, FlatList, Pressable } from 'react-native';
 import { resultKey, savedBookKeys, useBookSearch } from '@/api/books';
 import { ApiError } from '@/api/client';
@@ -12,6 +13,7 @@ import { useDebouncedValue } from '@/hooks/use-debounced-value';
 import { COLORS } from '@/theme/colors';
 
 export default function SearchScreen() {
+  const { t } = useTranslation();
   const [text, setText] = useState('');
   const query = useDebouncedValue(text.trim(), 400);
   const search = useBookSearch(query);
@@ -37,7 +39,7 @@ export default function SearchScreen() {
     if (isOnShelf(result)) {
       return (
         <Text className="font-sans-semibold text-sm text-accent">
-          On shelf ✓
+          {t('search.onShelf')}
         </Text>
       );
     }
@@ -54,7 +56,7 @@ export default function SearchScreen() {
         className="rounded-full bg-card-strong px-4 py-2 active:opacity-70 disabled:opacity-50"
       >
         <Text className="font-sans-semibold text-sm">
-          {isAdding ? 'Adding…' : '+ Add'}
+          {isAdding ? t('search.adding') : t('search.add')}
         </Text>
       </Pressable>
     );
@@ -63,7 +65,7 @@ export default function SearchScreen() {
   return (
     <Screen className="px-4 pt-2">
       <TextField
-        placeholder="Title or author"
+        placeholder={t('search.placeholder')}
         value={text}
         onChangeText={setText}
         autoFocus
@@ -75,7 +77,7 @@ export default function SearchScreen() {
         <Text className="mt-2 text-danger">
           {addToShelf.error instanceof ApiError &&
           addToShelf.error.status === 409
-            ? 'This book is already on your shelf'
+            ? t('search.alreadyOnShelf')
             : addToShelf.error.message}
         </Text>
       ) : null}
@@ -86,7 +88,7 @@ export default function SearchScreen() {
 
       {search.error ? (
         <Text className="mt-2 text-danger">
-          Search failed: {search.error.message}
+          {t('search.failed', { message: search.error.message })}
         </Text>
       ) : null}
 
@@ -98,7 +100,7 @@ export default function SearchScreen() {
         ListEmptyComponent={
           query.length >= 2 && search.isSuccess ? (
             <Text variant="muted" className="mt-4 text-center">
-              Nothing found
+              {t('search.nothingFound')}
             </Text>
           ) : null
         }
@@ -107,7 +109,11 @@ export default function SearchScreen() {
             title={item.title}
             authors={item.authors}
             coverUrl={item.coverUrl}
-            subtitle={item.pageCount ? `${item.pageCount} pages` : undefined}
+            subtitle={
+              item.pageCount
+                ? t('search.pageCount', { count: item.pageCount })
+                : undefined
+            }
             action={renderAction(item)}
           />
         )}

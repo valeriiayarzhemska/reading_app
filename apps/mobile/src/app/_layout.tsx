@@ -13,15 +13,20 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { createQueryClient } from '@/api/query-client';
+import { loadSavedLanguage } from '@/i18n';
 import { COLORS } from '@/theme/colors';
 
-// Hold the splash screen until fonts load, so text never flashes in the system font
+// Hold the splash screen until fonts and the saved language are loaded, so
+// text never flashes in the system font or in the wrong language
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const { t } = useTranslation();
   const [queryClient] = useState(createQueryClient);
+  const [isI18nReady, setIsI18nReady] = useState(false);
   const [fontsLoaded, fontError] = useFonts({
     Lora_500Medium,
     Lora_600SemiBold,
@@ -30,7 +35,11 @@ export default function RootLayout() {
     NunitoSans_700Bold,
   });
   // On a font error, start anyway with system fonts
-  const isReady = fontsLoaded || fontError !== null;
+  const isReady = isI18nReady && (fontsLoaded || fontError !== null);
+
+  useEffect(() => {
+    loadSavedLanguage().finally(() => setIsI18nReady(true));
+  }, []);
 
   useEffect(() => {
     if (isReady) {
@@ -63,7 +72,10 @@ export default function RootLayout() {
           >
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
-            <Stack.Screen name="search" options={{ title: 'Search' }} />
+            <Stack.Screen
+              name="search"
+              options={{ title: t('search.title') }}
+            />
 
             <Stack.Screen name="design" options={{ title: 'Design system' }} />
           </Stack>
