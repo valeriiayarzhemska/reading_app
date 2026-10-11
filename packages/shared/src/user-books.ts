@@ -1,7 +1,6 @@
 import type { BookFormat, ProgressUnit, ShelfStatus } from './enums.js';
 
-// API response shapes, as they arrive over JSON.
-// Dates are ISO strings ("2026-10-08T12:00:00.000Z"), not Date objects.
+// Shapes as they arrive over JSON: dates are ISO strings, not Date objects
 
 export interface Book {
   id: string;

@@ -1,6 +1,6 @@
-import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
 import { View } from 'react-native';
+import { BookCover } from '@/components/ui/book-cover';
 import { Text } from '@/components/ui/text';
 
 interface BookRowProps {
@@ -20,19 +20,7 @@ export function BookRow({
 }: BookRowProps) {
   return (
     <View className="flex-row items-center gap-3 py-2">
-      {coverUrl ? (
-        // expo-image is not a core component: it takes `style`, not className
-        <Image
-          source={coverUrl}
-          style={{ width: 48, height: 70, borderRadius: 6 }}
-          contentFit="cover"
-        />
-      ) : (
-        // Manual books have no cover: show the first letter instead
-        <View className="h-[70px] w-12 items-center justify-center rounded-md bg-card-strong">
-          <Text variant="heading">{title.charAt(0)}</Text>
-        </View>
-      )}
+      <BookCover uri={coverUrl} title={title} size="sm" />
 
       <View className="flex-1">
         <Text className="font-serif text-base" numberOfLines={2}>

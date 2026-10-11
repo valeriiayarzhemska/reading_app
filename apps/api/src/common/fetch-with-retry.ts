@@ -6,9 +6,8 @@ export interface RetryOptions {
   headers?: Record<string, string>;
 }
 
-// Fetches a URL, retrying network errors and 5xx responses (outages are
-// usually brief). 4xx is returned right away — retrying won't fix it.
-// Returns the last response, or null if the service was never reachable.
+// Retries network errors and 5xx (usually brief outages), not 4xx (won't fix
+// itself). Returns null if the service was never reachable.
 export async function fetchWithRetry(
   url: URL,
   { attempts = 3, delayMs = 300, timeoutMs = 5000, headers }: RetryOptions = {},

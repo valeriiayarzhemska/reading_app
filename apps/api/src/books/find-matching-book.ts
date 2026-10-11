@@ -5,7 +5,6 @@ interface TitledBook {
   authors: string[];
 }
 
-// Picks the candidate that is the same book (same title + first author).
 export function findMatchingBook<T extends TitledBook>(
   candidates: T[],
   book: TitledBook,

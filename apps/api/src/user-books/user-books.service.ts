@@ -14,7 +14,6 @@ import {
   validateProgress,
 } from './user-books.rules.js';
 
-// Every response includes the book itself (title, cover...), not just bookId
 const include = { book: true } satisfies Prisma.UserBookInclude;
 
 @Injectable()

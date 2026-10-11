@@ -10,7 +10,7 @@ const BASE_URL = 'https://www.googleapis.com/books/v1';
 
 @Injectable()
 export class GoogleBooksClient {
-  // Pause before retry N is retryDelayMs * N. Tests set it to 0.
+  // Tests set this to 0
   retryDelayMs = 300;
 
   constructor(private readonly config: ConfigService) {}
@@ -29,7 +29,6 @@ export class GoogleBooksClient {
     return this.request<GoogleVolume>(`/volumes/${encodeURIComponent(id)}`);
   }
 
-  // Returns null on 404; throws 502 Bad Gateway on any other failure.
   private async request<T>(
     path: string,
     params: Record<string, string> = {},

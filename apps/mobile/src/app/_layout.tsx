@@ -15,13 +15,10 @@ import { useEffect, useState } from 'react';
 import { createQueryClient } from '@/api/query-client';
 import { COLORS } from '@/theme/colors';
 
-// Keep the splash screen up until fonts are ready — otherwise text would
-// flash in the system font first ("flash of unstyled text")
+// Hold the splash screen until fonts load, so text never flashes in the system font
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  // useState, not a module constant: one client per app instance, never
-  // recreated on re-render
   const [queryClient] = useState(createQueryClient);
   const [fontsLoaded, fontError] = useFonts({
     Lora_500Medium,
@@ -30,7 +27,7 @@ export default function RootLayout() {
     NunitoSans_600SemiBold,
     NunitoSans_700Bold,
   });
-  // On a font error we still start the app — with system fonts
+  // On a font error, start anyway with system fonts
   const isReady = fontsLoaded || fontError !== null;
 
   useEffect(() => {
@@ -52,12 +49,13 @@ export default function RootLayout() {
           headerTintColor: COLORS.fg,
           headerTitleStyle: { fontFamily: 'Lora_500Medium' },
           headerShadowVisible: false,
-          // Behind every screen: no white flash during transitions
+          // Prevents a white flash during screen transitions
           contentStyle: { backgroundColor: COLORS.backgroundBottom },
         }}
       >
         <Stack.Screen name="index" options={{ title: 'My shelf' }} />
         <Stack.Screen name="search" options={{ title: 'Search' }} />
+        <Stack.Screen name="design" options={{ title: 'Design system' }} />
       </Stack>
     </QueryClientProvider>
   );

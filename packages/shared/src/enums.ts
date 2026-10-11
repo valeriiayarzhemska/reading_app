@@ -1,6 +1,4 @@
-// Each enum is a const object (runtime values) plus a type with the same name
-// (the union of those values). Values are plain strings, so they match JSON
-// from the API and the enums Prisma generates.
+// const objects instead of TS enums: plain strings that match JSON and Prisma
 
 export const ShelfStatus = {
   WANT_TO_READ: 'WANT_TO_READ',

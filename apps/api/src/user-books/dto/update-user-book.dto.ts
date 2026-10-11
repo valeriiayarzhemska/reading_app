@@ -1,7 +1,6 @@
 import { BookFormat, ProgressUnit, ShelfStatus } from '@reading/shared';
 import { IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
 
-// Every field is optional: PATCH sends only what changes.
 export class UpdateUserBookDto {
   @IsOptional()
   @IsEnum(ShelfStatus)

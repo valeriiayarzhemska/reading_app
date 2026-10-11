@@ -22,9 +22,8 @@ export class BooksService {
     private readonly google: GoogleBooksClient,
   ) {}
 
-  // Open Library first: it ranks by popularity, so "court of" finds the
-  // Maas books instead of court reports. Google is the fallback when Open
-  // Library fails or finds nothing (e.g. some Ukrainian editions).
+  // Open Library ranks by popularity (Google only by word match); Google
+  // covers outages and editions Open Library lacks, e.g. some Ukrainian ones.
   async search(query: string): Promise<BookSearchResult[]> {
     try {
       const results = await this.searchOpenLibrary(query);
@@ -45,7 +44,6 @@ export class BooksService {
         ? { googleBooksId: externalId }
         : { openLibraryId: externalId };
 
-    // Already saved by someone? Skip the external call.
     const existing = await this.prisma.book.findUnique({ where });
 
     if (existing) {
@@ -58,10 +56,8 @@ export class BooksService {
       throw new NotFoundException(`Book ${externalId} not found`);
     }
 
-    // Same book already saved from the other source (e.g. seeded from Google,
-    // now found on Open Library)? Attach this ID to it instead of duplicating.
-    // Only rows with an empty column for this source are candidates: a row
-    // with a different ID there is a different book.
+    // Same book saved from the other source? Attach this ID instead of
+    // duplicating. A row that already has a different ID here is another book.
     const candidates = await this.prisma.book.findMany({
       where: {
         title: { equals: result.title, mode: 'insensitive' },

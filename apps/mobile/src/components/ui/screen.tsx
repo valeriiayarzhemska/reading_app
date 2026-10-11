@@ -8,12 +8,10 @@ import { COLORS } from '@/theme/colors';
 interface ScreenProps {
   children: ReactNode;
   className?: string;
-  // Which edges need padding for the notch / home indicator. The top is
-  // usually handled by the navigation header, so the default is the bottom.
+  // The navigation header already covers the top inset
   edges?: Edge[];
 }
 
-// Every screen sits on the purple gradient background.
 export function Screen({
   children,
   className,

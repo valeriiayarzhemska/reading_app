@@ -6,7 +6,6 @@ import {
   sortByCompleteness,
 } from './search-results.js';
 
-// Builds a result with sensible defaults; each test overrides what it cares about.
 function book(overrides: Partial<BookSearchResult>): BookSearchResult {
   return {
     source: 'GOOGLE',

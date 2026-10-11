@@ -7,9 +7,8 @@ import { isUUID } from 'class-validator';
 import type { Request } from 'express';
 import { DEFAULT_DEV_USER_ID } from './dev-users.js';
 
-// TEMPORARY: reads the user from the x-user-id header (or a default dev user).
-// In Stage 3 only this function changes — it will read the user from the JWT.
-// Controllers using @CurrentUserId() stay the same.
+// TEMPORARY until real auth: in Stage 3 only this reads the JWT instead;
+// controllers using @CurrentUserId() stay the same.
 export const CurrentUserId = createParamDecorator(
   (_data: unknown, ctx: ExecutionContext): string => {
     const request = ctx.switchToHttp().getRequest<Request>();

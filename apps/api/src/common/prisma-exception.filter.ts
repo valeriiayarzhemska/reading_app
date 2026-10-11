@@ -9,7 +9,6 @@ import {
 import { BaseExceptionFilter } from '@nestjs/core';
 import { Prisma } from '../generated/prisma/client.js';
 
-// Turns known Prisma errors into proper HTTP responses instead of 500s.
 // Full list of codes: https://www.prisma.io/docs/orm/reference/error-reference
 export function toHttpException(
   error: Prisma.PrismaClientKnownRequestError,

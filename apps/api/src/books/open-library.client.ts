@@ -13,7 +13,7 @@ const HEADERS = { 'User-Agent': 'ReadingApp/0.1 (learning project)' };
 
 @Injectable()
 export class OpenLibraryClient {
-  // Pause before retry N is retryDelayMs * N. Tests set it to 0.
+  // Tests set this to 0
   retryDelayMs = 300;
 
   async search(query: string, limit = 20): Promise<OpenLibraryWork[]> {

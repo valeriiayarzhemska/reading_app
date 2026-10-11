@@ -1,7 +1,5 @@
 import { bookMatchKey, type BookSearchResult } from '@reading/shared';
 
-// Cleans up raw Google results: drops junk, merges duplicate editions,
-// and moves the most complete books to the top.
 export function refineResults(results: BookSearchResult[]): BookSearchResult[] {
   return sortByCompleteness(dedupe(results.filter(isUseful)));
 }
@@ -16,8 +14,8 @@ export function completeness(book: BookSearchResult): number {
   return (book.coverUrl ? 2 : 0) + (book.pageCount ? 1 : 0);
 }
 
-// Same title + same first author = same book. Keeps the most complete edition
-// in the position where that book first appeared (Google's relevance order).
+// Keeps the most complete edition, at the position where the book first
+// appeared, to preserve relevance order
 export function dedupe(results: BookSearchResult[]): BookSearchResult[] {
   const best = new Map<string, BookSearchResult>();
 

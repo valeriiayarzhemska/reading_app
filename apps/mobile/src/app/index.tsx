@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { ActivityIndicator, Pressable, SectionList, View } from 'react-native';
 import { useShelf } from '@/api/shelf';
 import { BookRow } from '@/components/book-row';
+import { Button } from '@/components/ui/button';
 import { Screen } from '@/components/ui/screen';
 import { Text } from '@/components/ui/text';
 import { COLORS } from '@/theme/colors';
@@ -44,6 +45,17 @@ function progressLabel(userBook: UserBookWithBook): string | undefined {
     : `page ${userBook.currentProgress}`;
 }
 
+function DesignLink() {
+  return (
+    <Pressable
+      onPress={() => router.push('/design')}
+      className="mt-8 items-center py-2"
+    >
+      <Text variant="label">Design system →</Text>
+    </Pressable>
+  );
+}
+
 export default function ShelfScreen() {
   const { data, isPending, error, refetch, isRefetching } = useShelf();
 
@@ -61,9 +73,8 @@ export default function ShelfScreen() {
         <Text className="text-center">
           Could not load your shelf: {error.message}
         </Text>
-        <Pressable onPress={() => refetch()}>
-          <Text className="font-sans-bold text-accent">Retry</Text>
-        </Pressable>
+        <Button title="Retry" variant="secondary" onPress={() => refetch()} />
+        {__DEV__ ? <DesignLink /> : null}
       </Screen>
     );
   }
@@ -79,18 +90,14 @@ export default function ShelfScreen() {
         refreshing={isRefetching}
         ListHeaderComponent={
           <View className="gap-4 pt-2">
-            <Text variant="title">Бібліотека</Text>
-            {/* Temporary button — replaced by PrimaryButton in DS-2 */}
-            <Pressable
+            <Text variant="title">Library</Text>
+            <Button
+              title="+ Add a book"
               onPress={() => router.push('/search')}
-              className="items-center rounded-full bg-accent py-3 active:opacity-80"
-            >
-              <Text className="font-sans-bold text-accent-fg">
-                + Add a book
-              </Text>
-            </Pressable>
+            />
           </View>
         }
+        ListFooterComponent={__DEV__ ? <DesignLink /> : null}
         ListEmptyComponent={
           <Text variant="muted" className="mt-6 text-center">
             Your shelf is empty.

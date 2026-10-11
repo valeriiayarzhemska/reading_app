@@ -1,17 +1,13 @@
 import { bookMatchKey, type BookSearchResult } from '@reading/shared';
 import { useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  TextInput,
-} from 'react-native';
+import { ActivityIndicator, FlatList, Pressable } from 'react-native';
 import { resultKey, savedBookKeys, useBookSearch } from '@/api/books';
 import { ApiError } from '@/api/client';
 import { useAddToShelf, useShelf } from '@/api/shelf';
 import { BookRow } from '@/components/book-row';
 import { Screen } from '@/components/ui/screen';
 import { Text } from '@/components/ui/text';
+import { TextField } from '@/components/ui/text-field';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
 import { COLORS } from '@/theme/colors';
 
@@ -22,9 +18,7 @@ export default function SearchScreen() {
   const shelf = useShelf();
   const addToShelf = useAddToShelf();
 
-  // Books already on my shelf → show "On shelf ✓" instead of "Add".
-  // Match by source ID, or by title + author for a book saved from the other
-  // source (the same rule the API uses when importing).
+  // Title + author too: the same book may be saved from the other source
   const shelfIds = new Set(
     shelf.data?.flatMap((userBook) => savedBookKeys(userBook.book)),
   );
@@ -68,17 +62,13 @@ export default function SearchScreen() {
 
   return (
     <Screen className="px-4 pt-2">
-      <TextInput
-        className="rounded-2xl border border-border bg-card px-4 py-3 font-sans text-base text-fg"
+      <TextField
         placeholder="Title or author"
-        placeholderTextColor={COLORS.fgFaint}
-        selectionColor={COLORS.accent}
         value={text}
         onChangeText={setText}
         autoFocus
         autoCorrect={false}
         clearButtonMode="while-editing"
-        keyboardAppearance="dark"
       />
 
       {addToShelf.error ? (

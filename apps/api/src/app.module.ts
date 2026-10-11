@@ -22,9 +22,9 @@ import { UserBooksModule } from './user-books/user-books.module.js';
     {
       provide: APP_PIPE,
       useValue: new ValidationPipe({
-        whitelist: true, // strip properties without decorators
-        forbidNonWhitelisted: true, // ...and reject the request if any were sent
-        transform: true, // turn plain JSON into DTO class instances
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
       }),
     },
     { provide: APP_FILTER, useClass: PrismaExceptionFilter },

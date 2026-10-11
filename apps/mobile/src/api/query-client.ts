@@ -1,9 +1,8 @@
 import { QueryClient } from '@tanstack/react-query';
 import { ApiError } from './client';
 
-// React Query retries 3 times by default (~7 s of spinner on a failure).
-// 4xx means our request is wrong — retrying won't help. 5xx and network
-// errors get one retry; the API already retries Google on its side.
+// Default is 3 retries (~7 s of spinner). 4xx won't fix itself; the API
+// already retries external services, so one retry is enough here.
 export function shouldRetry(failureCount: number, error: Error): boolean {
   if (error instanceof ApiError && error.status < 500) {
     return false;

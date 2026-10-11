@@ -18,7 +18,6 @@ export function useShelf() {
   return useQuery({ queryKey: shelfKey, queryFn: fetchShelf });
 }
 
-// Two steps: save the search result in our DB, then put it on the shelf.
 export function useAddToShelf() {
   const queryClient = useQueryClient();
 
@@ -35,9 +34,8 @@ export function useAddToShelf() {
         }),
       });
     },
-    // The shelf on the server changed → our cached copy is outdated.
-    // onSettled (not onSuccess): even after a 409 the import step may have
-    // linked a new source ID to the book, so refetch either way.
+    // onSettled, not onSuccess: even after a 409 the import may have linked
+    // a new source ID to the book
     onSettled: () => queryClient.invalidateQueries({ queryKey: shelfKey }),
   });
 }

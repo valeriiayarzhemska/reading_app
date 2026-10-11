@@ -29,7 +29,7 @@ export function datesForStatus(
   return {};
 }
 
-// Returns an error message, or null when the progress is valid.
+// Returns an error message, or null when valid
 export function validateProgress(
   unit: ProgressUnit,
   progress: number,

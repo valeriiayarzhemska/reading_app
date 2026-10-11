@@ -6,7 +6,6 @@ module.exports = defineConfig([
   expoConfig,
   {
     rules: {
-      // Every if/else/for body in braces, same as the API (oxlint `curly`)
       curly: ['error', 'all'],
     },
   },

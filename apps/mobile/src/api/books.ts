@@ -19,17 +19,14 @@ export function useBookSearch(query: string) {
   return useQuery({
     queryKey: ['books', 'search', query],
     queryFn: () => searchBooks(query),
-    // Don't search for 0–1 characters
     enabled: query.length >= 2,
   });
 }
 
-// One string per result, unique across sources: "OPEN_LIBRARY:OL17860744W"
 export function resultKey(result: BookSearchResult): string {
   return `${result.source}:${result.externalId}`;
 }
 
-// The same keys for a saved book — one per source it was found in
 export function savedBookKeys(book: Book): string[] {
   const keys: string[] = [];
 

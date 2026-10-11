@@ -34,7 +34,7 @@ export async function apiFetch<T>(
     throw new ApiError(res.status, message);
   }
 
-  // 204 No Content has no body to parse
+  // res.json() would throw on the empty body of a 204
   if (res.status === 204) {
     return undefined as T;
   }
