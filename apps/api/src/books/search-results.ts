@@ -1,4 +1,4 @@
-import type { BookSearchResult } from '@reading/shared';
+import { bookMatchKey, type BookSearchResult } from '@reading/shared';
 
 // Cleans up raw Google results: drops junk, merges duplicate editions,
 // and moves the most complete books to the top.
@@ -22,7 +22,7 @@ export function dedupe(results: BookSearchResult[]): BookSearchResult[] {
   const best = new Map<string, BookSearchResult>();
 
   for (const book of results) {
-    const key = dedupeKey(book);
+    const key = bookMatchKey(book.title, book.authors);
     const current = best.get(key);
 
     if (!current || completeness(book) > completeness(current)) {
@@ -38,13 +38,4 @@ export function sortByCompleteness(
   results: BookSearchResult[],
 ): BookSearchResult[] {
   return [...results].sort((a, b) => completeness(b) - completeness(a));
-}
-
-function dedupeKey(book: BookSearchResult): string {
-  return `${normalize(book.title)}|${normalize(book.authors[0] ?? '')}`;
-}
-
-// "Sarah J. Maas" and "Sarah J Maas" → "sarahjmaas". \p{L} keeps Cyrillic.
-function normalize(text: string): string {
-  return text.toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
 }

@@ -9,7 +9,8 @@ import {
 // Builds a result with sensible defaults; each test overrides what it cares about.
 function book(overrides: Partial<BookSearchResult>): BookSearchResult {
   return {
-    googleBooksId: 'id',
+    source: 'GOOGLE',
+    externalId: 'id',
     title: 'A Court of Wings and Ruin',
     authors: ['Sarah J. Maas'],
     coverUrl: 'https://example.com/cover.jpg',
@@ -36,17 +37,17 @@ describe('isUseful', () => {
 describe('dedupe', () => {
   it('merges editions with the same title and author, keeping the most complete', () => {
     const result = dedupe([
-      book({ googleBooksId: 'noPages', pageCount: null }),
-      book({ googleBooksId: 'full' }),
+      book({ externalId: 'noPages', pageCount: null }),
+      book({ externalId: 'full' }),
     ]);
-    expect(result.map((b) => b.googleBooksId)).toEqual(['full']);
+    expect(result.map((b) => b.externalId)).toEqual(['full']);
   });
 
   it('ignores case, spaces and punctuation in title and author', () => {
     const result = dedupe([
-      book({ googleBooksId: 'a', authors: ['Sarah J. Maas'] }),
+      book({ externalId: 'a', authors: ['Sarah J. Maas'] }),
       book({
-        googleBooksId: 'b',
+        externalId: 'b',
         title: 'a court of wings and ruin',
         authors: ['Sarah J Maas'],
       }),
@@ -56,39 +57,39 @@ describe('dedupe', () => {
 
   it('keeps books with the same title by different authors', () => {
     const result = dedupe([
-      book({ googleBooksId: 'real' }),
-      book({ googleBooksId: 'study-guide', authors: ['Perfection Learning'] }),
+      book({ externalId: 'real' }),
+      book({ externalId: 'study-guide', authors: ['Perfection Learning'] }),
     ]);
     expect(result).toHaveLength(2);
   });
 
   it('works with Cyrillic titles', () => {
     const result = dedupe([
-      book({ googleBooksId: 'a', title: 'Двір крил і руїн' }),
-      book({ googleBooksId: 'b', title: 'ДВІР КРИЛ І РУЇН!' }),
+      book({ externalId: 'a', title: 'Двір крил і руїн' }),
+      book({ externalId: 'b', title: 'ДВІР КРИЛ І РУЇН!' }),
     ]);
     expect(result).toHaveLength(1);
   });
 
   it('keeps the position where the book first appeared', () => {
     const result = dedupe([
-      book({ googleBooksId: 'first', pageCount: null }),
-      book({ googleBooksId: 'other', title: 'Another book' }),
-      book({ googleBooksId: 'better' }),
+      book({ externalId: 'first', pageCount: null }),
+      book({ externalId: 'other', title: 'Another book' }),
+      book({ externalId: 'better' }),
     ]);
-    expect(result.map((b) => b.googleBooksId)).toEqual(['better', 'other']);
+    expect(result.map((b) => b.externalId)).toEqual(['better', 'other']);
   });
 });
 
 describe('sortByCompleteness', () => {
   it('puts books with cover and pages first, keeping order among equals', () => {
     const result = sortByCompleteness([
-      book({ googleBooksId: 'pagesOnly', coverUrl: null }),
-      book({ googleBooksId: 'full1' }),
-      book({ googleBooksId: 'coverOnly', pageCount: null }),
-      book({ googleBooksId: 'full2' }),
+      book({ externalId: 'pagesOnly', coverUrl: null }),
+      book({ externalId: 'full1' }),
+      book({ externalId: 'coverOnly', pageCount: null }),
+      book({ externalId: 'full2' }),
     ]);
-    expect(result.map((b) => b.googleBooksId)).toEqual([
+    expect(result.map((b) => b.externalId)).toEqual([
       'full1',
       'full2',
       'coverOnly',
@@ -101,15 +102,15 @@ describe('refineResults', () => {
   it('filters, merges and sorts in one pass', () => {
     const result = refineResults([
       book({
-        googleBooksId: 'junk',
+        externalId: 'junk',
         title: 'Notebook',
         coverUrl: null,
         pageCount: null,
       }),
-      book({ googleBooksId: 'edition1', pageCount: null }),
-      book({ googleBooksId: 'other', title: 'Another', coverUrl: null }),
-      book({ googleBooksId: 'edition2' }),
+      book({ externalId: 'edition1', pageCount: null }),
+      book({ externalId: 'other', title: 'Another', coverUrl: null }),
+      book({ externalId: 'edition2' }),
     ]);
-    expect(result.map((b) => b.googleBooksId)).toEqual(['edition2', 'other']);
+    expect(result.map((b) => b.externalId)).toEqual(['edition2', 'other']);
   });
 });

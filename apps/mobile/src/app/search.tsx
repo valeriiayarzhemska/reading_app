@@ -1,4 +1,4 @@
-import type { BookSearchResult } from '@reading/shared';
+import { bookMatchKey, type BookSearchResult } from '@reading/shared';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -9,7 +9,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useBookSearch } from '@/api/books';
+import { resultKey, savedBookKeys, useBookSearch } from '@/api/books';
 import { ApiError } from '@/api/client';
 import { useAddToShelf, useShelf } from '@/api/shelf';
 import { BookRow } from '@/components/book-row';
@@ -22,19 +22,32 @@ export default function SearchScreen() {
   const shelf = useShelf();
   const addToShelf = useAddToShelf();
 
-  // Google IDs already on my shelf → show "On shelf ✓" instead of "Add"
-  const onShelf = new Set(
-    shelf.data?.map((userBook) => userBook.book.googleBooksId),
+  // Books already on my shelf → show "On shelf ✓" instead of "Add".
+  // Match by source ID, or by title + author for a book saved from the other
+  // source (the same rule the API uses when importing).
+  const shelfIds = new Set(
+    shelf.data?.flatMap((userBook) => savedBookKeys(userBook.book)),
+  );
+  const shelfTitles = new Set(
+    shelf.data?.map(({ book }) => bookMatchKey(book.title, book.authors)),
   );
 
+  function isOnShelf(result: BookSearchResult): boolean {
+    return (
+      shelfIds.has(resultKey(result)) ||
+      shelfTitles.has(bookMatchKey(result.title, result.authors))
+    );
+  }
+
   function renderAction(result: BookSearchResult) {
-    if (onShelf.has(result.googleBooksId)) {
+    if (isOnShelf(result)) {
       return <Text style={styles.onShelf}>On shelf ✓</Text>;
     }
 
     const isAdding =
       addToShelf.isPending &&
-      addToShelf.variables?.googleBooksId === result.googleBooksId;
+      addToShelf.variables !== undefined &&
+      resultKey(addToShelf.variables) === resultKey(result);
 
     return (
       <Button
@@ -74,7 +87,7 @@ export default function SearchScreen() {
 
       <FlatList
         data={search.data ?? []}
-        keyExtractor={(result) => result.googleBooksId}
+        keyExtractor={resultKey}
         keyboardShouldPersistTaps="handled"
         ListEmptyComponent={
           query.length >= 2 && search.isSuccess ? (

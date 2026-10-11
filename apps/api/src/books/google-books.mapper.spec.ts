@@ -17,7 +17,8 @@ describe('mapVolume', () => {
     });
 
     expect(result).toEqual({
-      googleBooksId: 'abc123',
+      source: 'GOOGLE',
+      externalId: 'abc123',
       title: 'Двір крил і руїн',
       authors: ['Сара Дж. Маас'],
       coverUrl: 'https://books.google.com/books/content?id=abc123&zoom=1',
@@ -30,7 +31,8 @@ describe('mapVolume', () => {
     const result = mapVolume({ id: 'empty', volumeInfo: {} });
 
     expect(result).toEqual({
-      googleBooksId: 'empty',
+      source: 'GOOGLE',
+      externalId: 'empty',
       title: 'Untitled',
       authors: [],
       coverUrl: null,

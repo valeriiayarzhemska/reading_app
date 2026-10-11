@@ -1,11 +1,12 @@
-import type { BookSearchResult } from '@reading/shared';
+import { BookSource, type BookSearchResult } from '@reading/shared';
 import type { GoogleVolume } from './google-books.types.js';
 
 export function mapVolume(volume: GoogleVolume): BookSearchResult {
   const info = volume.volumeInfo;
 
   return {
-    googleBooksId: volume.id,
+    source: BookSource.GOOGLE,
+    externalId: volume.id,
     title: info.title ?? 'Untitled',
     authors: info.authors ?? [],
     coverUrl: normalizeCoverUrl(
@@ -22,5 +23,6 @@ export function normalizeCoverUrl(url: string | undefined): string | null {
   if (!url) {
     return null;
   }
+
   return url.replace(/^http:\/\//, 'https://').replace('&edge=curl', '');
 }

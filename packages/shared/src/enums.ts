@@ -23,3 +23,11 @@ export const ProgressUnit = {
   MINUTES: 'MINUTES',
 } as const;
 export type ProgressUnit = (typeof ProgressUnit)[keyof typeof ProgressUnit];
+
+// Where a search result comes from. Not stored in the DB: a saved Book keeps
+// the ID of each source in its own column (googleBooksId / openLibraryId).
+export const BookSource = {
+  OPEN_LIBRARY: 'OPEN_LIBRARY',
+  GOOGLE: 'GOOGLE',
+} as const;
+export type BookSource = (typeof BookSource)[keyof typeof BookSource];

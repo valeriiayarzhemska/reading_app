@@ -10,7 +10,7 @@ export class BooksController {
   constructor(private readonly books: BooksService) {}
 
   /**
-   * Search Google Books by title or author. Results are not saved.
+   * Search by title or author (Open Library, Google Books as fallback). Results are not saved.
    */
   @Get('search')
   search(@Query() query: SearchBooksQuery) {
@@ -18,10 +18,10 @@ export class BooksController {
   }
 
   /**
-   * Save a Google Books result to our database (or return it if already saved).
+   * Save a search result to our database (or return it if already saved).
    */
   @Post('import')
   import(@Body() dto: ImportBookDto) {
-    return this.books.importFromGoogle(dto.googleBooksId);
+    return this.books.importBook(dto.source, dto.externalId);
   }
 }

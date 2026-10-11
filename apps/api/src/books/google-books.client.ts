@@ -1,13 +1,12 @@
 import { BadGatewayException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { fetchWithRetry } from '../common/fetch-with-retry.js';
 import type {
   GoogleVolume,
   GoogleVolumesResponse,
 } from './google-books.types.js';
 
 const BASE_URL = 'https://www.googleapis.com/books/v1';
-const TIMEOUT_MS = 5000;
-const MAX_ATTEMPTS = 3;
 
 @Injectable()
 export class GoogleBooksClient {
@@ -30,40 +29,28 @@ export class GoogleBooksClient {
     return this.request<GoogleVolume>(`/volumes/${encodeURIComponent(id)}`);
   }
 
-  // Returns null on 404. Retries network errors and 5xx (Google's outages are
-  // usually brief); throws 502 Bad Gateway once retries run out or on any
-  // other failure (4xx won't fix itself by retrying).
+  // Returns null on 404; throws 502 Bad Gateway on any other failure.
   private async request<T>(
     path: string,
     params: Record<string, string> = {},
   ): Promise<T | null> {
-    const url = this.buildUrl(path, params);
-    let attempt = 0;
+    const res = await fetchWithRetry(this.buildUrl(path, params), {
+      delayMs: this.retryDelayMs,
+    });
 
-    while (true) {
-      attempt++;
-      const res = await this.fetchOnce(url);
-
-      if (res?.status === 404) {
-        return null;
-      }
-
-      if (res?.ok) {
-        return (await res.json()) as T;
-      }
-
-      const isRetryable = !res || res.status >= 500;
-
-      if (!isRetryable || attempt >= MAX_ATTEMPTS) {
-        throw new BadGatewayException(
-          res
-            ? `Google Books responded with ${res.status}`
-            : 'Google Books is unreachable',
-        );
-      }
-
-      await sleep(this.retryDelayMs * attempt);
+    if (res?.status === 404) {
+      return null;
     }
+
+    if (!res?.ok) {
+      throw new BadGatewayException(
+        res
+          ? `Google Books responded with ${res.status}`
+          : 'Google Books is unreachable',
+      );
+    }
+
+    return (await res.json()) as T;
   }
 
   private buildUrl(path: string, params: Record<string, string>): URL {
@@ -80,17 +67,4 @@ export class GoogleBooksClient {
 
     return url;
   }
-
-  // null = network error or timeout
-  private async fetchOnce(url: URL): Promise<Response | null> {
-    try {
-      return await fetch(url, { signal: AbortSignal.timeout(TIMEOUT_MS) });
-    } catch {
-      return null;
-    }
-  }
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
