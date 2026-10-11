@@ -2,18 +2,18 @@ import { bookMatchKey, type BookSearchResult } from '@reading/shared';
 import { useState } from 'react';
 import {
   ActivityIndicator,
-  Button,
   FlatList,
-  StyleSheet,
-  Text,
+  Pressable,
   TextInput,
-  View,
 } from 'react-native';
 import { resultKey, savedBookKeys, useBookSearch } from '@/api/books';
 import { ApiError } from '@/api/client';
 import { useAddToShelf, useShelf } from '@/api/shelf';
 import { BookRow } from '@/components/book-row';
+import { Screen } from '@/components/ui/screen';
+import { Text } from '@/components/ui/text';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { COLORS } from '@/theme/colors';
 
 export default function SearchScreen() {
   const [text, setText] = useState('');
@@ -41,7 +41,11 @@ export default function SearchScreen() {
 
   function renderAction(result: BookSearchResult) {
     if (isOnShelf(result)) {
-      return <Text style={styles.onShelf}>On shelf ✓</Text>;
+      return (
+        <Text className="font-sans-semibold text-sm text-accent">
+          On shelf ✓
+        </Text>
+      );
     }
 
     const isAdding =
@@ -50,28 +54,35 @@ export default function SearchScreen() {
       resultKey(addToShelf.variables) === resultKey(result);
 
     return (
-      <Button
-        title={isAdding ? 'Adding…' : 'Add'}
+      <Pressable
         disabled={addToShelf.isPending}
         onPress={() => addToShelf.mutate(result)}
-      />
+        className="rounded-full bg-card-strong px-4 py-2 active:opacity-70 disabled:opacity-50"
+      >
+        <Text className="font-sans-semibold text-sm">
+          {isAdding ? 'Adding…' : '+ Add'}
+        </Text>
+      </Pressable>
     );
   }
 
   return (
-    <View style={styles.screen}>
+    <Screen className="px-4 pt-2">
       <TextInput
-        style={styles.input}
+        className="rounded-2xl border border-border bg-card px-4 py-3 font-sans text-base text-fg"
         placeholder="Title or author"
+        placeholderTextColor={COLORS.fgFaint}
+        selectionColor={COLORS.accent}
         value={text}
         onChangeText={setText}
         autoFocus
         autoCorrect={false}
         clearButtonMode="while-editing"
+        keyboardAppearance="dark"
       />
 
       {addToShelf.error ? (
-        <Text style={styles.error}>
+        <Text className="mt-2 text-danger">
           {addToShelf.error instanceof ApiError &&
           addToShelf.error.status === 409
             ? 'This book is already on your shelf'
@@ -79,19 +90,26 @@ export default function SearchScreen() {
         </Text>
       ) : null}
 
-      {search.isFetching ? <ActivityIndicator style={styles.loader} /> : null}
+      {search.isFetching ? (
+        <ActivityIndicator className="mt-3" color={COLORS.fg} />
+      ) : null}
 
       {search.error ? (
-        <Text style={styles.error}>Search failed: {search.error.message}</Text>
+        <Text className="mt-2 text-danger">
+          Search failed: {search.error.message}
+        </Text>
       ) : null}
 
       <FlatList
         data={search.data ?? []}
         keyExtractor={resultKey}
         keyboardShouldPersistTaps="handled"
+        contentContainerClassName="pb-8 pt-2"
         ListEmptyComponent={
           query.length >= 2 && search.isSuccess ? (
-            <Text style={styles.hint}>Nothing found</Text>
+            <Text variant="muted" className="mt-4 text-center">
+              Nothing found
+            </Text>
           ) : null
         }
         renderItem={({ item }) => (
@@ -104,35 +122,6 @@ export default function SearchScreen() {
           />
         )}
       />
-    </View>
+    </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    padding: 16,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-  },
-  loader: {
-    marginTop: 12,
-  },
-  error: {
-    color: '#c00',
-    marginTop: 8,
-  },
-  hint: {
-    color: '#888',
-    marginTop: 16,
-    textAlign: 'center',
-  },
-  onShelf: {
-    color: '#2a2',
-  },
-});

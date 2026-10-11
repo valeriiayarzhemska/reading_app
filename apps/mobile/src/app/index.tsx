@@ -1,15 +1,11 @@
 import { ShelfStatus, type UserBookWithBook } from '@reading/shared';
 import { router } from 'expo-router';
-import {
-  ActivityIndicator,
-  Button,
-  SectionList,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Pressable, SectionList, View } from 'react-native';
 import { useShelf } from '@/api/shelf';
 import { BookRow } from '@/components/book-row';
+import { Screen } from '@/components/ui/screen';
+import { Text } from '@/components/ui/text';
+import { COLORS } from '@/theme/colors';
 
 const SECTION_TITLES: Record<ShelfStatus, string> = {
   READING: 'Reading now',
@@ -52,63 +48,68 @@ export default function ShelfScreen() {
   const { data, isPending, error, refetch, isRefetching } = useShelf();
 
   if (isPending) {
-    return <ActivityIndicator style={styles.center} />;
+    return (
+      <Screen className="items-center justify-center">
+        <ActivityIndicator color={COLORS.fg} />
+      </Screen>
+    );
   }
 
   if (error) {
     return (
-      <View style={styles.center}>
-        <Text>Could not load your shelf: {error.message}</Text>
-        <Button title="Retry" onPress={() => refetch()} />
-      </View>
+      <Screen className="items-center justify-center gap-3 px-6">
+        <Text className="text-center">
+          Could not load your shelf: {error.message}
+        </Text>
+        <Pressable onPress={() => refetch()}>
+          <Text className="font-sans-bold text-accent">Retry</Text>
+        </Pressable>
+      </Screen>
     );
   }
 
   return (
-    <SectionList
-      sections={toSections(data)}
-      keyExtractor={(userBook) => userBook.id}
-      contentContainerStyle={styles.list}
-      onRefresh={refetch}
-      refreshing={isRefetching}
-      ListHeaderComponent={
-        <Button title="+ Add a book" onPress={() => router.push('/search')} />
-      }
-      ListEmptyComponent={<Text>Your shelf is empty.</Text>}
-      renderSectionHeader={({ section }) => (
-        <Text style={styles.sectionTitle}>
-          {section.title} · {section.data.length}
-        </Text>
-      )}
-      renderItem={({ item }) => (
-        <BookRow
-          title={item.book.title}
-          authors={item.book.authors}
-          coverUrl={item.book.coverUrl}
-          subtitle={progressLabel(item)}
-        />
-      )}
-    />
+    <Screen>
+      <SectionList
+        sections={toSections(data)}
+        keyExtractor={(userBook) => userBook.id}
+        contentContainerClassName="px-4 pb-8"
+        stickySectionHeadersEnabled={false}
+        onRefresh={refetch}
+        refreshing={isRefetching}
+        ListHeaderComponent={
+          <View className="gap-4 pt-2">
+            <Text variant="title">Бібліотека</Text>
+            {/* Temporary button — replaced by PrimaryButton in DS-2 */}
+            <Pressable
+              onPress={() => router.push('/search')}
+              className="items-center rounded-full bg-accent py-3 active:opacity-80"
+            >
+              <Text className="font-sans-bold text-accent-fg">
+                + Add a book
+              </Text>
+            </Pressable>
+          </View>
+        }
+        ListEmptyComponent={
+          <Text variant="muted" className="mt-6 text-center">
+            Your shelf is empty.
+          </Text>
+        }
+        renderSectionHeader={({ section }) => (
+          <Text variant="label" className="mb-1 mt-6">
+            {section.title} · {section.data.length}
+          </Text>
+        )}
+        renderItem={({ item }) => (
+          <BookRow
+            title={item.book.title}
+            authors={item.book.authors}
+            coverUrl={item.book.coverUrl}
+            subtitle={progressLabel(item)}
+          />
+        )}
+      />
+    </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-  },
-  list: {
-    padding: 16,
-  },
-  sectionTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    color: '#888',
-    backgroundColor: '#fff',
-    paddingTop: 16,
-    paddingBottom: 4,
-  },
-});

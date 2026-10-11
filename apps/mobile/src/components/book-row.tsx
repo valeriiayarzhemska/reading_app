@@ -1,6 +1,7 @@
 import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { View } from 'react-native';
+import { Text } from '@/components/ui/text';
 
 interface BookRowProps {
   title: string;
@@ -18,65 +19,36 @@ export function BookRow({
   action,
 }: BookRowProps) {
   return (
-    <View style={styles.row}>
+    <View className="flex-row items-center gap-3 py-2">
       {coverUrl ? (
-        <Image source={coverUrl} style={styles.cover} contentFit="cover" />
+        // expo-image is not a core component: it takes `style`, not className
+        <Image
+          source={coverUrl}
+          style={{ width: 48, height: 70, borderRadius: 6 }}
+          contentFit="cover"
+        />
       ) : (
         // Manual books have no cover: show the first letter instead
-        <View style={[styles.cover, styles.placeholder]}>
-          <Text style={styles.placeholderText}>{title.charAt(0)}</Text>
+        <View className="h-[70px] w-12 items-center justify-center rounded-md bg-card-strong">
+          <Text variant="heading">{title.charAt(0)}</Text>
         </View>
       )}
 
-      <View style={styles.info}>
-        <Text style={styles.title} numberOfLines={2}>
+      <View className="flex-1">
+        <Text className="font-serif text-base" numberOfLines={2}>
           {title}
         </Text>
-        <Text style={styles.authors} numberOfLines={1}>
+        <Text variant="muted" numberOfLines={1}>
           {authors.join(', ')}
         </Text>
-        {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+        {subtitle ? (
+          <Text variant="muted" className="mt-0.5 text-xs text-fg-faint">
+            {subtitle}
+          </Text>
+        ) : null}
       </View>
 
       {action}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingVertical: 8,
-  },
-  cover: {
-    width: 48,
-    height: 70,
-    borderRadius: 4,
-  },
-  placeholder: {
-    backgroundColor: '#ddd',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  placeholderText: {
-    fontSize: 20,
-    color: '#666',
-  },
-  info: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  authors: {
-    color: '#666',
-  },
-  subtitle: {
-    color: '#999',
-    fontSize: 12,
-    marginTop: 2,
-  },
-});
