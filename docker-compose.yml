@@ -9,11 +9,11 @@ services:
       POSTGRES_PASSWORD: reading
       POSTGRES_DB: reading
     ports:
-      - "5433:5432" # 5432 on the host is taken by a local Postgres
+      - '5433:5432' # 5432 on the host is taken by a local Postgres
     volumes:
       - pgdata:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U reading -d reading"]
+      test: ['CMD-SHELL', 'pg_isready -U reading -d reading']
       interval: 5s
       timeout: 3s
       retries: 10

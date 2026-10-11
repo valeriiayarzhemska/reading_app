@@ -84,7 +84,15 @@ export class UserBooksService {
 
     return this.prisma.userBook.update({
       where: { id },
-      data: { ...dto, ...datesForStatus(dto.status, current) },
+      // Fields listed explicitly (not ...dto): only what we expect reaches the DB
+      data: {
+        status: dto.status,
+        format: dto.format,
+        progressUnit: dto.progressUnit,
+        currentProgress: dto.currentProgress,
+        rating: dto.rating,
+        ...datesForStatus(dto.status, current),
+      },
       include,
     });
   }

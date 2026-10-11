@@ -10,6 +10,8 @@
     "dev": "turbo dev",
     "build": "turbo build",
     "lint": "turbo lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "db:up": "docker compose up -d",
     "db:down": "docker compose stop",
     "db:migrate": "pnpm --filter @reading/api exec prisma migrate dev",
@@ -17,6 +19,7 @@
     "db:studio": "pnpm --filter @reading/api exec prisma studio"
   },
   "devDependencies": {
+    "prettier": "^3.9.9",
     "turbo": "^2.11.7"
   }
 }

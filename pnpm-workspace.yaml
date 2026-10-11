@@ -1,8 +1,9 @@
 packages:
-  - "apps/*"
-  - "packages/*"
+  - 'apps/*'
+  - 'packages/*'
 allowBuilds:
   '@prisma/engines': true
   '@scarf/scarf': false # install analytics only, not needed
   esbuild: true
   prisma: true
+  unrs-resolver: true
