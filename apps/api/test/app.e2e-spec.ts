@@ -4,7 +4,8 @@ import request from 'supertest';
 import { App } from 'supertest/types.js';
 import { AppModule } from './../src/app.module.js';
 
-describe('AppController (e2e)', () => {
+// Needs the database running: `pnpm db:up`
+describe('App (e2e)', () => {
   let app: INestApplication<App>;
 
   beforeEach(async () => {
@@ -16,11 +17,15 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  it('GET /health is public', () => {
     return request(app.getHttpServer())
-      .get('/')
+      .get('/health')
       .expect(200)
-      .expect('Hello World!');
+      .expect({ status: 'ok', db: 'up' });
+  });
+
+  it('GET /me/books requires a token', () => {
+    return request(app.getHttpServer()).get('/me/books').expect(401);
   });
 
   afterEach(async () => {

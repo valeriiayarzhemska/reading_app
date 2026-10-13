@@ -16,15 +16,15 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { createQueryClient } from '@/api/query-client';
+import { AuthProvider, useAuth } from '@/auth/auth-context';
 import { loadSavedLanguage } from '@/i18n';
 import { COLORS } from '@/theme/colors';
 
-// Hold the splash screen until fonts and the saved language are loaded, so
-// text never flashes in the system font or in the wrong language
+// Hold the splash screen until fonts, the saved language and the session are
+// loaded, so nothing flashes (system font, wrong language, sign-in screen)
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const { t } = useTranslation();
   const [queryClient] = useState(createQueryClient);
   const [isI18nReady, setIsI18nReady] = useState(false);
   const [fontsLoaded, fontError] = useFonts({
@@ -41,12 +41,6 @@ export default function RootLayout() {
     loadSavedLanguage().finally(() => setIsI18nReady(true));
   }, []);
 
-  useEffect(() => {
-    if (isReady) {
-      SplashScreen.hideAsync();
-    }
-  }, [isReady]);
-
   if (!isReady) {
     return null;
   }
@@ -55,32 +49,58 @@ export default function RootLayout() {
     // Gestures (sheet dragging) silently do nothing without this root view
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
-        <BottomSheetModalProvider>
-          <StatusBar style="light" />
+        <AuthProvider>
+          <BottomSheetModalProvider>
+            <StatusBar style="light" />
 
-          <Stack
-            screenOptions={{
-              headerStyle: { backgroundColor: COLORS.backgroundTop },
-              headerTintColor: COLORS.fg,
-              headerTitleStyle: { fontFamily: 'Lora_500Medium' },
-              headerShadowVisible: false,
-              // Otherwise iOS shows the previous route's name, here "(tabs)"
-              headerBackButtonDisplayMode: 'minimal',
-              // Prevents a white flash during screen transitions
-              contentStyle: { backgroundColor: COLORS.backgroundBottom },
-            }}
-          >
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-
-            <Stack.Screen
-              name="search"
-              options={{ title: t('search.title') }}
-            />
-
-            <Stack.Screen name="design" options={{ title: 'Design system' }} />
-          </Stack>
-        </BottomSheetModalProvider>
+            <RootNavigator />
+          </BottomSheetModalProvider>
+        </AuthProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
+  );
+}
+
+function RootNavigator() {
+  const { t } = useTranslation();
+  const { state } = useAuth();
+  const isSignedIn = state.status === 'signedIn';
+
+  useEffect(() => {
+    if (state.status !== 'loading') {
+      SplashScreen.hideAsync();
+    }
+  }, [state.status]);
+
+  if (state.status === 'loading') {
+    return null;
+  }
+
+  return (
+    <Stack
+      screenOptions={{
+        headerStyle: { backgroundColor: COLORS.backgroundTop },
+        headerTintColor: COLORS.fg,
+        headerTitleStyle: { fontFamily: 'Lora_500Medium' },
+        headerShadowVisible: false,
+        // Otherwise iOS shows the previous route's name, here "(tabs)"
+        headerBackButtonDisplayMode: 'minimal',
+        // Prevents a white flash during screen transitions
+        contentStyle: { backgroundColor: COLORS.backgroundBottom },
+      }}
+    >
+      {/* When the guard flips, the router redirects to the first allowed screen */}
+      <Stack.Protected guard={isSignedIn}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
+        <Stack.Screen name="search" options={{ title: t('search.title') }} />
+
+        <Stack.Screen name="design" options={{ title: 'Design system' }} />
+      </Stack.Protected>
+
+      <Stack.Protected guard={!isSignedIn}>
+        <Stack.Screen name="sign-in" options={{ headerShown: false }} />
+      </Stack.Protected>
+    </Stack>
   );
 }

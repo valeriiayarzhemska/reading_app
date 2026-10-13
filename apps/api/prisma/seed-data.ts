@@ -1,4 +1,4 @@
-import { DEV_USERS } from '../src/auth/dev-users.js';
+import { DEV_USERS } from '@reading/shared';
 
 const [ALICE, BOB] = DEV_USERS;
 

@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module.js';
-import { DEFAULT_DEV_USER_ID, DEV_USERS } from './auth/dev-users.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,19 +17,16 @@ function setupSwagger(app: Parameters<typeof SwaggerModule.createDocument>[0]) {
   const config = new DocumentBuilder()
     .setTitle('Reading App API')
     .setVersion('0.1')
-    // TEMPORARY until real auth (Stage 3)
-    .addGlobalParameters({
-      name: 'x-user-id',
-      in: 'header',
-      required: false,
-      description: `Dev user. Alice: ${DEV_USERS[0].id}, Bob: ${DEV_USERS[1].id}. Empty = Alice.`,
-      schema: { type: 'string', format: 'uuid', example: DEFAULT_DEV_USER_ID },
-    })
+    // "Authorize" button: paste an access token from POST /auth/dev-login
+    .addBearerAuth()
+    .addSecurityRequirements('bearer')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('docs', app, document);
+  SwaggerModule.setup('docs', app, document, {
+    swaggerOptions: { persistAuthorization: true },
+  });
 }
 
 await bootstrap();

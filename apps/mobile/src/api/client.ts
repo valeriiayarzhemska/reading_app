@@ -1,3 +1,5 @@
+import { endSession, getAccessToken, refreshAccessToken } from '@/auth/session';
+
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export class ApiError extends Error {
@@ -9,9 +11,14 @@ export class ApiError extends Error {
   }
 }
 
+interface ApiFetchOptions extends RequestInit {
+  // false for endpoints called before there is a session (sign-in)
+  auth?: boolean;
+}
+
 export async function apiFetch<T>(
   path: string,
-  init?: RequestInit,
+  { auth = true, ...init }: ApiFetchOptions = {},
 ): Promise<T> {
   if (!API_URL) {
     throw new Error(
@@ -19,10 +26,21 @@ export async function apiFetch<T>(
     );
   }
 
-  const res = await fetch(API_URL + path, {
-    ...init,
-    headers: { 'Content-Type': 'application/json', ...init?.headers },
-  });
+  let res = await send(path, init, auth ? await getAccessToken() : null);
+
+  // The access token expired early or was revoked: refresh once and retry
+  if (res.status === 401 && auth) {
+    const freshToken = await refreshAccessToken();
+
+    if (freshToken) {
+      res = await send(path, init, freshToken);
+    }
+
+    // Still rejected with a fresh token: the account is gone
+    if (freshToken && res.status === 401) {
+      await endSession();
+    }
+  }
 
   if (!res.ok) {
     // Nest error bodies look like { statusCode, message, error }
@@ -40,4 +58,15 @@ export async function apiFetch<T>(
   }
 
   return res.json() as Promise<T>;
+}
+
+function send(path: string, init: RequestInit, token: string | null) {
+  return fetch(API_URL + path, {
+    ...init,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...init.headers,
+    },
+  });
 }

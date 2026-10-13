@@ -1,6 +1,8 @@
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
+import { useAuth } from '@/auth/auth-context';
 import { ComingSoon } from '@/components/coming-soon';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,12 +21,28 @@ const LANGUAGE_OPTIONS: SegmentOption<Language>[] = [
 export default function ProfileScreen() {
   // Re-renders this screen when the language changes
   const { t } = useTranslation();
+  const { state, signOut } = useAuth();
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const user = state.status === 'signedIn' ? state.user : null;
+
+  async function handleSignOut() {
+    setIsSigningOut(true);
+    await signOut();
+  }
 
   return (
     <ComingSoon
       title={t('tabs.profile')}
       description={t('placeholders.profile')}
     >
+      {user ? (
+        <View className="mt-6 items-center">
+          <Text variant="heading">{user.displayName}</Text>
+
+          <Text variant="muted">@{user.nickname}</Text>
+        </View>
+      ) : null}
+
       <View className="mt-8 gap-2 self-stretch">
         <Text variant="label">{t('profile.language')}</Text>
 
@@ -43,6 +61,14 @@ export default function ProfileScreen() {
           className="mt-6 self-stretch"
         />
       ) : null}
+
+      <Button
+        title={t('profile.signOut')}
+        variant="secondary"
+        loading={isSigningOut}
+        onPress={handleSignOut}
+        className="mt-3 self-stretch"
+      />
     </ComingSoon>
   );
 }

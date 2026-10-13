@@ -51,6 +51,15 @@ const uk: Translation = {
   },
   profile: {
     language: 'Мова',
+    signOut: 'Вийти',
+  },
+  auth: {
+    appName: 'Reading App',
+    tagline: 'Відстежуйте читання, сторінка за сторінкою.',
+    devSection: 'Розробка',
+    continueAs: 'Увійти як {{name}}',
+    providersSoon: 'Вхід через Apple і Google зʼявиться наступним.',
+    signInFailed: 'Не вдалося увійти: {{message}}',
   },
 };
 

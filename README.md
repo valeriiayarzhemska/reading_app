@@ -31,7 +31,7 @@ pnpm db:migrate                            # create the tables
 pnpm dev                                   # start API + Expo
 ```
 
-- API: http://localhost:3000 (health check: `/health`)
+- API: http://localhost:3001 (health check: `/health`)
 - Mobile: in the Expo panel, press `i` for the iOS Simulator or scan the QR code with Expo Go
 
 ## Project structure

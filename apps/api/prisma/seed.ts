@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { DEV_USERS } from '../src/auth/dev-users.js';
+import { DEV_USERS } from '@reading/shared';
 import { PrismaClient } from '../src/generated/prisma/client.js';
 import { BOOKS, USER_BOOKS } from './seed-data.js';
 

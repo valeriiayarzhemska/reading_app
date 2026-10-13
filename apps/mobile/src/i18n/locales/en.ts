@@ -46,6 +46,15 @@ const en = {
   },
   profile: {
     language: 'Language',
+    signOut: 'Sign out',
+  },
+  auth: {
+    appName: 'Reading App',
+    tagline: 'Track your reading, one page at a time.',
+    devSection: 'Development',
+    continueAs: 'Continue as {{name}}',
+    providersSoon: 'Sign in with Apple and Google is coming next.',
+    signInFailed: 'Could not sign in: {{message}}',
   },
 };
 
