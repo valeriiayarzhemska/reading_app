@@ -9,6 +9,14 @@ export function devLogin(userId: string) {
   });
 }
 
+export function googleLogin(idToken: string) {
+  return apiFetch<AuthResponse>('/auth/google', {
+    method: 'POST',
+    body: JSON.stringify({ idToken }),
+    auth: false,
+  });
+}
+
 export function fetchMe() {
   return apiFetch<Me>('/auth/me');
 }

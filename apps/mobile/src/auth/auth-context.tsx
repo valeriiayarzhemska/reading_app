@@ -9,7 +9,8 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { devLogin, fetchMe, logout } from '@/api/auth';
+import { devLogin, fetchMe, googleLogin, logout } from '@/api/auth';
+import { getGoogleIdToken, signOutOfGoogle } from './google';
 import {
   currentRefreshToken,
   endSession,
@@ -25,6 +26,7 @@ type AuthState =
 
 interface AuthContextValue {
   state: AuthState;
+  signInWithGoogle: () => Promise<void>;
   signInDev: (userId: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -53,6 +55,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setState({ status: 'signedIn', user: response.user });
   }, []);
 
+  const signInWithGoogle = useCallback(async () => {
+    const idToken = await getGoogleIdToken();
+
+    // The user closed Google's sheet
+    if (!idToken) {
+      return;
+    }
+
+    await completeSignIn(await googleLogin(idToken));
+  }, [completeSignIn]);
+
   const signInDev = useCallback(
     async (userId: string) => completeSignIn(await devLogin(userId)),
     [completeSignIn],
@@ -66,12 +79,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await logout(refreshToken).catch(() => undefined);
     }
 
+    await signOutOfGoogle();
     await endSession();
   }, []);
 
   const value = useMemo(
-    () => ({ state, signInDev, signOut }),
-    [state, signInDev, signOut],
+    () => ({ state, signInWithGoogle, signInDev, signOut }),
+    [state, signInWithGoogle, signInDev, signOut],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

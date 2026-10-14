@@ -12,7 +12,9 @@ import { DEV_USERS } from '@reading/shared';
 import { AuthService } from './auth.service.js';
 import { CurrentUserId } from './current-user-id.decorator.js';
 import { DevLoginDto } from './dto/dev-login.dto.js';
+import { GoogleSignInDto } from './dto/google-sign-in.dto.js';
 import { RefreshTokenDto } from './dto/refresh-token.dto.js';
+import { GoogleTokenVerifier } from './google-token.verifier.js';
 import { Public } from './public.decorator.js';
 
 const DEV_USER_IDS = new Set<string>(DEV_USERS.map((user) => user.id));
@@ -22,11 +24,24 @@ const DEV_USER_IDS = new Set<string>(DEV_USERS.map((user) => user.id));
 export class AuthController {
   constructor(
     private readonly auth: AuthService,
+    private readonly google: GoogleTokenVerifier,
     private readonly config: ConfigService,
   ) {}
 
   /**
-   * Development only: sign in as a seeded dev user (Alice or Bob) without Apple/Google.
+   * Sign in (or sign up, the first time) with a Google ID token from the app.
+   */
+  @Public()
+  @Post('google')
+  @HttpCode(200)
+  async googleSignIn(@Body() dto: GoogleSignInDto) {
+    const profile = await this.google.verify(dto.idToken);
+
+    return this.auth.signInWithGoogle(profile);
+  }
+
+  /**
+   * Development only: sign in as a seeded dev user (Alice or Bob) without Google.
    */
   @Public()
   @Post('dev-login')

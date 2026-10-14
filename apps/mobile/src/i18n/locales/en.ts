@@ -53,7 +53,7 @@ const en = {
     tagline: 'Track your reading, one page at a time.',
     devSection: 'Development',
     continueAs: 'Continue as {{name}}',
-    providersSoon: 'Sign in with Apple and Google is coming next.',
+    continueWithGoogle: 'Continue with Google',
     signInFailed: 'Could not sign in: {{message}}',
   },
 };

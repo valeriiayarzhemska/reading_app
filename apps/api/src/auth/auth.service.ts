@@ -1,6 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import type { AuthResponse, Me } from '@reading/shared';
 import { PrismaService } from '../prisma/prisma.service.js';
+import type { GoogleProfile } from './google-token.verifier.js';
+import { generateNickname } from './nickname.js';
 import { REFRESH_TOKEN_TTL_MS, TokenService } from './token.service.js';
 
 const ME_FIELDS = {
@@ -31,6 +33,58 @@ export class AuthService {
     });
 
     return this.buildResponse(userId, refreshToken);
+  }
+
+  async signInWithGoogle(profile: GoogleProfile): Promise<AuthResponse> {
+    const userId = await this.findOrCreateUser('google', profile);
+
+    return this.signIn(userId);
+  }
+
+  private async findOrCreateUser(
+    provider: string,
+    profile: GoogleProfile,
+  ): Promise<string> {
+    const account = await this.prisma.authAccount.findUnique({
+      where: {
+        provider_providerUserId: { provider, providerUserId: profile.sub },
+      },
+      select: { userId: true },
+    });
+
+    if (account) {
+      return account.userId;
+    }
+
+    // No automatic account linking by email: if the email already belongs to
+    // another user, the new account simply goes without it
+    const emailTaken = profile.email
+      ? (await this.prisma.user.count({ where: { email: profile.email } })) > 0
+      : false;
+
+    const user = await this.prisma.user.create({
+      data: {
+        nickname: await this.freeNickname(),
+        displayName: profile.name ?? 'Reader',
+        email: emailTaken ? null : profile.email,
+        avatarUrl: profile.picture,
+        accounts: { create: { provider, providerUserId: profile.sub } },
+      },
+      select: { id: true },
+    });
+
+    return user.id;
+  }
+
+  private async freeNickname(): Promise<string> {
+    while (true) {
+      const nickname = generateNickname();
+      const taken = await this.prisma.user.count({ where: { nickname } });
+
+      if (taken === 0) {
+        return nickname;
+      }
+    }
   }
 
   // Rotation: the old refresh token stops working, the caller gets a new one

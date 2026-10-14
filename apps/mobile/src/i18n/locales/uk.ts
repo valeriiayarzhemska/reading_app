@@ -58,7 +58,7 @@ const uk: Translation = {
     tagline: 'Відстежуйте читання, сторінка за сторінкою.',
     devSection: 'Розробка',
     continueAs: 'Увійти як {{name}}',
-    providersSoon: 'Вхід через Apple і Google зʼявиться наступним.',
+    continueWithGoogle: 'Продовжити з Google',
     signInFailed: 'Не вдалося увійти: {{message}}',
   },
 };

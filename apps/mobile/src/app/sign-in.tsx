@@ -7,25 +7,30 @@ import { Button } from '@/components/ui/button';
 import { Screen } from '@/components/ui/screen';
 import { Text } from '@/components/ui/text';
 
+// 'google' or a dev user's ID: which button shows the spinner
+type Pending = string | null;
+
 export default function SignInScreen() {
   const { t } = useTranslation();
-  const { signInDev } = useAuth();
-  const [pendingUserId, setPendingUserId] = useState<string | null>(null);
+  const { signInWithGoogle, signInDev } = useAuth();
+  const [pending, setPending] = useState<Pending>(null);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleDevSignIn(userId: string) {
-    setPendingUserId(userId);
+  async function run(key: string, signIn: () => Promise<void>) {
+    setPending(key);
     setError(null);
 
     try {
-      await signInDev(userId);
+      await signIn();
     } catch (e) {
       setError(
         t('auth.signInFailed', {
           message: e instanceof Error ? e.message : String(e),
         }),
       );
-      setPendingUserId(null);
+    } finally {
+      // On success this screen unmounts; on cancel or error the buttons unlock
+      setPending(null);
     }
   }
 
@@ -42,16 +47,19 @@ export default function SignInScreen() {
       </View>
 
       <View className="gap-3">
-        <Text variant="muted" className="text-center">
-          {t('auth.providersSoon')}
-        </Text>
+        <Button
+          title={t('auth.continueWithGoogle')}
+          loading={pending === 'google'}
+          disabled={pending !== null}
+          onPress={() => run('google', signInWithGoogle)}
+        />
 
         {error ? (
           <Text className="text-center text-danger">{error}</Text>
         ) : null}
 
         {__DEV__ ? (
-          <View className="mt-4 gap-3">
+          <View className="mt-6 gap-3">
             <Text variant="label" className="text-center">
               {t('auth.devSection')}
             </Text>
@@ -61,9 +69,9 @@ export default function SignInScreen() {
                 key={user.id}
                 title={t('auth.continueAs', { name: user.displayName })}
                 variant="secondary"
-                loading={pendingUserId === user.id}
-                disabled={pendingUserId !== null}
-                onPress={() => handleDevSignIn(user.id)}
+                loading={pending === user.id}
+                disabled={pending !== null}
+                onPress={() => run(user.id, () => signInDev(user.id))}
               />
             ))}
           </View>
