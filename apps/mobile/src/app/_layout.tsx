@@ -96,6 +96,8 @@ function RootNavigator() {
 
         <Stack.Screen name="search" options={{ title: t('search.title') }} />
 
+        <Stack.Screen name="shelf/[status]" />
+
         <Stack.Screen
           name="edit-profile"
           options={{ title: t('editProfile.title') }}

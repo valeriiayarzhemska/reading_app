@@ -4,4 +4,5 @@ export * from './books.js';
 export * from './dev-users.js';
 export * from './enums.js';
 export * from './profile.js';
+export * from './reading-progress.js';
 export * from './user-books.js';

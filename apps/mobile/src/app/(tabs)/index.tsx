@@ -1,62 +1,25 @@
-import { ShelfStatus, type UserBookWithBook } from '@reading/shared';
+import { Feather } from '@expo/vector-icons';
+import { ShelfStatus } from '@reading/shared';
 import { router } from 'expo-router';
-import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, SectionList, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  View,
+} from 'react-native';
 import { useShelf } from '@/api/shelf';
-import { BookRow } from '@/components/book-row';
+import { CurrentReadingCard } from '@/components/library/current-reading-card';
+import { InProgressRow } from '@/components/library/in-progress-row';
+import { ShelfTile } from '@/components/library/shelf-tile';
 import { useTabBarInset } from '@/components/tab-bar';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Screen } from '@/components/ui/screen';
 import { Text } from '@/components/ui/text';
-import { currentLanguage } from '@/i18n';
-import { formatDate } from '@/lib/format';
+import { toLibrarySections } from '@/library/shelves';
 import { COLORS } from '@/theme/colors';
-
-const SECTION_ORDER = [
-  ShelfStatus.READING,
-  ShelfStatus.WANT_TO_READ,
-  ShelfStatus.READ,
-  ShelfStatus.ABANDONED,
-];
-
-function toSections(books: UserBookWithBook[], t: TFunction) {
-  return SECTION_ORDER.map((status) => ({
-    title: t(`library.sections.${status}`),
-    data: books.filter((userBook) => userBook.status === status),
-  })).filter((section) => section.data.length > 0);
-}
-
-function progressLabel(
-  userBook: UserBookWithBook,
-  t: TFunction,
-): string | undefined {
-  if (userBook.status !== ShelfStatus.READING) {
-    return undefined;
-  }
-
-  const progress =
-    userBook.progressUnit === 'PERCENT'
-      ? `${userBook.currentProgress}%`
-      : userBook.book.pageCount
-        ? t('library.progressPage', {
-            current: userBook.currentProgress,
-            total: userBook.book.pageCount,
-          })
-        : t('library.progressPageUnknownTotal', {
-            current: userBook.currentProgress,
-          });
-
-  if (!userBook.startedAt) {
-    return progress;
-  }
-
-  const started = t('library.startedOn', {
-    date: formatDate(userBook.startedAt, currentLanguage()),
-  });
-
-  return `${progress} · ${started}`;
-}
 
 export default function LibraryScreen() {
   const { t } = useTranslation();
@@ -90,51 +53,98 @@ export default function LibraryScreen() {
     );
   }
 
+  const sections = toLibrarySections(data);
+  const nextToRead = sections.wantToRead[0]?.book.title;
+
   return (
     <Screen edges={['top']}>
-      <SectionList
-        sections={toSections(data, t)}
-        keyExtractor={(userBook) => userBook.id}
-        contentContainerClassName="px-4"
+      <ScrollView
+        contentContainerClassName="gap-6 px-4 pt-2"
         contentContainerStyle={{ paddingBottom: tabBarInset }}
-        stickySectionHeadersEnabled={false}
-        onRefresh={refetch}
-        refreshing={isRefetching}
-        ListHeaderComponent={
-          <View className="gap-4 pt-2">
-            <View className="gap-1">
-              <Text variant="title">{t('library.title')}</Text>
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={refetch}
+            tintColor={COLORS.fg}
+          />
+        }
+      >
+        <View className="flex-row items-end justify-between">
+          <View className="gap-1">
+            <Text variant="label">
+              {t('library.bookCount', { count: data.length })}
+            </Text>
 
-              <Text variant="muted">
-                {t('library.bookCount', { count: data.length })}
-              </Text>
-            </View>
+            <Text variant="title">{t('library.title')}</Text>
+          </View>
+
+          <Pressable
+            onPress={() => router.push('/search')}
+            accessibilityRole="button"
+            accessibilityLabel={t('search.title')}
+            className="h-11 w-11 items-center justify-center rounded-full border border-border bg-card active:opacity-70"
+          >
+            <Feather name="search" size={20} color={COLORS.fg} />
+          </Pressable>
+        </View>
+
+        {data.length === 0 ? (
+          <Card className="gap-4">
+            <Text variant="heading">{t('library.emptyTitle')}</Text>
+
+            <Text variant="muted">{t('library.empty')}</Text>
 
             <Button
               title={t('library.addBook')}
               onPress={() => router.push('/search')}
             />
+          </Card>
+        ) : null}
+
+        {sections.current ? (
+          <CurrentReadingCard entry={sections.current} />
+        ) : null}
+
+        {sections.inProgress.length > 0 ? (
+          <InProgressRow entries={sections.inProgress} />
+        ) : null}
+
+        {data.length > 0 ? (
+          <View className="flex-row gap-3">
+            <ShelfTile
+              count={sections.wantToRead.length}
+              label={t('library.tiles.want')}
+              footer={
+                nextToRead
+                  ? t('library.tiles.next', { title: nextToRead })
+                  : undefined
+              }
+              entries={sections.wantToRead}
+              onPress={() =>
+                router.push({
+                  pathname: '/shelf/[status]',
+                  params: { status: ShelfStatus.WANT_TO_READ },
+                })
+              }
+            />
+
+            <ShelfTile
+              count={sections.read.length}
+              label={t('library.tiles.read')}
+              footer={t('library.tiles.thisYear', {
+                count: sections.readThisYear,
+              })}
+              entries={sections.read}
+              onPress={() =>
+                router.push({
+                  pathname: '/shelf/[status]',
+                  params: { status: ShelfStatus.READ },
+                })
+              }
+            />
           </View>
-        }
-        ListEmptyComponent={
-          <Text variant="muted" className="mt-6 text-center">
-            {t('library.empty')}
-          </Text>
-        }
-        renderSectionHeader={({ section }) => (
-          <Text variant="label" className="mb-1 mt-6">
-            {section.title} · {section.data.length}
-          </Text>
-        )}
-        renderItem={({ item }) => (
-          <BookRow
-            title={item.book.title}
-            authors={item.book.authors}
-            coverUrl={item.book.coverUrl}
-            subtitle={progressLabel(item, t)}
-          />
-        )}
-      />
+        ) : null}
+      </ScrollView>
     </Screen>
   );
 }
