@@ -1,0 +1,215 @@
+import { Feather } from '@expo/vector-icons';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import {
+  dayWithBook,
+  progressFraction,
+  ShelfStatus,
+  type SavedReadingSession,
+} from '@reading/shared';
+import { router } from 'expo-router';
+import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Alert, Pressable, View } from 'react-native';
+import { useUpdateStatus } from '@/api/shelf';
+
+import { FinishSessionSheet } from '@/components/timer/finish-session-sheet';
+import { BookCover } from '@/components/ui/book-cover';
+import { ProgressBar } from '@/components/ui/progress-bar';
+import { Screen } from '@/components/ui/screen';
+import { Text } from '@/components/ui/text';
+
+import { useNow } from '@/hooks/use-now';
+import { COLORS } from '@/theme/colors';
+import { elapsedMs, formatElapsed } from '@/timer/active-session';
+import { useActiveSession } from '@/timer/use-active-session';
+
+// This screen is a native modal, drawn by iOS above the whole app, including
+// the root BottomSheetModalProvider. Sheets opened here need a provider
+// inside the modal, or they'd appear underneath it.
+export default function TimerScreen() {
+  return (
+    <BottomSheetModalProvider>
+      <TimerContent />
+    </BottomSheetModalProvider>
+  );
+}
+
+function TimerContent() {
+  const { t } = useTranslation();
+  const { session, pause, resume, clear } = useActiveSession();
+  const now = useNow(session !== undefined);
+  const [isFinishOpen, setIsFinishOpen] = useState(false);
+  const wasRunning = useRef(false);
+  const isSaved = useRef(false);
+  const updateStatus = useUpdateStatus(session?.userBookId ?? '');
+
+  // A stale link, or the session was just saved / discarded while the modal
+  // closes. Not a <Redirect>: that would navigate away during the animation.
+  if (!session) {
+    return <Screen>{null}</Screen>;
+  }
+
+  const isPaused = session.pausedAt !== null;
+  const fraction = progressFraction({
+    progressUnit: session.unit,
+    currentProgress: session.progressFrom,
+    book: { pageCount: session.book.pageCount, audioDurationMin: null },
+  });
+  const day = dayWithBook(
+    session.bookStartedAt ?? new Date(session.startedAt).toISOString(),
+  );
+
+  function close() {
+    router.back();
+    clear();
+  }
+
+  // Freeze the clock first: the moment of Stop is when reading ended, not
+  // when the page number has been typed
+  function stop() {
+    wasRunning.current = !isPaused;
+    pause();
+    setIsFinishOpen(true);
+  }
+
+  function cancelFinish() {
+    setIsFinishOpen(false);
+
+    // The sheet also reports closing after a save; only a real cancel resumes
+    if (wasRunning.current && !isSaved.current) {
+      resume();
+    }
+  }
+
+  function onSaved({ userBook }: SavedReadingSession) {
+    isSaved.current = true;
+    setIsFinishOpen(false);
+
+    const isFinished =
+      progressFraction(userBook) === 1 && userBook.status !== ShelfStatus.READ;
+
+    if (!isFinished) {
+      close();
+
+      return;
+    }
+
+    Alert.alert(
+      t('timer.finishedTitle'),
+      t('timer.finishedMessage', { title: userBook.book.title }),
+      [
+        { text: t('timer.notYet'), style: 'cancel', onPress: close },
+        {
+          text: t('timer.markRead'),
+          onPress: () =>
+            updateStatus.mutate(ShelfStatus.READ, { onSettled: close }),
+        },
+      ],
+    );
+  }
+
+  function confirmDiscard() {
+    Alert.alert(t('timer.discardTitle'), t('timer.discardMessage'), [
+      { text: t('book.cancel'), style: 'cancel' },
+      { text: t('timer.discard'), style: 'destructive', onPress: close },
+    ]);
+  }
+
+  return (
+    <Screen className="px-6">
+      <View className="flex-row justify-between pt-2">
+        {/* Minimize: the session keeps running, the mini-timer shows it */}
+        <Pressable
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel={t('timer.minimize')}
+          className="h-11 w-11 items-center justify-center active:opacity-60"
+        >
+          <Feather name="chevron-down" size={28} color={COLORS.fg} />
+        </Pressable>
+
+        <Pressable
+          onPress={confirmDiscard}
+          accessibilityRole="button"
+          accessibilityLabel={t('timer.discard')}
+          className="h-11 w-11 items-center justify-center active:opacity-60"
+        >
+          <Feather name="trash-2" size={20} color={COLORS.fgMuted} />
+        </Pressable>
+      </View>
+
+      <View className="flex-1 items-center justify-center gap-8">
+        <View className="items-center gap-3">
+          <BookCover
+            uri={session.book.coverUrl}
+            title={session.book.title}
+            size="lg"
+          />
+
+          <View className="items-center gap-1">
+            <Text variant="heading" className="text-center" numberOfLines={2}>
+              {session.book.title}
+            </Text>
+
+            <Text variant="muted" numberOfLines={1}>
+              {session.book.authors.join(', ')}
+            </Text>
+          </View>
+        </View>
+
+        <Text
+          className="font-serif text-7xl text-fg"
+          style={{ fontVariant: ['tabular-nums'] }}
+          accessibilityRole="timer"
+        >
+          {formatElapsed(elapsedMs(session, now))}
+        </Text>
+
+        <View className="w-full gap-2">
+          <ProgressBar value={fraction ?? 0} />
+
+          <Text variant="muted" className="text-center">
+            {t('timer.info', {
+              progress: t(`book.progressValue.${session.unit}`, {
+                current: session.progressFrom,
+              }),
+              day,
+            })}
+          </Text>
+        </View>
+
+        <View className="flex-row items-center gap-6">
+          <Pressable
+            onPress={isPaused ? resume : pause}
+            accessibilityRole="button"
+            accessibilityLabel={isPaused ? t('timer.resume') : t('timer.pause')}
+            className="h-20 w-20 items-center justify-center rounded-full bg-accent active:opacity-80"
+          >
+            <Feather
+              name={isPaused ? 'play' : 'pause'}
+              size={32}
+              color={COLORS.backgroundBottom}
+            />
+          </Pressable>
+
+          <Pressable
+            onPress={stop}
+            accessibilityRole="button"
+            accessibilityLabel={t('timer.stop')}
+            className="h-14 w-14 items-center justify-center rounded-full border border-border bg-card active:opacity-70"
+          >
+            <Feather name="square" size={20} color={COLORS.fg} />
+          </Pressable>
+        </View>
+      </View>
+
+      <FinishSessionSheet
+        session={session}
+        open={isFinishOpen}
+        onClose={cancelFinish}
+        onSaved={onSaved}
+        now={now}
+      />
+    </Screen>
+  );
+}

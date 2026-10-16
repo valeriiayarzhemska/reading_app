@@ -12,8 +12,8 @@ import { uploadCover } from './uploads';
 
 // ['shelf'] is the list, ['shelf', id] one entry. Invalidating ['shelf']
 // refreshes both: React Query matches keys by prefix.
-const shelfKey = ['shelf'] as const;
-const entryKey = (id: string) => ['shelf', id] as const;
+export const shelfKey = ['shelf'] as const;
+export const entryKey = (id: string) => ['shelf', id] as const;
 
 export function fetchShelf() {
   return apiFetch<UserBookWithBook[]>('/me/books');
