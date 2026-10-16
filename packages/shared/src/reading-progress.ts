@@ -26,6 +26,28 @@ export function progressFraction(userBook: ProgressInput): number | null {
   return Math.min(1, Math.max(0, currentProgress / total));
 }
 
+export type ProgressError = 'overPercent' | 'overPages';
+
+export function progressError(
+  unit: ProgressUnit,
+  progress: number,
+  pageCount: number | null,
+): ProgressError | null {
+  if (unit === ProgressUnit.PERCENT && progress > 100) {
+    return 'overPercent';
+  }
+
+  if (
+    unit === ProgressUnit.PAGES &&
+    pageCount !== null &&
+    progress > pageCount
+  ) {
+    return 'overPages';
+  }
+
+  return null;
+}
+
 export function pagesLeft(userBook: ProgressInput): number | null {
   if (
     userBook.progressUnit !== ProgressUnit.PAGES ||

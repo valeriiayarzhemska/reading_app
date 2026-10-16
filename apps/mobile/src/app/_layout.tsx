@@ -96,7 +96,11 @@ function RootNavigator() {
 
         <Stack.Screen name="search" options={{ title: t('search.title') }} />
 
+        <Stack.Screen name="add-book" options={{ title: t('addBook.title') }} />
+
         <Stack.Screen name="shelf/[status]" />
+
+        <Stack.Screen name="book/[id]" options={{ title: '' }} />
 
         <Stack.Screen
           name="edit-profile"

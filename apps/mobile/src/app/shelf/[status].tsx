@@ -1,7 +1,7 @@
 import { ShelfStatus } from '@reading/shared';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { FlatList } from 'react-native';
+import { FlatList, Pressable } from 'react-native';
 import { useShelf } from '@/api/shelf';
 import { BookRow } from '@/components/book-row';
 import { Screen } from '@/components/ui/screen';
@@ -36,12 +36,19 @@ export default function ShelfListScreen() {
           </Text>
         }
         renderItem={({ item }) => (
-          <BookRow
-            title={item.book.title}
-            authors={item.book.authors}
-            coverUrl={item.book.coverUrl}
-            subtitle={progressLabel(item, t)}
-          />
+          <Pressable
+            onPress={() =>
+              router.push({ pathname: '/book/[id]', params: { id: item.id } })
+            }
+            className="active:opacity-60"
+          >
+            <BookRow
+              title={item.book.title}
+              authors={item.book.authors}
+              coverUrl={item.book.coverUrl}
+              subtitle={progressLabel(item, t)}
+            />
+          </Pressable>
         )}
       />
     </Screen>

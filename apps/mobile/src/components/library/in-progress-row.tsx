@@ -1,9 +1,16 @@
-import { progressFraction, type UserBookWithBook } from '@reading/shared';
+import { Feather } from '@expo/vector-icons';
+import {
+  BookFormat,
+  progressFraction,
+  type UserBookWithBook,
+} from '@reading/shared';
+import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, View } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 import { BookCover } from '@/components/ui/book-cover';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { Text } from '@/components/ui/text';
+import { COLORS } from '@/theme/colors';
 
 export function InProgressRow({ entries }: { entries: UserBookWithBook[] }) {
   const { t } = useTranslation();
@@ -27,23 +34,46 @@ export function InProgressRow({ entries }: { entries: UserBookWithBook[] }) {
           const fraction = progressFraction(entry);
 
           return (
-            <View key={entry.id} className="w-20 gap-2">
+            <Pressable
+              key={entry.id}
+              onPress={() =>
+                router.push({
+                  pathname: '/book/[id]',
+                  params: { id: entry.id },
+                })
+              }
+              className="w-20 gap-2 active:opacity-60"
+            >
               <BookCover
                 uri={entry.book.coverUrl}
                 title={entry.book.title}
                 size="md"
               />
 
+              <Text className="font-sans text-xs" numberOfLines={2}>
+                {entry.book.title}
+              </Text>
+
               {fraction !== null ? (
                 <View className="gap-1">
                   <ProgressBar value={fraction} />
 
-                  <Text variant="muted" className="text-xs">
-                    {Math.round(fraction * 100)}%
-                  </Text>
+                  <View className="flex-row items-center gap-1">
+                    {entry.format === BookFormat.AUDIO ? (
+                      <Feather
+                        name="headphones"
+                        size={11}
+                        color={COLORS.fgMuted}
+                      />
+                    ) : null}
+
+                    <Text variant="muted" className="text-xs">
+                      {Math.round(fraction * 100)}%
+                    </Text>
+                  </View>
                 </View>
               ) : null}
-            </View>
+            </Pressable>
           );
         })}
       </ScrollView>

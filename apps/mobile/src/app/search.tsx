@@ -1,4 +1,5 @@
 import { bookMatchKey, type BookSearchResult } from '@reading/shared';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, FlatList, Pressable } from 'react-native';
@@ -102,6 +103,22 @@ export default function SearchScreen() {
             <Text variant="muted" className="mt-4 text-center">
               {t('search.nothingFound')}
             </Text>
+          ) : null
+        }
+        ListFooterComponent={
+          query.length >= 2 && search.isSuccess ? (
+            <Pressable
+              onPress={() =>
+                router.push({ pathname: '/add-book', params: { query } })
+              }
+              className="mt-4 items-center gap-1 py-3 active:opacity-60"
+            >
+              <Text variant="muted">{t('search.cantFind')}</Text>
+
+              <Text className="font-sans-semibold text-accent">
+                {t('search.addManually')}
+              </Text>
+            </Pressable>
           ) : null
         }
         renderItem={({ item }) => (

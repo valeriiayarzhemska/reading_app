@@ -46,6 +46,7 @@ model User {
   authSessions    AuthSession[]
   userBooks       UserBook[]
   readingSessions ReadingSession[]
+  createdBooks    Book[]
 }
 
 // One row per signed-in device. Only the refresh token's hash is stored.
@@ -82,9 +83,15 @@ model Book {
   pageCount        Int?
   audioDurationMin Int?
   language         String?
+  // Set for books a user typed in themselves: visible only to that user.
+  // Null for books imported from Open Library / Google, shared by everyone.
+  createdById      String?
   createdAt        DateTime @default(now())
 
+  createdBy User?     @relation(fields: [createdById], references: [id], onDelete: Cascade)
   userBooks UserBook[]
+
+  @@index([createdById])
 }
 
 model UserBook {
@@ -102,7 +109,7 @@ model UserBook {
   updatedAt       DateTime     @updatedAt
 
   user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  book     Book             @relation(fields: [bookId], references: [id])
+  book     Book             @relation(fields: [bookId], references: [id], onDelete: Cascade)
   sessions ReadingSession[]
 
   @@unique([userId, bookId, format])

@@ -1,4 +1,9 @@
-import { BookFormat, ProgressUnit, ShelfStatus } from '@reading/shared';
+import {
+  BookFormat,
+  progressError,
+  ProgressUnit,
+  ShelfStatus,
+} from '@reading/shared';
 
 export function defaultProgressUnit(format: BookFormat): ProgressUnit {
   return format === BookFormat.AUDIO
@@ -29,21 +34,20 @@ export function datesForStatus(
   return {};
 }
 
-// Returns an error message, or null when valid
+// The rule lives in packages/shared (the app checks it too); this turns its
+// error code into the API's message
 export function validateProgress(
   unit: ProgressUnit,
   progress: number,
   pageCount: number | null,
 ): string | null {
-  if (unit === ProgressUnit.PERCENT && progress > 100) {
+  const error = progressError(unit, progress, pageCount);
+
+  if (error === 'overPercent') {
     return 'Progress cannot exceed 100%';
   }
 
-  if (
-    unit === ProgressUnit.PAGES &&
-    pageCount !== null &&
-    progress > pageCount
-  ) {
+  if (error === 'overPages') {
     return `Progress cannot exceed the book's ${pageCount} pages`;
   }
 

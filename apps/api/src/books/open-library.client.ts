@@ -22,6 +22,12 @@ export class OpenLibraryClient {
     return data.docs;
   }
 
+  async searchByIsbn(isbn: string): Promise<OpenLibraryWork[]> {
+    const data = await this.request({ isbn });
+
+    return data.docs;
+  }
+
   // The search endpoint also finds a single work by its key, returning the
   // same fields — so one mapper covers search results and imports.
   async getWork(workId: string): Promise<OpenLibraryWork | null> {

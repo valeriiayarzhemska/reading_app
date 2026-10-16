@@ -25,6 +25,10 @@ export class GoogleBooksClient {
     return data?.items ?? [];
   }
 
+  searchByIsbn(isbn: string): Promise<GoogleVolume[]> {
+    return this.search(`isbn:${isbn}`, 5);
+  }
+
   getById(id: string): Promise<GoogleVolume | null> {
     return this.request<GoogleVolume>(`/volumes/${encodeURIComponent(id)}`);
   }

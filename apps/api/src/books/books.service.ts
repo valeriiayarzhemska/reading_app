@@ -1,6 +1,17 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { BookSource, type BookSearchResult } from '@reading/shared';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  BookSource,
+  normalizeIsbn,
+  type BookSearchResult,
+} from '@reading/shared';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { CoverStorage } from '../uploads/cover-storage.service.js';
+import type { CreateBookDto } from './dto/create-book.dto.js';
 import { findMatchingBook } from './find-matching-book.js';
 import { GoogleBooksClient } from './google-books.client.js';
 import { mapVolume } from './google-books.mapper.js';
@@ -20,11 +31,18 @@ export class BooksService {
     private readonly prisma: PrismaService,
     private readonly openLibrary: OpenLibraryClient,
     private readonly google: GoogleBooksClient,
+    private readonly covers: CoverStorage,
   ) {}
 
   // Open Library ranks by popularity (Google only by word match); Google
   // covers outages and editions Open Library lacks, e.g. some Ukrainian ones.
   async search(query: string): Promise<BookSearchResult[]> {
+    const isbn = normalizeIsbn(query);
+
+    if (isbn) {
+      return this.searchByIsbn(isbn);
+    }
+
     try {
       const results = await this.searchOpenLibrary(query);
 
@@ -36,6 +54,22 @@ export class BooksService {
     }
 
     return this.searchGoogle(query);
+  }
+
+  createManual(userId: string, dto: CreateBookDto) {
+    if (dto.coverUrl && !this.covers.isOwnCover(userId, dto.coverUrl)) {
+      throw new BadRequestException('coverUrl must come from /uploads/cover');
+    }
+
+    return this.prisma.book.create({
+      data: {
+        title: dto.title,
+        authors: dto.authors ?? [],
+        pageCount: dto.pageCount ?? null,
+        coverUrl: dto.coverUrl ?? null,
+        createdById: userId,
+      },
+    });
   }
 
   async importBook(source: BookSource, externalId: string) {
@@ -58,10 +92,12 @@ export class BooksService {
 
     // Same book saved from the other source? Attach this ID instead of
     // duplicating. A row that already has a different ID here is another book.
+    // Private books are never candidates: they'd become everyone's.
     const candidates = await this.prisma.book.findMany({
       where: {
         title: { equals: result.title, mode: 'insensitive' },
         [this.idColumn(source)]: null,
+        createdById: null,
       },
     });
     const match = findMatchingBook(candidates, result);
@@ -83,6 +119,24 @@ export class BooksService {
 
   private idColumn(source: BookSource) {
     return source === BookSource.GOOGLE ? 'googleBooksId' : 'openLibraryId';
+  }
+
+  // Same fallback order as a text search, without the ranking: an ISBN
+  // matches one edition, so there's nothing to rank
+  private async searchByIsbn(isbn: string): Promise<BookSearchResult[]> {
+    try {
+      const works = await this.openLibrary.searchByIsbn(isbn);
+
+      if (works.length > 0) {
+        return works.map(mapWork);
+      }
+    } catch (error) {
+      this.logger.warn(`Open Library failed, using Google: ${String(error)}`);
+    }
+
+    const volumes = await this.google.searchByIsbn(isbn);
+
+    return volumes.map(mapVolume);
   }
 
   private async searchOpenLibrary(query: string) {
