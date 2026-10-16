@@ -7,6 +7,7 @@ import { PrismaExceptionFilter } from './common/prisma-exception.filter.js';
 import { HealthController } from './health/health.controller.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { UserBooksModule } from './user-books/user-books.module.js';
+import { UsersModule } from './users/users.module.js';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UserBooksModule } from './user-books/user-books.module.js';
     AuthModule,
     BooksModule,
     UserBooksModule,
+    UsersModule,
   ],
   controllers: [HealthController],
   providers: [

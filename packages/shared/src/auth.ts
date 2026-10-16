@@ -1,3 +1,5 @@
+import type { NicknameError } from './profile.js';
+
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
@@ -11,10 +13,20 @@ export interface Me {
   nickname: string;
   displayName: string;
   avatarUrl: string | null;
+  bio: string | null;
+  links: string[];
   timezone: string;
+  // null until the user has picked their name and nickname
+  onboardedAt: string | null;
 }
 
 export interface AuthResponse {
   tokens: AuthTokens;
   user: Me;
+}
+
+export interface NicknameAvailability {
+  available: boolean;
+  // Set when the nickname breaks the format rules (then available is false)
+  error: NicknameError | null;
 }

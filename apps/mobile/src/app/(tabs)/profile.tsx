@@ -1,10 +1,12 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { Linking, Pressable, ScrollView, View } from 'react-native';
 import { useAuth } from '@/auth/auth-context';
-import { ComingSoon } from '@/components/coming-soon';
+import { useTabBarInset } from '@/components/tab-bar';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Screen } from '@/components/ui/screen';
 import {
   SegmentedControl,
   type SegmentOption,
@@ -18,10 +20,16 @@ const LANGUAGE_OPTIONS: SegmentOption<Language>[] = [
   { value: 'uk', label: 'Українська' },
 ];
 
+// "https://www.instagram.com/vale.arw" → "instagram.com/vale.arw"
+function displayLink(link: string): string {
+  return link.replace(/^https:\/\/(www\.)?/, '');
+}
+
 export default function ProfileScreen() {
   // Re-renders this screen when the language changes
   const { t } = useTranslation();
   const { state, signOut } = useAuth();
+  const tabBarInset = useTabBarInset();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const user = state.status === 'signedIn' ? state.user : null;
 
@@ -31,44 +39,65 @@ export default function ProfileScreen() {
   }
 
   return (
-    <ComingSoon
-      title={t('tabs.profile')}
-      description={t('placeholders.profile')}
-    >
-      {user ? (
-        <View className="mt-6 items-center">
-          <Text variant="heading">{user.displayName}</Text>
+    <Screen edges={['top']}>
+      <ScrollView
+        contentContainerClassName="gap-6 px-4 pt-2"
+        contentContainerStyle={{ paddingBottom: tabBarInset }}
+      >
+        <Text variant="title">{t('tabs.profile')}</Text>
 
-          <Text variant="muted">@{user.nickname}</Text>
+        {user ? (
+          <Card className="gap-3">
+            <View>
+              <Text variant="heading">{user.displayName}</Text>
+
+              <Text variant="muted">@{user.nickname}</Text>
+            </View>
+
+            {user.bio ? <Text>{user.bio}</Text> : null}
+
+            {user.links.map((link) => (
+              <Pressable key={link} onPress={() => Linking.openURL(link)}>
+                <Text className="text-accent">{displayLink(link)}</Text>
+              </Pressable>
+            ))}
+
+            <Button
+              title={t('profile.editProfile')}
+              variant="secondary"
+              onPress={() => router.push('/edit-profile')}
+              className="mt-1"
+            />
+          </Card>
+        ) : null}
+
+        <View className="gap-2">
+          <Text variant="label">{t('profile.language')}</Text>
+
+          <SegmentedControl
+            options={LANGUAGE_OPTIONS}
+            value={currentLanguage()}
+            onChange={setLanguage}
+          />
         </View>
-      ) : null}
 
-      <View className="mt-8 gap-2 self-stretch">
-        <Text variant="label">{t('profile.language')}</Text>
+        <View className="gap-3">
+          {__DEV__ ? (
+            <Button
+              title="Design system"
+              variant="secondary"
+              onPress={() => router.push('/design')}
+            />
+          ) : null}
 
-        <SegmentedControl
-          options={LANGUAGE_OPTIONS}
-          value={currentLanguage()}
-          onChange={setLanguage}
-        />
-      </View>
-
-      {__DEV__ ? (
-        <Button
-          title="Design system"
-          variant="secondary"
-          onPress={() => router.push('/design')}
-          className="mt-6 self-stretch"
-        />
-      ) : null}
-
-      <Button
-        title={t('profile.signOut')}
-        variant="secondary"
-        loading={isSigningOut}
-        onPress={handleSignOut}
-        className="mt-3 self-stretch"
-      />
-    </ComingSoon>
+          <Button
+            title={t('profile.signOut')}
+            variant="secondary"
+            loading={isSigningOut}
+            onPress={handleSignOut}
+          />
+        </View>
+      </ScrollView>
+    </Screen>
   );
 }

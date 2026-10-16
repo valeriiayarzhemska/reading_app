@@ -1,18 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import type { AuthResponse, Me } from '@reading/shared';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { ME_SELECT, toMe } from '../users/me.js';
 import type { GoogleProfile } from './google-token.verifier.js';
 import { generateNickname } from './nickname.js';
 import { REFRESH_TOKEN_TTL_MS, TokenService } from './token.service.js';
-
-const ME_FIELDS = {
-  id: true,
-  email: true,
-  nickname: true,
-  displayName: true,
-  avatarUrl: true,
-  timezone: true,
-} as const;
 
 @Injectable()
 export class AuthService {
@@ -126,7 +118,7 @@ export class AuthService {
   async me(userId: string): Promise<Me> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: ME_FIELDS,
+      select: ME_SELECT,
     });
 
     // A valid token for a deleted account
@@ -134,7 +126,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    return user;
+    return toMe(user);
   }
 
   private async buildResponse(

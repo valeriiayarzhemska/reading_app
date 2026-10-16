@@ -29,6 +29,7 @@ interface AuthContextValue {
   signInWithGoogle: () => Promise<void>;
   signInDev: (userId: string) => Promise<void>;
   signOut: () => Promise<void>;
+  updateUser: (user: Me) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -58,7 +59,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGoogle = useCallback(async () => {
     const idToken = await getGoogleIdToken();
 
-    // The user closed Google's sheet
     if (!idToken) {
       return;
     }
@@ -83,9 +83,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await endSession();
   }, []);
 
+  const updateUser = useCallback((user: Me) => {
+    setState({ status: 'signedIn', user });
+  }, []);
+
   const value = useMemo(
-    () => ({ state, signInWithGoogle, signInDev, signOut }),
-    [state, signInWithGoogle, signInDev, signOut],
+    () => ({ state, signInWithGoogle, signInDev, signOut, updateUser }),
+    [state, signInWithGoogle, signInDev, signOut, updateUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

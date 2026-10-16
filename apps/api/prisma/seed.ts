@@ -11,7 +11,10 @@ const prisma = new PrismaClient({
 // Every step uses upsert, so the seed is safe to run any number of times.
 // `update` repeats the data: re-seeding resets these rows to their seed state.
 async function main() {
-  for (const user of DEV_USERS) {
+  for (const devUser of DEV_USERS) {
+    // Dev users skip onboarding
+    const user = { ...devUser, onboardedAt: new Date() };
+
     await prisma.user.upsert({
       where: { id: user.id },
       create: user,

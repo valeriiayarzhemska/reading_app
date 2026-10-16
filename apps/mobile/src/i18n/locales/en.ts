@@ -47,6 +47,38 @@ const en = {
   profile: {
     language: 'Language',
     signOut: 'Sign out',
+    editProfile: 'Edit profile',
+  },
+  onboarding: {
+    title: 'Welcome!',
+    subtitle: 'Choose how other readers will see you. You can change it later.',
+    displayName: 'Name',
+    nickname: 'Nickname',
+    checking: 'Checking…',
+    available: 'Available ✓',
+    nicknameTaken: 'This nickname is already taken',
+    continue: 'Continue',
+    nicknameErrors: {
+      tooShort: 'At least 3 characters',
+      tooLong: 'At most 30 characters',
+      invalidCharacters: 'Only Latin letters, digits, "." and "_"',
+      edgeSymbol: 'Can\'t start or end with "." or "_"',
+    },
+  },
+  editProfile: {
+    title: 'Edit profile',
+    bio: 'Bio',
+    bioPlaceholder: 'A few words about you and your reading',
+    links: 'Links',
+    linkPlaceholder: 'https://instagram.com/…',
+    addLink: '+ Add link',
+    removeLink: 'Remove link',
+    save: 'Save',
+    linkErrors: {
+      notHttps: 'Must start with https://',
+      invalid: "This doesn't look like a link",
+      tooLong: 'At most 200 characters',
+    },
   },
   auth: {
     appName: 'Reading App',

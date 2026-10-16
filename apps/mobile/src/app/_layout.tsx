@@ -65,6 +65,7 @@ function RootNavigator() {
   const { t } = useTranslation();
   const { state } = useAuth();
   const isSignedIn = state.status === 'signedIn';
+  const isOnboarded = isSignedIn && state.user.onboardedAt !== null;
 
   useEffect(() => {
     if (state.status !== 'loading') {
@@ -89,13 +90,22 @@ function RootNavigator() {
         contentStyle: { backgroundColor: COLORS.backgroundBottom },
       }}
     >
-      {/* When the guard flips, the router redirects to the first allowed screen */}
-      <Stack.Protected guard={isSignedIn}>
+      {/* When a guard flips, the router redirects to the first allowed screen */}
+      <Stack.Protected guard={isOnboarded}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
         <Stack.Screen name="search" options={{ title: t('search.title') }} />
 
+        <Stack.Screen
+          name="edit-profile"
+          options={{ title: t('editProfile.title') }}
+        />
+
         <Stack.Screen name="design" options={{ title: 'Design system' }} />
+      </Stack.Protected>
+
+      <Stack.Protected guard={isSignedIn && !isOnboarded}>
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
       </Stack.Protected>
 
       <Stack.Protected guard={!isSignedIn}>

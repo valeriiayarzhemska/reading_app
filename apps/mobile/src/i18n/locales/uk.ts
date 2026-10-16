@@ -52,6 +52,39 @@ const uk: Translation = {
   profile: {
     language: 'Мова',
     signOut: 'Вийти',
+    editProfile: 'Редагувати профіль',
+  },
+  onboarding: {
+    title: 'Вітаємо!',
+    subtitle:
+      'Оберіть, як вас бачитимуть інші читачі. Це можна змінити пізніше.',
+    displayName: 'Імʼя',
+    nickname: 'Нікнейм',
+    checking: 'Перевіряю…',
+    available: 'Вільний ✓',
+    nicknameTaken: 'Цей нікнейм уже зайнятий',
+    continue: 'Продовжити',
+    nicknameErrors: {
+      tooShort: 'Щонайменше 3 символи',
+      tooLong: 'Щонайбільше 30 символів',
+      invalidCharacters: 'Лише латинські літери, цифри, «.» і «_»',
+      edgeSymbol: 'Не може починатися чи закінчуватися на «.» або «_»',
+    },
+  },
+  editProfile: {
+    title: 'Редагувати профіль',
+    bio: 'Про себе',
+    bioPlaceholder: 'Кілька слів про себе та своє читання',
+    links: 'Посилання',
+    linkPlaceholder: 'https://instagram.com/…',
+    addLink: '+ Додати посилання',
+    removeLink: 'Видалити посилання',
+    save: 'Зберегти',
+    linkErrors: {
+      notHttps: 'Має починатися з https://',
+      invalid: 'Це не схоже на посилання',
+      tooLong: 'Щонайбільше 200 символів',
+    },
   },
   auth: {
     appName: 'Reading App',
