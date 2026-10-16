@@ -16,14 +16,14 @@ A mobile app for tracking your reading: book shelves, a reading timer that works
 
 ## Requirements
 
-- Node 22 (see `.nvmrc` — run `nvm use`)
+- Node 24 (see `.nvmrc` — run `nvm use`)
 - pnpm (`corepack enable`)
 - Docker
 
 ## Getting started
 
 ```bash
-nvm use                                    # Node 22
+nvm use                                    # Node 24
 pnpm install
 cp apps/api/.env.example apps/api/.env     # local config (never committed)
 pnpm db:up                                 # start PostgreSQL in Docker (port 5433)
