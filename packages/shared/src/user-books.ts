@@ -12,7 +12,7 @@ export interface Book {
   pageCount: number | null;
   audioDurationMin: number | null;
   language: string | null;
-  // Set when a user added the book by hand; only they can see it
+  // Who added the book by hand (null for imported books, or if they left)
   createdById: string | null;
   createdAt: string;
 }

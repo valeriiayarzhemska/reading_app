@@ -48,6 +48,33 @@ export function progressError(
   return null;
 }
 
+// Pages ↔ percent, e.g. page 92 of 828 ≈ 11%. Null when it can't be
+// converted (no page count, or minutes)
+export function convertProgress(
+  value: number,
+  from: ProgressUnit,
+  to: ProgressUnit,
+  pageCount: number | null,
+): number | null {
+  if (from === to) {
+    return value;
+  }
+
+  if (!pageCount) {
+    return null;
+  }
+
+  if (from === ProgressUnit.PAGES && to === ProgressUnit.PERCENT) {
+    return Math.round((value / pageCount) * 100);
+  }
+
+  if (from === ProgressUnit.PERCENT && to === ProgressUnit.PAGES) {
+    return Math.round((value / 100) * pageCount);
+  }
+
+  return null;
+}
+
 export function pagesLeft(userBook: ProgressInput): number | null {
   if (
     userBook.progressUnit !== ProgressUnit.PAGES ||

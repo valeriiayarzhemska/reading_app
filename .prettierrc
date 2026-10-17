@@ -1,4 +1,32 @@
 {
   "singleQuote": true,
-  "trailingComma": "all"
+  "trailingComma": "all",
+  "plugins": ["@ianvs/prettier-plugin-sort-imports"],
+  "importOrder": [
+    "<BUILTIN_MODULES>",
+    "",
+    "^react$",
+    "^react-native$",
+    "^react-.*$",
+    "",
+    "^@expo-google-fonts/.*$",
+    "^@expo/.*$",
+    "^expo$",
+    "^expo-.*$",
+    "^expo/.*$",
+    "",
+    "<THIRD_PARTY_MODULES>",
+    "",
+    "^@reading/.*$",
+    "",
+    "^@/components/.*$",
+    "",
+    "^@/assets/.*$",
+    "\\.(png|jpe?g|gif|webp|svg)$",
+    "",
+    "^@/.*$",
+    "^[.]"
+  ],
+  "importOrderTypeScriptVersion": "5.0.0",
+  "importOrderParserPlugins": ["typescript", "jsx", "decorators-legacy"]
 }

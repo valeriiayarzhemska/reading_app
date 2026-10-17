@@ -4,6 +4,7 @@ import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/cn';
 
 const SIZES = {
+  xs: { width: 30, height: 44, radius: 4, letter: 'text-sm' },
   sm: { width: 48, height: 70, radius: 6, letter: 'text-xl' },
   md: { width: 80, height: 118, radius: 8, letter: 'text-3xl' },
   lg: { width: 128, height: 188, radius: 12, letter: 'text-5xl' },

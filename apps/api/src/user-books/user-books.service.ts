@@ -44,13 +44,8 @@ export class UserBooksService {
   }
 
   async add(userId: string, dto: AddUserBookDto) {
-    // Someone else's private book answers the same 404 as a missing one,
-    // so its ID doesn't reveal that it exists
-    const book = await this.prisma.book.findFirst({
-      where: {
-        id: dto.bookId,
-        OR: [{ createdById: null }, { createdById: userId }],
-      },
+    const book = await this.prisma.book.findUnique({
+      where: { id: dto.bookId },
     });
 
     if (!book) {

@@ -7,6 +7,7 @@ import {
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
+import { StartSessionButton } from '@/components/timer/start-session-button';
 import { BookCover } from '@/components/ui/book-cover';
 import { Card } from '@/components/ui/card';
 import { ProgressRing } from '@/components/ui/progress-ring';
@@ -72,6 +73,8 @@ export function CurrentReadingCard({ entry }: { entry: UserBookWithBook }) {
             ) : null}
           </View>
         </View>
+
+        <StartSessionButton entry={entry} />
       </Card>
     </Pressable>
   );

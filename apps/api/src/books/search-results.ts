@@ -31,6 +31,24 @@ export function dedupe(results: BookSearchResult[]): BookSearchResult[] {
   return [...best.values()];
 }
 
+// Books readers added by hand go after the catalogue results, minus any the
+// catalogue already has (someone typed in a book before finding it there)
+export function withLibraryBooks(
+  catalogue: BookSearchResult[],
+  library: BookSearchResult[],
+): BookSearchResult[] {
+  const known = new Set(
+    catalogue.map((book) => bookMatchKey(book.title, book.authors)),
+  );
+
+  return [
+    ...catalogue,
+    ...library.filter(
+      (book) => !known.has(bookMatchKey(book.title, book.authors)),
+    ),
+  ];
+}
+
 // Array.prototype.sort is stable, so equally complete books keep their order.
 export function sortByCompleteness(
   results: BookSearchResult[],

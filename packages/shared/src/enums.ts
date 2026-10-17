@@ -27,5 +27,7 @@ export type ProgressUnit = (typeof ProgressUnit)[keyof typeof ProgressUnit];
 export const BookSource = {
   OPEN_LIBRARY: 'OPEN_LIBRARY',
   GOOGLE: 'GOOGLE',
+  // Added by a reader by hand; externalId is our own Book.id
+  LIBRARY: 'LIBRARY',
 } as const;
 export type BookSource = (typeof BookSource)[keyof typeof BookSource];

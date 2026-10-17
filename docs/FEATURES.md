@@ -95,7 +95,9 @@ As a reader, I want to search by title or author so that I can add books quickly
 
 **LIB-3 — Add book manually** (P1)
 - AC: Form: title (required), author, pages, cover from gallery or camera (7:10 crop).
-- AC: Manually added books are visible only to their creator.
+- AC: Manually added books are public: other readers find them in search (after Open Library / Google results) and can add them to their shelves.
+- AC: If the creator deletes their account, the book stays (creator set to null).
+- Before release: "Report" on hand-added books (App Store guideline 1.2 for user-generated content).
 - 📚 Learn: forms + validation (react-hook-form + zod), image picker, file upload (S3/R2 presigned URL).
 
 **LIB-4 — Shelf status** (P0)

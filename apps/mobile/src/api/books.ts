@@ -28,7 +28,7 @@ export function resultKey(result: BookSearchResult): string {
 }
 
 export function savedBookKeys(book: Book): string[] {
-  const keys: string[] = [];
+  const keys = [`${BookSource.LIBRARY}:${book.id}`];
 
   if (book.openLibraryId) {
     keys.push(`${BookSource.OPEN_LIBRARY}:${book.openLibraryId}`);

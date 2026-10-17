@@ -21,6 +21,7 @@ import {
   useUpdateStatus,
 } from '@/api/shelf';
 import { UpdateProgressSheet } from '@/components/library/update-progress-sheet';
+import { StartSessionButton } from '@/components/timer/start-session-button';
 import { BookCover } from '@/components/ui/book-cover';
 import { Card } from '@/components/ui/card';
 import { ProgressBar } from '@/components/ui/progress-bar';
@@ -99,6 +100,8 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
             </Text>
           </View>
         </View>
+
+        <StartSessionButton entry={entry} />
 
         <Card className="flex-row justify-around">
           <Stat

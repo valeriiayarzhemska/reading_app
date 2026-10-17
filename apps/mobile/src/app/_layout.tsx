@@ -1,5 +1,3 @@
-import '../../global.css';
-
 import { Lora_500Medium, Lora_600SemiBold } from '@expo-google-fonts/lora';
 import {
   NunitoSans_400Regular,
@@ -20,6 +18,8 @@ import { AuthProvider, useAuth } from '@/auth/auth-context';
 import { loadSavedLanguage } from '@/i18n';
 import { COLORS } from '@/theme/colors';
 import { useSessionSync } from '@/timer/use-session-sync';
+
+import '../../global.css';
 
 // Hold the splash screen until fonts, the saved language and the session are
 // loaded, so nothing flashes (system font, wrong language, sign-in screen)

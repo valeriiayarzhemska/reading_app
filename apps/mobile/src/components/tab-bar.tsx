@@ -3,9 +3,11 @@ import type { BottomTabBarProps } from 'expo-router/tabs';
 import type { ComponentProps } from 'react';
 import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MiniTimer, MINI_TIMER_HEIGHT } from '@/components/timer/mini-timer';
 import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/cn';
 import { COLORS } from '@/theme/colors';
+import { useActiveSession } from '@/timer/use-active-session';
 
 type IconName = ComponentProps<typeof Feather>['name'];
 
@@ -22,8 +24,10 @@ const BAR_GAP = 12;
 // The bar floats over the content, so scrollable screens pad their bottom by this
 export function useTabBarInset(): number {
   const { bottom } = useSafeAreaInsets();
+  const { session } = useActiveSession();
+  const miniTimer = session ? MINI_TIMER_HEIGHT + BAR_GAP / 2 : 0;
 
-  return Math.max(bottom, BAR_GAP) + BAR_HEIGHT + BAR_GAP;
+  return Math.max(bottom, BAR_GAP) + BAR_HEIGHT + BAR_GAP + miniTimer;
 }
 
 export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
@@ -32,9 +36,11 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   return (
     <View
       pointerEvents="box-none"
-      className="absolute left-4 right-4"
+      className="absolute left-4 right-4 gap-1.5"
       style={{ bottom: Math.max(bottom, BAR_GAP) }}
     >
+      <MiniTimer />
+
       <View
         accessibilityRole="tablist"
         className="flex-row items-center rounded-full border border-border bg-tab-bar px-2"

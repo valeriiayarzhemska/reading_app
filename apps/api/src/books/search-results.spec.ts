@@ -4,6 +4,7 @@ import {
   isUseful,
   refineResults,
   sortByCompleteness,
+  withLibraryBooks,
 } from './search-results.js';
 
 function book(overrides: Partial<BookSearchResult>): BookSearchResult {
@@ -111,5 +112,31 @@ describe('refineResults', () => {
       book({ externalId: 'edition2' }),
     ]);
     expect(result.map((b) => b.externalId)).toEqual(['edition2', 'other']);
+  });
+});
+
+describe('withLibraryBooks', () => {
+  it('puts library books after the catalogue', () => {
+    const catalogue = [book({ externalId: 'a' })];
+    const library = [
+      book({ source: 'LIBRARY', externalId: 'b', title: 'Grandma Diary' }),
+    ];
+
+    expect(
+      withLibraryBooks(catalogue, library).map((result) => result.externalId),
+    ).toEqual(['a', 'b']);
+  });
+
+  it('drops a library book the catalogue already has', () => {
+    const catalogue = [book({ externalId: 'a' })];
+    const library = [
+      book({
+        source: 'LIBRARY',
+        externalId: 'b',
+        title: 'a court of wings and ruin',
+      }),
+    ];
+
+    expect(withLibraryBooks(catalogue, library)).toEqual(catalogue);
   });
 });
