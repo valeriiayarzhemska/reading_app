@@ -112,6 +112,12 @@ const en = {
     finishedMessage: 'Mark "{{title}}" as read?',
     notYet: 'Not yet',
     markRead: 'Mark as read',
+    queuedTitle: 'Saved on your phone',
+    queuedMessage:
+      "You're offline. The session will be sent automatically when you're back online.",
+    ok: 'OK',
+    pending_one: '{{count}} session waiting to sync',
+    pending_other: '{{count}} sessions waiting to sync',
   },
   search: {
     title: 'Search',

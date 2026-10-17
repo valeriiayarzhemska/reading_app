@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { useShelf } from '@/api/shelf';
+import { useAuth } from '@/auth/auth-context';
 import { CurrentReadingCard } from '@/components/library/current-reading-card';
 import { InProgressRow } from '@/components/library/in-progress-row';
 import { ShelfTile } from '@/components/library/shelf-tile';
@@ -20,11 +21,16 @@ import { Screen } from '@/components/ui/screen';
 import { Text } from '@/components/ui/text';
 import { toLibrarySections } from '@/library/shelves';
 import { COLORS } from '@/theme/colors';
+import { usePendingCount } from '@/timer/pending-sessions';
 
 export default function LibraryScreen() {
   const { t } = useTranslation();
   const { data, isPending, error, refetch, isRefetching } = useShelf();
   const tabBarInset = useTabBarInset();
+  const { state } = useAuth();
+  const pendingCount = usePendingCount(
+    state.status === 'signedIn' ? state.user.id : null,
+  );
 
   if (isPending) {
     return (
@@ -87,6 +93,16 @@ export default function LibraryScreen() {
             <Feather name="search" size={20} color={COLORS.fg} />
           </Pressable>
         </View>
+
+        {pendingCount > 0 ? (
+          <View className="flex-row items-center gap-2">
+            <Feather name="cloud-off" size={14} color={COLORS.fgMuted} />
+
+            <Text variant="muted" className="text-xs">
+              {t('timer.pending', { count: pendingCount })}
+            </Text>
+          </View>
+        ) : null}
 
         {data.length === 0 ? (
           <Card className="gap-4">

@@ -122,6 +122,14 @@ const uk: Translation = {
     finishedMessage: 'Позначити «{{title}}» як прочитану?',
     notYet: 'Ще ні',
     markRead: 'Прочитано',
+    queuedTitle: 'Збережено на телефоні',
+    queuedMessage:
+      'Немає інтернету. Сесію буде надіслано автоматично, щойно зʼявиться звʼязок.',
+    ok: 'OK',
+    pending_one: '{{count}} сесія чекає на синхронізацію',
+    pending_few: '{{count}} сесії чекають на синхронізацію',
+    pending_many: '{{count}} сесій чекають на синхронізацію',
+    pending_other: '{{count}} сесії чекають на синхронізацію',
   },
   search: {
     title: 'Пошук',

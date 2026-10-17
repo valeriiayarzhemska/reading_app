@@ -19,6 +19,7 @@ import { createQueryClient } from '@/api/query-client';
 import { AuthProvider, useAuth } from '@/auth/auth-context';
 import { loadSavedLanguage } from '@/i18n';
 import { COLORS } from '@/theme/colors';
+import { useSessionSync } from '@/timer/use-session-sync';
 
 // Hold the splash screen until fonts, the saved language and the session are
 // loaded, so nothing flashes (system font, wrong language, sign-in screen)
@@ -67,6 +68,8 @@ function RootNavigator() {
   const isSignedIn = state.status === 'signedIn';
   const isOnboarded = isSignedIn && state.user.onboardedAt !== null;
 
+  useSessionSync(isSignedIn ? state.user.id : null);
+
   useEffect(() => {
     if (state.status !== 'loading') {
       SplashScreen.hideAsync();
@@ -101,6 +104,12 @@ function RootNavigator() {
         <Stack.Screen name="shelf/[status]" />
 
         <Stack.Screen name="book/[id]" options={{ title: '' }} />
+
+        {/* Slides up over everything; swiping down minimizes it */}
+        <Stack.Screen
+          name="timer"
+          options={{ presentation: 'modal', headerShown: false }}
+        />
 
         <Stack.Screen
           name="edit-profile"

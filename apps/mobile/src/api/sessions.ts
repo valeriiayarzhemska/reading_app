@@ -1,7 +1,25 @@
-import type { NewReadingSession, SavedReadingSession } from '@reading/shared';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from './client';
+import {
+  ShelfStatus,
+  type NewReadingSession,
+  type SavedReadingSession,
+  type UserBookWithBook,
+} from '@reading/shared';
+import {
+  useMutation,
+  useQueryClient,
+  type QueryClient,
+} from '@tanstack/react-query';
+import { useAuth } from '@/auth/auth-context';
+import {
+  addPending,
+  readPending,
+  removePending,
+} from '@/timer/pending-sessions';
+import { ApiError, apiFetch } from './client';
 import { entryKey, shelfKey } from './shelf';
+
+export type SaveOutcome =
+  { status: 'saved'; result: SavedReadingSession } | { status: 'queued' };
 
 export function saveSession(session: NewReadingSession) {
   return apiFetch<SavedReadingSession>('/me/sessions', {
@@ -10,16 +28,115 @@ export function saveSession(session: NewReadingSession) {
   });
 }
 
+// No response at all (offline: fetch throws a TypeError, not an ApiError) or
+// a server-side failure may work later. A 4xx means the request itself is
+// wrong: sending it again won't help. 401: the token refresh failed, so
+// wait for the next sign-in rather than lose the session.
+export function isRetryable(error: unknown): boolean {
+  return (
+    !(error instanceof ApiError) || error.status >= 500 || error.status === 401
+  );
+}
+
 export function useSaveSession() {
   const queryClient = useQueryClient();
+  const { state } = useAuth();
+  const userId = state.status === 'signedIn' ? state.user.id : null;
 
   return useMutation({
-    mutationFn: saveSession,
-    onSuccess: ({ userBook }) => {
-      // The response already has the updated book: show it right away,
-      // then refresh the list (Library home, shelves) behind it
-      queryClient.setQueryData(entryKey(userBook.id), userBook);
-      queryClient.invalidateQueries({ queryKey: shelfKey });
+    mutationFn: async (session: NewReadingSession): Promise<SaveOutcome> => {
+      try {
+        return { status: 'saved', result: await saveSession(session) };
+      } catch (error) {
+        if (!userId || !isRetryable(error)) {
+          throw error;
+        }
+
+        addPending({ userId, session });
+
+        return { status: 'queued' };
+      }
+    },
+    onSuccess: (outcome, session) => {
+      if (outcome.status === 'saved') {
+        applySaved(queryClient, outcome.result);
+      } else {
+        applyQueued(queryClient, session);
+      }
     },
   });
+}
+
+function applySaved(
+  queryClient: QueryClient,
+  { userBook }: SavedReadingSession,
+) {
+  // The response already has the updated book: show it right away, then
+  // refresh the list (Library home, shelves) behind it
+  queryClient.setQueryData(entryKey(userBook.id), userBook);
+  queryClient.invalidateQueries({ queryKey: shelfKey });
+}
+
+// Not confirmed yet, but show the new progress anyway (optimistic). After a
+// restart the shelf comes from the server again until the sync succeeds.
+function applyQueued(queryClient: QueryClient, session: NewReadingSession) {
+  const patch = (entry: UserBookWithBook): UserBookWithBook =>
+    entry.id === session.userBookId
+      ? {
+          ...entry,
+          currentProgress: session.progressTo,
+          progressUnit: session.unit,
+          status:
+            entry.status === ShelfStatus.WANT_TO_READ
+              ? ShelfStatus.READING
+              : entry.status,
+        }
+      : entry;
+
+  queryClient.setQueryData<UserBookWithBook[]>(shelfKey, (list) =>
+    list?.map(patch),
+  );
+  queryClient.setQueryData<UserBookWithBook>(
+    entryKey(session.userBookId),
+    (entry) => entry && patch(entry),
+  );
+}
+
+// Module-level flag: the interval, the foreground event and app start can
+// all fire together; only one sync may walk the queue at a time
+let isSyncing = false;
+
+// Sends the queue oldest first. Safe to repeat: the server recognizes a
+// clientId it has already saved and returns that session instead.
+export async function syncPendingSessions(
+  queryClient: QueryClient,
+  userId: string,
+) {
+  if (isSyncing) {
+    return;
+  }
+
+  isSyncing = true;
+
+  try {
+    const mine = readPending().filter((item) => item.userId === userId);
+
+    for (const { session } of mine) {
+      try {
+        applySaved(queryClient, await saveSession(session));
+        removePending(session.clientId);
+      } catch (error) {
+        // Still offline: keep this one and the rest for the next attempt
+        if (isRetryable(error)) {
+          return;
+        }
+
+        // Rejected for good (e.g. the book was removed from the shelf)
+        console.warn('Dropping a session the server rejected', error);
+        removePending(session.clientId);
+      }
+    }
+  } finally {
+    isSyncing = false;
+  }
 }
