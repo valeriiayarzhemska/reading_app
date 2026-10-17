@@ -8,6 +8,7 @@ import { PrismaExceptionFilter } from './common/prisma-exception.filter.js';
 import { HealthController } from './health/health.controller.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { ReadingSessionsModule } from './reading-sessions/reading-sessions.module.js';
+import { StatsModule } from './stats/stats.module.js';
 import { UploadsModule } from './uploads/uploads.module.js';
 import { UserBooksModule } from './user-books/user-books.module.js';
 import { UsersModule } from './users/users.module.js';
@@ -19,6 +20,7 @@ import { UsersModule } from './users/users.module.js';
     AuthModule,
     BooksModule,
     ReadingSessionsModule,
+    StatsModule,
     UploadsModule,
     UserBooksModule,
     UsersModule,
