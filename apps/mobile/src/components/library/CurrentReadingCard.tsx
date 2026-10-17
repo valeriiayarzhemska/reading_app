@@ -10,11 +10,11 @@ import {
   type UserBookWithBook,
 } from '@reading/shared';
 
-import { StartSessionButton } from '@/components/timer/start-session-button';
-import { BookCover } from '@/components/ui/book-cover';
-import { Card } from '@/components/ui/card';
-import { ProgressRing } from '@/components/ui/progress-ring';
-import { Text } from '@/components/ui/text';
+import { StartSessionButton } from '@/components/timer/StartSessionButton';
+import { BookCover } from '@/components/ui/BookCover';
+import { Card } from '@/components/ui/Card';
+import { ProgressRing } from '@/components/ui/ProgressRing';
+import { Text } from '@/components/ui/Text';
 
 export function CurrentReadingCard({ entry }: { entry: UserBookWithBook }) {
   const { t } = useTranslation();

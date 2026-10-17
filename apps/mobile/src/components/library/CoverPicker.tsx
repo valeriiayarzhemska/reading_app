@@ -5,15 +5,15 @@ import { useTranslation } from 'react-i18next';
 import { Feather } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 
-import { Button } from '@/components/ui/button';
-import { Sheet } from '@/components/ui/sheet';
-import { Text } from '@/components/ui/text';
+import { Button } from '@/components/ui/Button';
+import { Sheet } from '@/components/ui/Sheet';
+import { Text } from '@/components/ui/Text';
 
 import {
   pickImage,
   prepareCover,
   type CoverSource,
-} from '@/library/cover-image';
+} from '@/library/coverImage';
 import { COLORS } from '@/theme/colors';
 
 const WIDTH = 112;

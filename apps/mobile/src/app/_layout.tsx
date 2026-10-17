@@ -16,11 +16,11 @@ import { StatusBar } from 'expo-status-bar';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { QueryClientProvider } from '@tanstack/react-query';
 
-import { createQueryClient } from '@/api/query-client';
-import { AuthProvider, useAuth } from '@/auth/auth-context';
+import { createQueryClient } from '@/api/queryClient';
+import { AuthProvider, useAuth } from '@/auth/AuthContext';
 import { loadSavedLanguage } from '@/i18n';
 import { COLORS } from '@/theme/colors';
-import { useSessionSync } from '@/timer/use-session-sync';
+import { useSessionSync } from '@/timer/useSessionSync';
 
 import '../../global.css';
 

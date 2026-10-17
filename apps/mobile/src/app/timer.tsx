@@ -9,18 +9,18 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 import { dayWithBook, progressFraction, ShelfStatus } from '@reading/shared';
 
-import { FinishSessionSheet } from '@/components/timer/finish-session-sheet';
-import { BookCover } from '@/components/ui/book-cover';
-import { ProgressBar } from '@/components/ui/progress-bar';
-import { Screen } from '@/components/ui/screen';
-import { Text } from '@/components/ui/text';
+import { FinishSessionSheet } from '@/components/timer/FinishSessionSheet';
+import { BookCover } from '@/components/ui/BookCover';
+import { ProgressBar } from '@/components/ui/ProgressBar';
+import { Screen } from '@/components/ui/Screen';
+import { Text } from '@/components/ui/Text';
 
 import type { SaveOutcome } from '@/api/sessions';
 import { useUpdateStatus } from '@/api/shelf';
-import { useNow } from '@/hooks/use-now';
+import { useNow } from '@/hooks/useNow';
 import { COLORS } from '@/theme/colors';
-import { elapsedMs, formatElapsed } from '@/timer/active-session';
-import { useActiveSession } from '@/timer/use-active-session';
+import { elapsedMs, formatElapsed } from '@/timer/activeSession';
+import { useActiveSession } from '@/timer/useActiveSession';
 
 // This screen is a native modal, drawn by iOS above the whole app, including
 // the root BottomSheetModalProvider. Sheets opened here need a provider

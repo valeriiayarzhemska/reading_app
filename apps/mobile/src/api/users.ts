@@ -6,7 +6,7 @@ import {
   type NicknameAvailability,
 } from '@reading/shared';
 
-import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { apiFetch } from './client';
 
 function fetchNicknameAvailability(nickname: string) {

@@ -11,12 +11,12 @@ import {
   type UserBookWithBook,
 } from '@reading/shared';
 
-import { useAuth } from '@/auth/auth-context';
+import { useAuth } from '@/auth/AuthContext';
 import {
   addPending,
   readPending,
   removePending,
-} from '@/timer/pending-sessions';
+} from '@/timer/pendingSessions';
 import { ApiError, apiFetch } from './client';
 import { entryKey, shelfKey } from './shelf';
 

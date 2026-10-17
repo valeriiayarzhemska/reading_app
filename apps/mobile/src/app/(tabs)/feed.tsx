@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-import { ComingSoon } from '@/components/coming-soon';
+import { ComingSoon } from '@/components/ComingSoon';
 
 export default function FeedScreen() {
   const { t } = useTranslation();

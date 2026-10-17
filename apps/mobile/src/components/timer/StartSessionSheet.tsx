@@ -12,16 +12,16 @@ import {
   type UserBookWithBook,
 } from '@reading/shared';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import {
   SegmentedControl,
   type SegmentOption,
-} from '@/components/ui/segmented-control';
-import { Sheet } from '@/components/ui/sheet';
-import { Text } from '@/components/ui/text';
-import { TextField } from '@/components/ui/text-field';
+} from '@/components/ui/SegmentedControl';
+import { Sheet } from '@/components/ui/Sheet';
+import { Text } from '@/components/ui/Text';
+import { TextField } from '@/components/ui/TextField';
 
-import { useActiveSession } from '@/timer/use-active-session';
+import { useActiveSession } from '@/timer/useActiveSession';
 
 type ReadingUnit = typeof ProgressUnit.PAGES | typeof ProgressUnit.PERCENT;
 

@@ -6,7 +6,7 @@ import {
   type FieldValues,
 } from 'react-hook-form';
 
-import { TextField } from '@/components/ui/text-field';
+import { TextField } from '@/components/ui/TextField';
 
 type FormTextFieldProps<TValues extends FieldValues, TTransformed> = Omit<
   ComponentProps<typeof TextField>,

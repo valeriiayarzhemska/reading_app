@@ -18,18 +18,18 @@ import {
   type UserBookWithBook,
 } from '@reading/shared';
 
-import { UpdateProgressSheet } from '@/components/library/update-progress-sheet';
-import { LogReadingSheet } from '@/components/timer/log-reading-sheet';
-import { StartSessionButton } from '@/components/timer/start-session-button';
-import { BookCover } from '@/components/ui/book-cover';
-import { Card } from '@/components/ui/card';
-import { ProgressBar } from '@/components/ui/progress-bar';
-import { Screen } from '@/components/ui/screen';
+import { UpdateProgressSheet } from '@/components/library/UpdateProgressSheet';
+import { LogReadingSheet } from '@/components/timer/LogReadingSheet';
+import { StartSessionButton } from '@/components/timer/StartSessionButton';
+import { BookCover } from '@/components/ui/BookCover';
+import { Card } from '@/components/ui/Card';
+import { ProgressBar } from '@/components/ui/ProgressBar';
+import { Screen } from '@/components/ui/Screen';
 import {
   SegmentedControl,
   type SegmentOption,
-} from '@/components/ui/segmented-control';
-import { Text } from '@/components/ui/text';
+} from '@/components/ui/SegmentedControl';
+import { Text } from '@/components/ui/Text';
 
 import {
   useRemoveFromShelf,

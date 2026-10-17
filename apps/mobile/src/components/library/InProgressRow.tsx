@@ -10,9 +10,9 @@ import {
   type UserBookWithBook,
 } from '@reading/shared';
 
-import { BookCover } from '@/components/ui/book-cover';
-import { ProgressBar } from '@/components/ui/progress-bar';
-import { Text } from '@/components/ui/text';
+import { BookCover } from '@/components/ui/BookCover';
+import { ProgressBar } from '@/components/ui/ProgressBar';
+import { Text } from '@/components/ui/Text';
 
 import { COLORS } from '@/theme/colors';
 

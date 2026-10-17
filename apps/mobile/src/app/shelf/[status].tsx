@@ -5,12 +5,12 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 
 import { ShelfStatus } from '@reading/shared';
 
-import { BookRow } from '@/components/book-row';
-import { Screen } from '@/components/ui/screen';
-import { Text } from '@/components/ui/text';
+import { BookRow } from '@/components/BookRow';
+import { Screen } from '@/components/ui/Screen';
+import { Text } from '@/components/ui/Text';
 
 import { useShelf } from '@/api/shelf';
-import { progressLabel } from '@/library/progress-label';
+import { progressLabel } from '@/library/progressLabel';
 
 function isShelfStatus(value: unknown): value is ShelfStatus {
   return Object.values(ShelfStatus).includes(value as ShelfStatus);

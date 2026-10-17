@@ -4,11 +4,11 @@ import { useTranslation } from 'react-i18next';
 
 import { DEV_USERS } from '@reading/shared';
 
-import { Button } from '@/components/ui/button';
-import { Screen } from '@/components/ui/screen';
-import { Text } from '@/components/ui/text';
+import { Button } from '@/components/ui/Button';
+import { Screen } from '@/components/ui/Screen';
+import { Text } from '@/components/ui/Text';
 
-import { useAuth } from '@/auth/auth-context';
+import { useAuth } from '@/auth/AuthContext';
 
 // 'google' or a dev user's ID: which button shows the spinner
 type Pending = string | null;

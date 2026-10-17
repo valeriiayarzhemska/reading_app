@@ -11,14 +11,14 @@ import {
   suggestNickname,
 } from '@reading/shared';
 
-import { Button } from '@/components/ui/button';
-import { Screen } from '@/components/ui/screen';
-import { Text } from '@/components/ui/text';
-import { TextField } from '@/components/ui/text-field';
+import { Button } from '@/components/ui/Button';
+import { Screen } from '@/components/ui/Screen';
+import { Text } from '@/components/ui/Text';
+import { TextField } from '@/components/ui/TextField';
 
 import { ApiError } from '@/api/client';
 import { completeOnboarding, useNicknameAvailability } from '@/api/users';
-import { useAuth } from '@/auth/auth-context';
+import { useAuth } from '@/auth/AuthContext';
 
 export default function OnboardingScreen() {
   const { t } = useTranslation();

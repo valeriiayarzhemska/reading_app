@@ -6,10 +6,10 @@ import { router } from 'expo-router';
 
 import type { UserBookWithBook } from '@reading/shared';
 
-import { StartSessionSheet } from '@/components/timer/start-session-sheet';
-import { Button } from '@/components/ui/button';
+import { StartSessionSheet } from '@/components/timer/StartSessionSheet';
+import { Button } from '@/components/ui/Button';
 
-import { useActiveSession } from '@/timer/use-active-session';
+import { useActiveSession } from '@/timer/useActiveSession';
 
 interface StartSessionButtonProps {
   entry: UserBookWithBook;

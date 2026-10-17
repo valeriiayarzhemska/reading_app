@@ -4,7 +4,7 @@ import { randomUUID } from 'expo-crypto';
 
 import type { ProgressUnit, UserBookWithBook } from '@reading/shared';
 
-import { pause, resume, type ActiveSession } from './active-session';
+import { pause, resume, type ActiveSession } from './activeSession';
 import { timerStorage } from './storage';
 
 const KEY = 'activeSession';

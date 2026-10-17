@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 import { View } from 'react-native';
 
-import { BookCover } from '@/components/ui/book-cover';
-import { Text } from '@/components/ui/text';
+import { BookCover } from '@/components/ui/BookCover';
+import { Text } from '@/components/ui/Text';
 
 interface BookRowProps {
   title: string;

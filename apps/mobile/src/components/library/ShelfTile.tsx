@@ -2,8 +2,8 @@ import { Pressable, View } from 'react-native';
 
 import type { UserBookWithBook } from '@reading/shared';
 
-import { BookCover } from '@/components/ui/book-cover';
-import { Text } from '@/components/ui/text';
+import { BookCover } from '@/components/ui/BookCover';
+import { Text } from '@/components/ui/Text';
 
 const STACK_SIZE = 3;
 

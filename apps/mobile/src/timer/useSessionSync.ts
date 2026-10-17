@@ -5,7 +5,7 @@ import { useMMKVString } from 'react-native-mmkv';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { syncPendingSessions } from '@/api/sessions';
-import { PENDING_KEY } from './pending-sessions';
+import { PENDING_KEY } from './pendingSessions';
 import { timerStorage } from './storage';
 
 const RETRY_INTERVAL_MS = 60_000;

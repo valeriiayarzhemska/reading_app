@@ -4,13 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
-import { BookCover } from '@/components/ui/book-cover';
-import { Text } from '@/components/ui/text';
+import { BookCover } from '@/components/ui/BookCover';
+import { Text } from '@/components/ui/Text';
 
-import { useNow } from '@/hooks/use-now';
+import { useNow } from '@/hooks/useNow';
 import { COLORS } from '@/theme/colors';
-import { elapsedMs, formatElapsed } from '@/timer/active-session';
-import { useActiveSession } from '@/timer/use-active-session';
+import { elapsedMs, formatElapsed } from '@/timer/activeSession';
+import { useActiveSession } from '@/timer/useActiveSession';
 
 export const MINI_TIMER_HEIGHT = 60;
 

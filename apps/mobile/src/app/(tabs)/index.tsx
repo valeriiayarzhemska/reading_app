@@ -12,20 +12,20 @@ import { router } from 'expo-router';
 
 import { ShelfStatus } from '@reading/shared';
 
-import { CurrentReadingCard } from '@/components/library/current-reading-card';
-import { InProgressRow } from '@/components/library/in-progress-row';
-import { ShelfTile } from '@/components/library/shelf-tile';
-import { useTabBarInset } from '@/components/tab-bar';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Screen } from '@/components/ui/screen';
-import { Text } from '@/components/ui/text';
+import { CurrentReadingCard } from '@/components/library/CurrentReadingCard';
+import { InProgressRow } from '@/components/library/InProgressRow';
+import { ShelfTile } from '@/components/library/ShelfTile';
+import { useTabBarInset } from '@/components/TabBar';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Screen } from '@/components/ui/Screen';
+import { Text } from '@/components/ui/Text';
 
 import { useShelf } from '@/api/shelf';
-import { useAuth } from '@/auth/auth-context';
+import { useAuth } from '@/auth/AuthContext';
 import { toLibrarySections } from '@/library/shelves';
 import { COLORS } from '@/theme/colors';
-import { usePendingCount } from '@/timer/pending-sessions';
+import { usePendingCount } from '@/timer/pendingSessions';
 
 export default function LibraryScreen() {
   const { t } = useTranslation();

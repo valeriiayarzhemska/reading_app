@@ -4,17 +4,17 @@ import { useTranslation } from 'react-i18next';
 
 import { router } from 'expo-router';
 
-import { useTabBarInset } from '@/components/tab-bar';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Screen } from '@/components/ui/screen';
+import { useTabBarInset } from '@/components/TabBar';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Screen } from '@/components/ui/Screen';
 import {
   SegmentedControl,
   type SegmentOption,
-} from '@/components/ui/segmented-control';
-import { Text } from '@/components/ui/text';
+} from '@/components/ui/SegmentedControl';
+import { Text } from '@/components/ui/Text';
 
-import { useAuth } from '@/auth/auth-context';
+import { useAuth } from '@/auth/AuthContext';
 import { currentLanguage, setLanguage, type Language } from '@/i18n';
 
 // Each language is shown in its own language, so it's findable whatever is active

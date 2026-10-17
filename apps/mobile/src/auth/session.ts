@@ -1,6 +1,6 @@
 import type { AuthResponse, AuthTokens } from '@reading/shared';
 
-import { deleteTokens, readTokens, writeTokens } from './token-storage';
+import { deleteTokens, readTokens, writeTokens } from './tokenStorage';
 
 // Token handling lives outside React because apiFetch (also outside React)
 // needs it on every request.

@@ -12,22 +12,22 @@ import {
   ShelfStatus,
 } from '@reading/shared';
 
-import { FormTextField } from '@/components/form/form-text-field';
-import { CoverPicker } from '@/components/library/cover-picker';
-import { Button } from '@/components/ui/button';
-import { Screen } from '@/components/ui/screen';
+import { FormTextField } from '@/components/form/FormTextField';
+import { CoverPicker } from '@/components/library/CoverPicker';
+import { Button } from '@/components/ui/Button';
+import { Screen } from '@/components/ui/Screen';
 import {
   SegmentedControl,
   type SegmentOption,
-} from '@/components/ui/segmented-control';
-import { Text } from '@/components/ui/text';
+} from '@/components/ui/SegmentedControl';
+import { Text } from '@/components/ui/Text';
 
 import { useAddManualBook } from '@/api/shelf';
 import {
   manualBookSchema,
   type ManualBookError,
   type ManualBookValues,
-} from '@/library/manual-book-form';
+} from '@/library/manualBookForm';
 
 type ManualStatus = ManualBookValues['status'];
 

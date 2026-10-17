@@ -9,7 +9,7 @@ import {
   type BottomSheetBackdropProps,
 } from '@gorhom/bottom-sheet';
 
-import { Text } from '@/components/ui/text';
+import { Text } from '@/components/ui/Text';
 
 import { COLORS } from '@/theme/colors';
 

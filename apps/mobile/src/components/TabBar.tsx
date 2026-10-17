@@ -5,12 +5,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import type { BottomTabBarProps } from 'expo-router/tabs';
 
-import { MINI_TIMER_HEIGHT, MiniTimer } from '@/components/timer/mini-timer';
-import { Text } from '@/components/ui/text';
+import { MINI_TIMER_HEIGHT, MiniTimer } from '@/components/timer/MiniTimer';
+import { Text } from '@/components/ui/Text';
 
 import { cn } from '@/lib/cn';
 import { COLORS } from '@/theme/colors';
-import { useActiveSession } from '@/timer/use-active-session';
+import { useActiveSession } from '@/timer/useActiveSession';
 
 type IconName = ComponentProps<typeof Feather>['name'];
 

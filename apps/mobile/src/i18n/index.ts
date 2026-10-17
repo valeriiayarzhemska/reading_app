@@ -1,4 +1,4 @@
-import './intl-polyfills';
+import './intlPolyfills';
 
 import { initReactI18next } from 'react-i18next';
 

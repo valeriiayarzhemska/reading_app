@@ -22,10 +22,10 @@ import {
   type Me,
 } from '@reading/shared';
 
-import { Button } from '@/components/ui/button';
-import { Screen } from '@/components/ui/screen';
-import { Text } from '@/components/ui/text';
-import { TextField } from '@/components/ui/text-field';
+import { Button } from '@/components/ui/Button';
+import { Screen } from '@/components/ui/Screen';
+import { Text } from '@/components/ui/Text';
+import { TextField } from '@/components/ui/TextField';
 
 import { ApiError } from '@/api/client';
 import {
@@ -33,7 +33,7 @@ import {
   useNicknameAvailability,
   type ProfileChanges,
 } from '@/api/users';
-import { useAuth } from '@/auth/auth-context';
+import { useAuth } from '@/auth/AuthContext';
 
 // Only fields that actually changed are sent: PATCH means "change these"
 function diff(user: Me, form: Required<ProfileChanges>): ProfileChanges {

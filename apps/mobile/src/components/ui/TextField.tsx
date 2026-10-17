@@ -3,7 +3,7 @@ import { TextInput, View, type TextInputProps } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { cssInterop } from 'nativewind';
 
-import { Text } from '@/components/ui/text';
+import { Text } from '@/components/ui/Text';
 
 import { cn } from '@/lib/cn';
 import { COLORS } from '@/theme/colors';

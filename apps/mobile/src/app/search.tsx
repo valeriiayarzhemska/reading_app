@@ -6,15 +6,15 @@ import { router } from 'expo-router';
 
 import { bookMatchKey, type BookSearchResult } from '@reading/shared';
 
-import { BookRow } from '@/components/book-row';
-import { Screen } from '@/components/ui/screen';
-import { Text } from '@/components/ui/text';
-import { TextField } from '@/components/ui/text-field';
+import { BookRow } from '@/components/BookRow';
+import { Screen } from '@/components/ui/Screen';
+import { Text } from '@/components/ui/Text';
+import { TextField } from '@/components/ui/TextField';
 
 import { resultKey, savedBookKeys, useBookSearch } from '@/api/books';
 import { ApiError } from '@/api/client';
 import { useAddToShelf, useShelf } from '@/api/shelf';
-import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { COLORS } from '@/theme/colors';
 
 export default function SearchScreen() {

@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Tabs } from 'expo-router';
 
-import { TabBar } from '@/components/tab-bar';
+import { TabBar } from '@/components/TabBar';
 
 export default function TabsLayout() {
   const { t } = useTranslation();

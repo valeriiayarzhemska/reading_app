@@ -8,10 +8,10 @@ import {
   type UserBookWithBook,
 } from '@reading/shared';
 
-import { Button } from '@/components/ui/button';
-import { Sheet } from '@/components/ui/sheet';
-import { Text } from '@/components/ui/text';
-import { TextField } from '@/components/ui/text-field';
+import { Button } from '@/components/ui/Button';
+import { Sheet } from '@/components/ui/Sheet';
+import { Text } from '@/components/ui/Text';
+import { TextField } from '@/components/ui/TextField';
 
 import { useUpdateProgress } from '@/api/shelf';
 
