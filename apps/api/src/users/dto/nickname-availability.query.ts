@@ -1,6 +1,7 @@
-import { normalizeNickname } from '@reading/shared';
 import { Transform } from 'class-transformer';
 import { IsString, MaxLength } from 'class-validator';
+
+import { normalizeNickname } from '@reading/shared';
 
 export class NicknameAvailabilityQuery {
   // Format problems are reported in the response, not as a 400: the app

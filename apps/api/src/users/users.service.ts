@@ -1,9 +1,11 @@
 import { ConflictException, Injectable } from '@nestjs/common';
+
 import {
   nicknameError,
   type Me,
   type NicknameAvailability,
 } from '@reading/shared';
+
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { CompleteOnboardingDto } from './dto/complete-onboarding.dto.js';
 import type { UpdateProfileDto } from './dto/update-profile.dto.js';

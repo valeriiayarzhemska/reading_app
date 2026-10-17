@@ -1,4 +1,3 @@
-import { BookSource } from '@reading/shared';
 import {
   IsEnum,
   Validate,
@@ -6,6 +5,9 @@ import {
   type ValidationArguments,
   type ValidatorConstraintInterface,
 } from 'class-validator';
+
+import { BookSource } from '@reading/shared';
+
 import { isValidExternalId } from '../external-id.js';
 
 // Custom rule: the ID format depends on another field (source), which the

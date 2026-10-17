@@ -1,5 +1,3 @@
-import type { AuthResponse, Me } from '@reading/shared';
-import { useQueryClient } from '@tanstack/react-query';
 import {
   createContext,
   useCallback,
@@ -9,6 +7,11 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+
+import { useQueryClient } from '@tanstack/react-query';
+
+import type { AuthResponse, Me } from '@reading/shared';
+
 import { devLogin, fetchMe, googleLogin, logout } from '@/api/auth';
 import { getGoogleIdToken, signOutOfGoogle } from './google';
 import {

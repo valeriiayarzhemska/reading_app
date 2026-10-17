@@ -1,5 +1,7 @@
-import { ProgressUnit, sessionProgressError } from '@reading/shared';
 import { describe, expect, it } from 'vitest';
+
+import { ProgressUnit, sessionProgressError } from '@reading/shared';
+
 import { sessionTimeError } from './reading-sessions.rules.js';
 
 const NOW = new Date('2026-10-16T20:00:00Z');

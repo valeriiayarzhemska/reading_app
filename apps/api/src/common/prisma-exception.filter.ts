@@ -7,6 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
+
 import { Prisma } from '../generated/prisma/client.js';
 
 // Full list of codes: https://www.prisma.io/docs/orm/reference/error-reference

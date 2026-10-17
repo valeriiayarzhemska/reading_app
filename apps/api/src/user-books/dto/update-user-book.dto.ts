@@ -1,5 +1,6 @@
-import { BookFormat, ProgressUnit, ShelfStatus } from '@reading/shared';
 import { IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
+
+import { BookFormat, ProgressUnit, ShelfStatus } from '@reading/shared';
 
 export class UpdateUserBookDto {
   @IsOptional()

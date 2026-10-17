@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { View } from 'react-native';
+
 import { BookCover } from '@/components/ui/book-cover';
 import { Text } from '@/components/ui/text';
 

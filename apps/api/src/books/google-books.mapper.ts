@@ -1,4 +1,5 @@
 import { BookSource, type BookSearchResult } from '@reading/shared';
+
 import type { GoogleVolume } from './google-books.types.js';
 
 export function mapVolume(volume: GoogleVolume): BookSearchResult {

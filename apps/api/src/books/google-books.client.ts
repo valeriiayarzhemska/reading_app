@@ -1,5 +1,6 @@
 import { BadGatewayException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+
 import { fetchWithRetry } from '../common/fetch-with-retry.js';
 import type {
   GoogleVolume,

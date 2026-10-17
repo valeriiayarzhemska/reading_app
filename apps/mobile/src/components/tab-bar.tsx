@@ -1,10 +1,13 @@
-import { Feather } from '@expo/vector-icons';
-import type { BottomTabBarProps } from 'expo-router/tabs';
 import type { ComponentProps } from 'react';
 import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MiniTimer, MINI_TIMER_HEIGHT } from '@/components/timer/mini-timer';
+
+import { Feather } from '@expo/vector-icons';
+import type { BottomTabBarProps } from 'expo-router/tabs';
+
+import { MINI_TIMER_HEIGHT, MiniTimer } from '@/components/timer/mini-timer';
 import { Text } from '@/components/ui/text';
+
 import { cn } from '@/lib/cn';
 import { COLORS } from '@/theme/colors';
 import { useActiveSession } from '@/timer/use-active-session';

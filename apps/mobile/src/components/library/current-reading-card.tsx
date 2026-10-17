@@ -1,12 +1,15 @@
+import { Pressable, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+
+import { router } from 'expo-router';
+
 import {
   dayWithBook,
   pagesLeft,
   progressFraction,
   type UserBookWithBook,
 } from '@reading/shared';
-import { router } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { Pressable, View } from 'react-native';
+
 import { StartSessionButton } from '@/components/timer/start-session-button';
 import { BookCover } from '@/components/ui/book-cover';
 import { Card } from '@/components/ui/card';

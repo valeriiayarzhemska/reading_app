@@ -1,11 +1,15 @@
-import { ShelfStatus } from '@reading/shared';
-import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable } from 'react-native';
-import { useShelf } from '@/api/shelf';
+import { useTranslation } from 'react-i18next';
+
+import { router, Stack, useLocalSearchParams } from 'expo-router';
+
+import { ShelfStatus } from '@reading/shared';
+
 import { BookRow } from '@/components/book-row';
 import { Screen } from '@/components/ui/screen';
 import { Text } from '@/components/ui/text';
+
+import { useShelf } from '@/api/shelf';
 import { progressLabel } from '@/library/progress-label';
 
 function isShelfStatus(value: unknown): value is ShelfStatus {

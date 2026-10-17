@@ -1,5 +1,7 @@
-import { BookSource, type Book, type BookSearchResult } from '@reading/shared';
 import { useQuery } from '@tanstack/react-query';
+
+import { BookSource, type Book, type BookSearchResult } from '@reading/shared';
+
 import { apiFetch } from './client';
 
 export function searchBooks(query: string) {

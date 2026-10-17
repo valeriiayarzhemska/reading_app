@@ -1,12 +1,13 @@
-import { Feather } from '@expo/vector-icons';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { dayWithBook, progressFraction, ShelfStatus } from '@reading/shared';
-import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, View } from 'react-native';
-import type { SaveOutcome } from '@/api/sessions';
-import { useUpdateStatus } from '@/api/shelf';
+import { useTranslation } from 'react-i18next';
+
+import { Feather } from '@expo/vector-icons';
+import { router } from 'expo-router';
+
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+
+import { dayWithBook, progressFraction, ShelfStatus } from '@reading/shared';
 
 import { FinishSessionSheet } from '@/components/timer/finish-session-sheet';
 import { BookCover } from '@/components/ui/book-cover';
@@ -14,6 +15,8 @@ import { ProgressBar } from '@/components/ui/progress-bar';
 import { Screen } from '@/components/ui/screen';
 import { Text } from '@/components/ui/text';
 
+import type { SaveOutcome } from '@/api/sessions';
+import { useUpdateStatus } from '@/api/shelf';
 import { useNow } from '@/hooks/use-now';
 import { COLORS } from '@/theme/colors';
 import { elapsedMs, formatElapsed } from '@/timer/active-session';

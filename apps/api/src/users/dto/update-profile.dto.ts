@@ -1,9 +1,3 @@
-import {
-  BIO_MAX_LENGTH,
-  DISPLAY_NAME_MAX_LENGTH,
-  LINKS_MAX_COUNT,
-  normalizeNickname,
-} from '@reading/shared';
 import { Transform } from 'class-transformer';
 import {
   ArrayMaxSize,
@@ -14,6 +8,14 @@ import {
   MaxLength,
   Validate,
 } from 'class-validator';
+
+import {
+  BIO_MAX_LENGTH,
+  DISPLAY_NAME_MAX_LENGTH,
+  LINKS_MAX_COUNT,
+  normalizeNickname,
+} from '@reading/shared';
+
 import { IsProfileLink } from '../link.validator.js';
 import { IsValidNickname } from '../nickname.validator.js';
 

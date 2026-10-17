@@ -1,3 +1,17 @@
+import { useState } from 'react';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  View,
+} from 'react-native';
+import { useTranslation } from 'react-i18next';
+
+import { router } from 'expo-router';
+
+import { useMutation } from '@tanstack/react-query';
+
 import {
   BIO_MAX_LENGTH,
   DISPLAY_NAME_MAX_LENGTH,
@@ -7,17 +21,12 @@ import {
   normalizeNickname,
   type Me,
 } from '@reading/shared';
-import { useMutation } from '@tanstack/react-query';
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  View,
-} from 'react-native';
+
+import { Button } from '@/components/ui/button';
+import { Screen } from '@/components/ui/screen';
+import { Text } from '@/components/ui/text';
+import { TextField } from '@/components/ui/text-field';
+
 import { ApiError } from '@/api/client';
 import {
   updateProfile,
@@ -25,10 +34,6 @@ import {
   type ProfileChanges,
 } from '@/api/users';
 import { useAuth } from '@/auth/auth-context';
-import { Button } from '@/components/ui/button';
-import { Screen } from '@/components/ui/screen';
-import { Text } from '@/components/ui/text';
-import { TextField } from '@/components/ui/text-field';
 
 // Only fields that actually changed are sent: PATCH means "change these"
 function diff(user: Me, form: Required<ProfileChanges>): ProfileChanges {

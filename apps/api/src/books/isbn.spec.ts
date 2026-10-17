@@ -1,5 +1,6 @@
-import { normalizeIsbn } from '@reading/shared';
 import { describe, expect, it } from 'vitest';
+
+import { normalizeIsbn } from '@reading/shared';
 
 describe('normalizeIsbn', () => {
   it('accepts ISBN-13 with hyphens and spaces', () => {

@@ -1,4 +1,5 @@
 import { BadGatewayException, Injectable } from '@nestjs/common';
+
 import { fetchWithRetry } from '../common/fetch-with-retry.js';
 import type {
   OpenLibrarySearchResponse,

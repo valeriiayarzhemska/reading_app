@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
+
 import { clamp01 } from '@/lib/clamp';
 import { COLORS } from '@/theme/colors';
 

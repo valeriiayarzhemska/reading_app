@@ -1,4 +1,5 @@
 import { BookSource } from '@reading/shared';
+
 import { isValidExternalId } from './external-id.js';
 
 describe('isValidExternalId', () => {

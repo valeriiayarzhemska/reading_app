@@ -1,5 +1,6 @@
-import { BookFormat, ProgressUnit, ShelfStatus } from '@reading/shared';
 import { IsEnum, IsOptional, IsUUID } from 'class-validator';
+
+import { BookFormat, ProgressUnit, ShelfStatus } from '@reading/shared';
 
 export class AddUserBookDto {
   @IsUUID()

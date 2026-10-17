@@ -1,4 +1,5 @@
 import { extendTailwindMerge } from 'tailwind-merge';
+
 import { tailwindColors } from '@/theme/colors';
 
 // { fg: { DEFAULT, muted } } → ['fg', 'fg-muted']

@@ -1,5 +1,7 @@
 import { Pressable, View } from 'react-native';
+
 import { Text } from '@/components/ui/text';
+
 import { cn } from '@/lib/cn';
 
 export interface SegmentOption<T extends string> {

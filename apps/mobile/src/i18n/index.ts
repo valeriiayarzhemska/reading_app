@@ -1,9 +1,12 @@
 import './intl-polyfills';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getLocales } from 'expo-localization';
-import { createInstance } from 'i18next';
 import { initReactI18next } from 'react-i18next';
+
+import { getLocales } from 'expo-localization';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createInstance } from 'i18next';
+
 import en from './locales/en';
 import uk from './locales/uk';
 

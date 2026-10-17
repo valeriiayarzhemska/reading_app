@@ -1,9 +1,11 @@
+import { useQuery } from '@tanstack/react-query';
+
 import {
   nicknameError,
   type Me,
   type NicknameAvailability,
 } from '@reading/shared';
-import { useQuery } from '@tanstack/react-query';
+
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
 import { apiFetch } from './client';
 

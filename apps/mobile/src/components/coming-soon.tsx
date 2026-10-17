@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+
 import { Screen } from '@/components/ui/screen';
 import { Text } from '@/components/ui/text';
 

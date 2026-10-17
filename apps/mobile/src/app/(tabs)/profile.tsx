@@ -1,8 +1,9 @@
-import { router } from 'expo-router';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Linking, Pressable, ScrollView, View } from 'react-native';
-import { useAuth } from '@/auth/auth-context';
+import { useTranslation } from 'react-i18next';
+
+import { router } from 'expo-router';
+
 import { useTabBarInset } from '@/components/tab-bar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -12,6 +13,8 @@ import {
   type SegmentOption,
 } from '@/components/ui/segmented-control';
 import { Text } from '@/components/ui/text';
+
+import { useAuth } from '@/auth/auth-context';
 import { currentLanguage, setLanguage, type Language } from '@/i18n';
 
 // Each language is shown in its own language, so it's findable whatever is active

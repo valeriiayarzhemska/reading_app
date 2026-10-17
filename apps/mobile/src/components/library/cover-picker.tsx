@@ -1,11 +1,14 @@
+import { useState } from 'react';
+import { ActivityIndicator, Pressable, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+
 import { Feather } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, View } from 'react-native';
+
 import { Button } from '@/components/ui/button';
 import { Sheet } from '@/components/ui/sheet';
 import { Text } from '@/components/ui/text';
+
 import {
   pickImage,
   prepareCover,

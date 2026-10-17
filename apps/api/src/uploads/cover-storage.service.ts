@@ -1,9 +1,11 @@
+import { randomUUID } from 'node:crypto';
+
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+
 import type { CoverUpload } from '@reading/shared';
-import { randomUUID } from 'node:crypto';
 
 const UPLOAD_URL_TTL_SECONDS = 5 * 60;
 

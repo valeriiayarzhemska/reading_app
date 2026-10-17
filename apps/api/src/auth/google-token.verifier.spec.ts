@@ -7,6 +7,7 @@ import {
   SignJWT,
   type CryptoKey,
 } from 'jose';
+
 import { GoogleTokenVerifier } from './google-token.verifier.js';
 
 const WEB_CLIENT_ID = 'web-client.apps.googleusercontent.com';

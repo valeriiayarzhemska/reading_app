@@ -1,5 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+
 import { CurrentUserId } from '../auth/current-user-id.decorator.js';
 import { CoverStorage } from './cover-storage.service.js';
 import { CreateCoverUploadDto } from './dto/create-cover-upload.dto.js';

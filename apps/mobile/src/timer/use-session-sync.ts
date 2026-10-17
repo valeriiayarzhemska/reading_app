@@ -1,7 +1,9 @@
-import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { AppState } from 'react-native';
 import { useMMKVString } from 'react-native-mmkv';
+
+import { useQueryClient } from '@tanstack/react-query';
+
 import { syncPendingSessions } from '@/api/sessions';
 import { PENDING_KEY } from './pending-sessions';
 import { timerStorage } from './storage';

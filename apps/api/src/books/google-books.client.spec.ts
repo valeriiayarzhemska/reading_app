@@ -1,5 +1,6 @@
 import { BadGatewayException } from '@nestjs/common';
 import type { ConfigService } from '@nestjs/config';
+
 import { GoogleBooksClient } from './google-books.client.js';
 
 // Only getOrThrow is used by the client

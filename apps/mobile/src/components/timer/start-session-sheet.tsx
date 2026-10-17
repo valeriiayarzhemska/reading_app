@@ -1,3 +1,9 @@
+import { useState } from 'react';
+import { View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+
+import { router } from 'expo-router';
+
 import {
   BookFormat,
   convertProgress,
@@ -5,10 +11,7 @@ import {
   ProgressUnit,
   type UserBookWithBook,
 } from '@reading/shared';
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+
 import { Button } from '@/components/ui/button';
 import {
   SegmentedControl,
@@ -17,6 +20,7 @@ import {
 import { Sheet } from '@/components/ui/sheet';
 import { Text } from '@/components/ui/text';
 import { TextField } from '@/components/ui/text-field';
+
 import { useActiveSession } from '@/timer/use-active-session';
 
 type ReadingUnit = typeof ProgressUnit.PAGES | typeof ProgressUnit.PERCENT;

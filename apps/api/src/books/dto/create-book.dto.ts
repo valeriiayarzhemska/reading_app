@@ -1,9 +1,3 @@
-import {
-  BOOK_AUTHOR_MAX_LENGTH,
-  BOOK_AUTHORS_MAX_COUNT,
-  BOOK_PAGE_COUNT_MAX,
-  BOOK_TITLE_MAX_LENGTH,
-} from '@reading/shared';
 import { Transform } from 'class-transformer';
 import {
   ArrayMaxSize,
@@ -16,6 +10,13 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
+
+import {
+  BOOK_AUTHOR_MAX_LENGTH,
+  BOOK_AUTHORS_MAX_COUNT,
+  BOOK_PAGE_COUNT_MAX,
+  BOOK_TITLE_MAX_LENGTH,
+} from '@reading/shared';
 
 const trim = ({ value }: { value: unknown }) =>
   typeof value === 'string' ? value.trim() : value;

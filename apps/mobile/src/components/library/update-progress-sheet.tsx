@@ -1,16 +1,19 @@
+import { useState } from 'react';
+import { View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+
 import {
-  ProgressUnit,
   progressError,
+  ProgressUnit,
   type UserBookWithBook,
 } from '@reading/shared';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
-import { useUpdateProgress } from '@/api/shelf';
+
 import { Button } from '@/components/ui/button';
 import { Sheet } from '@/components/ui/sheet';
 import { Text } from '@/components/ui/text';
 import { TextField } from '@/components/ui/text-field';
+
+import { useUpdateProgress } from '@/api/shelf';
 
 interface UpdateProgressSheetProps {
   entry: UserBookWithBook;

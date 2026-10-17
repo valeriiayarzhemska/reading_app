@@ -1,6 +1,9 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+
+import { LinearGradient } from 'expo-linear-gradient';
+
 import { Text } from '@/components/ui/text';
+
 import { cn } from '@/lib/cn';
 import { COLORS } from '@/theme/colors';
 

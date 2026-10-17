@@ -1,16 +1,19 @@
+import { useState } from 'react';
+import { View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+
 import {
   convertProgress,
   ProgressUnit,
   sessionProgressError,
 } from '@reading/shared';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
-import { useSaveSession, type SaveOutcome } from '@/api/sessions';
+
 import { Button } from '@/components/ui/button';
 import { Sheet } from '@/components/ui/sheet';
 import { Text } from '@/components/ui/text';
 import { TextField } from '@/components/ui/text-field';
+
+import { useSaveSession, type SaveOutcome } from '@/api/sessions';
 import {
   elapsedMs,
   formatElapsed,

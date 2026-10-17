@@ -1,5 +1,7 @@
-import type { NewReadingSession } from '@reading/shared';
 import { useMMKVString } from 'react-native-mmkv';
+
+import type { NewReadingSession } from '@reading/shared';
+
 import { timerStorage } from './storage';
 
 export const PENDING_KEY = 'pendingSessions';

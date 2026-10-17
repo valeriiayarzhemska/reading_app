@@ -1,4 +1,5 @@
 import { Text as RNText, type TextProps as RNTextProps } from 'react-native';
+
 import { cn } from '@/lib/cn';
 
 // React Native doesn't inherit fonts from parent views, so every Text sets one.

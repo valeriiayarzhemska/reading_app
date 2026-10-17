@@ -1,10 +1,14 @@
-import type { UserBookWithBook } from '@reading/shared';
-import { router } from 'expo-router';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Alert } from 'react-native';
+import { useTranslation } from 'react-i18next';
+
+import { router } from 'expo-router';
+
+import type { UserBookWithBook } from '@reading/shared';
+
 import { StartSessionSheet } from '@/components/timer/start-session-sheet';
 import { Button } from '@/components/ui/button';
+
 import { useActiveSession } from '@/timer/use-active-session';
 
 interface StartSessionButtonProps {

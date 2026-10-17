@@ -1,5 +1,6 @@
-import { ShelfStatus } from '@reading/shared';
 import { IsEnum, IsOptional } from 'class-validator';
+
+import { ShelfStatus } from '@reading/shared';
 
 export class ListUserBooksQuery {
   @IsOptional()

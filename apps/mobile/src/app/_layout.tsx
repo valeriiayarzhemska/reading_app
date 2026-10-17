@@ -1,18 +1,21 @@
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 import { Lora_500Medium, Lora_600SemiBold } from '@expo-google-fonts/lora';
 import {
   NunitoSans_400Regular,
   NunitoSans_600SemiBold,
   NunitoSans_700Bold,
 } from '@expo-google-fonts/nunito-sans';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { QueryClientProvider } from '@tanstack/react-query';
+
 import { createQueryClient } from '@/api/query-client';
 import { AuthProvider, useAuth } from '@/auth/auth-context';
 import { loadSavedLanguage } from '@/i18n';

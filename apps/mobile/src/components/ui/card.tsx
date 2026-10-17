@@ -1,4 +1,5 @@
 import { View, type ViewProps } from 'react-native';
+
 import { cn } from '@/lib/cn';
 
 interface CardProps extends ViewProps {

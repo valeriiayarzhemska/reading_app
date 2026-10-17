@@ -1,6 +1,7 @@
 import { View } from 'react-native';
-import { cn } from '@/lib/cn';
+
 import { clamp01 } from '@/lib/clamp';
+import { cn } from '@/lib/cn';
 
 interface ProgressBarProps {
   // 0..1

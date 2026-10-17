@@ -1,8 +1,9 @@
-import { nicknameError } from '@reading/shared';
 import {
   ValidatorConstraint,
   type ValidatorConstraintInterface,
 } from 'class-validator';
+
+import { nicknameError } from '@reading/shared';
 
 // The same rules the app shows while typing (packages/shared/src/profile.ts)
 @ValidatorConstraint({ name: 'nickname' })

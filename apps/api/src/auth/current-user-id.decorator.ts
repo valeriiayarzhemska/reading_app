@@ -3,6 +3,7 @@ import {
   ExecutionContext,
   UnauthorizedException,
 } from '@nestjs/common';
+
 import type { AuthenticatedRequest } from './auth.guard.js';
 
 // Set by AuthGuard from the access token

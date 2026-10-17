@@ -1,4 +1,5 @@
 import { BookSource, type BookSearchResult } from '@reading/shared';
+
 import type { OpenLibraryWork } from './open-library.types.js';
 
 export function mapWork(work: OpenLibraryWork): BookSearchResult {

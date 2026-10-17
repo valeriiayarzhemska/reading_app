@@ -1,19 +1,22 @@
-import { BookFormat, ProgressUnit } from '@reading/shared';
 import { useState, type ReactNode } from 'react';
 import { ScrollView, View } from 'react-native';
+
+import { BookFormat, ProgressUnit } from '@reading/shared';
+
 import { BookCover } from '@/components/ui/book-cover';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { ProgressRing } from '@/components/ui/progress-ring';
 import { Screen } from '@/components/ui/screen';
-import { Sheet } from '@/components/ui/sheet';
 import {
   SegmentedControl,
   type SegmentOption,
 } from '@/components/ui/segmented-control';
+import { Sheet } from '@/components/ui/sheet';
 import { Text } from '@/components/ui/text';
 import { TextField } from '@/components/ui/text-field';
+
 import { i18n } from '@/i18n';
 import { formatDate } from '@/lib/format';
 import { COLORS } from '@/theme/colors';

@@ -1,5 +1,6 @@
 import type { ConfigService } from '@nestjs/config';
 import { describe, expect, it } from 'vitest';
+
 import { CoverStorage } from './cover-storage.service.js';
 
 const ENV: Record<string, string> = {

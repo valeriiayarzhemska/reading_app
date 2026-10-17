@@ -1,5 +1,7 @@
-import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+
+import { Tabs } from 'expo-router';
+
 import { TabBar } from '@/components/tab-bar';
 
 export default function TabsLayout() {

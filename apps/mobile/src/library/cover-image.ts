@@ -1,6 +1,7 @@
+import { Platform } from 'react-native';
+
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
-import { Platform } from 'react-native';
 
 export type CoverSource = 'camera' | 'library';
 

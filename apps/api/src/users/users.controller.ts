@@ -8,6 +8,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+
 import { CurrentUserId } from '../auth/current-user-id.decorator.js';
 import { CompleteOnboardingDto } from './dto/complete-onboarding.dto.js';
 import { NicknameAvailabilityQuery } from './dto/nickname-availability.query.js';

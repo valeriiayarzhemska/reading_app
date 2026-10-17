@@ -1,5 +1,7 @@
-import type { UserBookWithBook } from '@reading/shared';
 import { Pressable, View } from 'react-native';
+
+import type { UserBookWithBook } from '@reading/shared';
+
 import { BookCover } from '@/components/ui/book-cover';
 import { Text } from '@/components/ui/text';
 

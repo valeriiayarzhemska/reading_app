@@ -1,6 +1,8 @@
-import type { CoverUpload } from '@reading/shared';
-import { fetch } from 'expo/fetch';
 import { File } from 'expo-file-system';
+import { fetch } from 'expo/fetch';
+
+import type { CoverUpload } from '@reading/shared';
+
 import { apiFetch } from './client';
 
 // 1. Our API checks who we are and signs a one-time link for this exact size

@@ -1,5 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+
 import type { AuthResponse, Me } from '@reading/shared';
+
 import { PrismaService } from '../prisma/prisma.service.js';
 import { ME_SELECT, toMe } from '../users/me.js';
 import type { GoogleProfile } from './google-token.verifier.js';

@@ -1,15 +1,19 @@
+import { Pressable, ScrollView, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+
 import { Feather } from '@expo/vector-icons';
+import { router } from 'expo-router';
+
 import {
   BookFormat,
   progressFraction,
   type UserBookWithBook,
 } from '@reading/shared';
-import { router } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, View } from 'react-native';
+
 import { BookCover } from '@/components/ui/book-cover';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { Text } from '@/components/ui/text';
+
 import { COLORS } from '@/theme/colors';
 
 export function InProgressRow({ entries }: { entries: UserBookWithBook[] }) {

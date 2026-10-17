@@ -1,13 +1,4 @@
-import {
-  dayWithBook,
-  progressFraction,
-  ProgressUnit,
-  ShelfStatus,
-  type UserBookWithBook,
-} from '@reading/shared';
-import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Alert,
@@ -15,11 +6,18 @@ import {
   ScrollView,
   View,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
+
+import { router, useLocalSearchParams } from 'expo-router';
+
 import {
-  useRemoveFromShelf,
-  useShelfEntry,
-  useUpdateStatus,
-} from '@/api/shelf';
+  dayWithBook,
+  progressFraction,
+  ProgressUnit,
+  ShelfStatus,
+  type UserBookWithBook,
+} from '@reading/shared';
+
 import { UpdateProgressSheet } from '@/components/library/update-progress-sheet';
 import { StartSessionButton } from '@/components/timer/start-session-button';
 import { BookCover } from '@/components/ui/book-cover';
@@ -31,6 +29,12 @@ import {
   type SegmentOption,
 } from '@/components/ui/segmented-control';
 import { Text } from '@/components/ui/text';
+
+import {
+  useRemoveFromShelf,
+  useShelfEntry,
+  useUpdateStatus,
+} from '@/api/shelf';
 import { COLORS } from '@/theme/colors';
 
 export default function BookScreen() {

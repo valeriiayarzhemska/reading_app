@@ -1,7 +1,3 @@
-import { Feather } from '@expo/vector-icons';
-import { ShelfStatus } from '@reading/shared';
-import { router } from 'expo-router';
-import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Pressable,
@@ -9,8 +5,13 @@ import {
   ScrollView,
   View,
 } from 'react-native';
-import { useShelf } from '@/api/shelf';
-import { useAuth } from '@/auth/auth-context';
+import { useTranslation } from 'react-i18next';
+
+import { Feather } from '@expo/vector-icons';
+import { router } from 'expo-router';
+
+import { ShelfStatus } from '@reading/shared';
+
 import { CurrentReadingCard } from '@/components/library/current-reading-card';
 import { InProgressRow } from '@/components/library/in-progress-row';
 import { ShelfTile } from '@/components/library/shelf-tile';
@@ -19,6 +20,9 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Screen } from '@/components/ui/screen';
 import { Text } from '@/components/ui/text';
+
+import { useShelf } from '@/api/shelf';
+import { useAuth } from '@/auth/auth-context';
 import { toLibrarySections } from '@/library/shelves';
 import { COLORS } from '@/theme/colors';
 import { usePendingCount } from '@/timer/pending-sessions';

@@ -1,13 +1,16 @@
+import { useCallback, useEffect, useRef, type ReactNode } from 'react';
+import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetView,
   type BottomSheetBackdropProps,
 } from '@gorhom/bottom-sheet';
-import { useCallback, useEffect, useRef, type ReactNode } from 'react';
-import { View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { Text } from '@/components/ui/text';
+
 import { COLORS } from '@/theme/colors';
 
 interface SheetProps {

@@ -1,4 +1,3 @@
-import { ProgressUnit } from '@reading/shared';
 import {
   IsEnum,
   IsInt,
@@ -8,6 +7,8 @@ import {
   Max,
   Min,
 } from 'class-validator';
+
+import { ProgressUnit } from '@reading/shared';
 
 // ISO 8601 allows "2026-10-16T17:22:00" with no zone, which the server would
 // read in its own timezone. Requiring Z or ±hh:mm makes the moment exact.

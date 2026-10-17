@@ -1,5 +1,6 @@
-import type { AuthTokens } from '@reading/shared';
 import * as SecureStore from 'expo-secure-store';
+
+import type { AuthTokens } from '@reading/shared';
 
 // iOS Keychain / Android Keystore: encrypted by the OS, unlike AsyncStorage
 const KEY = 'auth-tokens';

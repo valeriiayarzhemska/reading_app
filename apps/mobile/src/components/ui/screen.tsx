@@ -1,7 +1,9 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
+
+import { LinearGradient } from 'expo-linear-gradient';
+
 import { cn } from '@/lib/cn';
 import { COLORS } from '@/theme/colors';
 

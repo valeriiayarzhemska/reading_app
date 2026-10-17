@@ -1,5 +1,6 @@
 import type { ConfigService } from '@nestjs/config';
 import { SignJWT } from 'jose';
+
 import { TokenService } from './token.service.js';
 
 const SECRET = 'test-secret-that-is-at-least-32-characters-long';

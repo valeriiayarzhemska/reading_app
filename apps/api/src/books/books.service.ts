@@ -4,11 +4,13 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+
 import {
   BookSource,
   normalizeIsbn,
   type BookSearchResult,
 } from '@reading/shared';
+
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CoverStorage } from '../uploads/cover-storage.service.js';
 import type { CreateBookDto } from './dto/create-book.dto.js';

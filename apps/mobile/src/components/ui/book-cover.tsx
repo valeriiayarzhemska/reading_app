@@ -1,6 +1,9 @@
-import { Image } from 'expo-image';
 import { View } from 'react-native';
+
+import { Image } from 'expo-image';
+
 import { Text } from '@/components/ui/text';
+
 import { cn } from '@/lib/cn';
 
 const SIZES = {

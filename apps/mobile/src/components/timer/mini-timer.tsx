@@ -1,9 +1,12 @@
+import { Pressable, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { Pressable, View } from 'react-native';
+
 import { BookCover } from '@/components/ui/book-cover';
 import { Text } from '@/components/ui/text';
+
 import { useNow } from '@/hooks/use-now';
 import { COLORS } from '@/theme/colors';
 import { elapsedMs, formatElapsed } from '@/timer/active-session';

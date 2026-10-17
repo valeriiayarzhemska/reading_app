@@ -1,20 +1,24 @@
+import { useState } from 'react';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+
+import { useMutation } from '@tanstack/react-query';
+
 import {
   DISPLAY_NAME_MAX_LENGTH,
   nicknameError,
   normalizeNickname,
   suggestNickname,
 } from '@reading/shared';
-import { useMutation } from '@tanstack/react-query';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
-import { ApiError } from '@/api/client';
-import { completeOnboarding, useNicknameAvailability } from '@/api/users';
-import { useAuth } from '@/auth/auth-context';
+
 import { Button } from '@/components/ui/button';
 import { Screen } from '@/components/ui/screen';
 import { Text } from '@/components/ui/text';
 import { TextField } from '@/components/ui/text-field';
+
+import { ApiError } from '@/api/client';
+import { completeOnboarding, useNicknameAvailability } from '@/api/users';
+import { useAuth } from '@/auth/auth-context';
 
 export default function OnboardingScreen() {
   const { t } = useTranslation();
