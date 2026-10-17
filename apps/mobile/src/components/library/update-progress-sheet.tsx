@@ -25,7 +25,17 @@ export function UpdateProgressSheet({
 }: UpdateProgressSheetProps) {
   const { t } = useTranslation();
   const [value, setValue] = useState(String(entry.currentProgress));
+  const [wasOpen, setWasOpen] = useState(open);
   const update = useUpdateProgress(entry.id);
+
+  // Refill on every open: the progress may have changed since (a session)
+  if (open !== wasOpen) {
+    setWasOpen(open);
+
+    if (open) {
+      setValue(String(entry.currentProgress));
+    }
+  }
 
   const progress = Number(value);
   const isNumber = value.trim() !== '' && Number.isInteger(progress);

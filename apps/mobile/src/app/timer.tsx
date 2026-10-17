@@ -1,15 +1,11 @@
 import { Feather } from '@expo/vector-icons';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import {
-  dayWithBook,
-  progressFraction,
-  ShelfStatus,
-  type SavedReadingSession,
-} from '@reading/shared';
+import { dayWithBook, progressFraction, ShelfStatus } from '@reading/shared';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, View } from 'react-native';
+import type { SaveOutcome } from '@/api/sessions';
 import { useUpdateStatus } from '@/api/shelf';
 
 import { FinishSessionSheet } from '@/components/timer/finish-session-sheet';
@@ -81,10 +77,20 @@ function TimerContent() {
     }
   }
 
-  function onSaved({ userBook }: SavedReadingSession) {
+  function onSaved(outcome: SaveOutcome) {
     isSaved.current = true;
     setIsFinishOpen(false);
 
+    // Offline: kept on the phone, sent later by useSessionSync
+    if (outcome.status === 'queued') {
+      Alert.alert(t('timer.queuedTitle'), t('timer.queuedMessage'), [
+        { text: t('timer.ok'), onPress: close },
+      ]);
+
+      return;
+    }
+
+    const { userBook } = outcome.result;
     const isFinished =
       progressFraction(userBook) === 1 && userBook.status !== ShelfStatus.READ;
 

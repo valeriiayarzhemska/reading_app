@@ -2,12 +2,11 @@ import {
   convertProgress,
   ProgressUnit,
   sessionProgressError,
-  type SavedReadingSession,
 } from '@reading/shared';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
-import { useSaveSession } from '@/api/sessions';
+import { useSaveSession, type SaveOutcome } from '@/api/sessions';
 import { Button } from '@/components/ui/button';
 import { Sheet } from '@/components/ui/sheet';
 import { Text } from '@/components/ui/text';
@@ -23,7 +22,7 @@ interface FinishSessionSheetProps {
   session: ActiveSession;
   open: boolean;
   onClose: () => void;
-  onSaved: (result: SavedReadingSession) => void;
+  onSaved: (outcome: SaveOutcome) => void;
   // From the screen's useNow: rendering must not read the clock itself
   now: number;
 }
@@ -99,7 +98,7 @@ export function FinishSessionSheet({
         ) : null}
       </View>
 
-      {/* The session stays saved on the phone, so a failed request loses nothing */}
+      {/* Only a rejection (4xx) ends up here: network failures are queued */}
       {save.error ? (
         <Text className="text-center text-sm text-danger">
           {t('timer.saveFailed', { message: save.error.message })}
