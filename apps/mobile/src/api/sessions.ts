@@ -90,6 +90,7 @@ function applySaved(
   queryClient.setQueryData(entryKey(userBook.id), userBook);
   queryClient.invalidateQueries({ queryKey: shelfKey });
   queryClient.invalidateQueries({ queryKey: speedKey });
+  queryClient.invalidateQueries({ queryKey: ['calendar'] });
 }
 
 // Not confirmed yet, but show the new progress anyway (optimistic). After a

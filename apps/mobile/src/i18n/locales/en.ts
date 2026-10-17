@@ -190,6 +190,19 @@ const en = {
     language: 'Language',
     signOut: 'Sign out',
     editProfile: 'Edit profile',
+    views: {
+      profile: 'Profile',
+      reading: 'My reading',
+    },
+  },
+  stats: {
+    previousMonth: 'Previous month',
+    nextMonth: 'Next month',
+    monthSummary: '{{books}} · {{pages}}',
+    booksFinished_one: '{{count}} book this month',
+    booksFinished_other: '{{count}} books this month',
+    pages_one: '{{count}} page',
+    pages_other: '{{count}} pages',
   },
   onboarding: {
     title: 'Welcome!',

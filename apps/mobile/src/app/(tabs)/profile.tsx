@@ -1,45 +1,27 @@
 import { useState } from 'react';
-import { Linking, Pressable, ScrollView, View } from 'react-native';
+import { ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { router } from 'expo-router';
-
+import { ProfileOverview } from '@/components/profile/ProfileOverview';
+import { MyReading } from '@/components/stats/MyReading';
 import { useTabBarInset } from '@/components/TabBar';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
 import { Screen } from '@/components/ui/Screen';
 import {
   SegmentedControl,
   type SegmentOption,
 } from '@/components/ui/SegmentedControl';
-import { Text } from '@/components/ui/Text';
 
-import { useAuth } from '@/auth/AuthContext';
-import { currentLanguage, setLanguage, type Language } from '@/i18n';
-
-// Each language is shown in its own language, so it's findable whatever is active
-const LANGUAGE_OPTIONS: SegmentOption<Language>[] = [
-  { value: 'en', label: 'English' },
-  { value: 'uk', label: 'Українська' },
-];
-
-// "https://www.instagram.com/vale.arw" → "instagram.com/vale.arw"
-function displayLink(link: string): string {
-  return link.replace(/^https:\/\/(www\.)?/, '');
-}
+type ProfileView = 'profile' | 'reading';
 
 export default function ProfileScreen() {
-  // Re-renders this screen when the language changes
   const { t } = useTranslation();
-  const { state, signOut } = useAuth();
   const tabBarInset = useTabBarInset();
-  const [isSigningOut, setIsSigningOut] = useState(false);
-  const user = state.status === 'signedIn' ? state.user : null;
+  const [view, setView] = useState<ProfileView>('profile');
 
-  async function handleSignOut() {
-    setIsSigningOut(true);
-    await signOut();
-  }
+  const viewOptions: SegmentOption<ProfileView>[] = [
+    { value: 'profile', label: t('profile.views.profile') },
+    { value: 'reading', label: t('profile.views.reading') },
+  ];
 
   return (
     <Screen edges={['top']}>
@@ -47,59 +29,13 @@ export default function ProfileScreen() {
         contentContainerClassName="gap-6 px-4 pt-2"
         contentContainerStyle={{ paddingBottom: tabBarInset }}
       >
-        <Text variant="title">{t('tabs.profile')}</Text>
+        <SegmentedControl
+          options={viewOptions}
+          value={view}
+          onChange={setView}
+        />
 
-        {user ? (
-          <Card className="gap-3">
-            <View>
-              <Text variant="heading">{user.displayName}</Text>
-
-              <Text variant="muted">@{user.nickname}</Text>
-            </View>
-
-            {user.bio ? <Text>{user.bio}</Text> : null}
-
-            {user.links.map((link) => (
-              <Pressable key={link} onPress={() => Linking.openURL(link)}>
-                <Text className="text-accent">{displayLink(link)}</Text>
-              </Pressable>
-            ))}
-
-            <Button
-              title={t('profile.editProfile')}
-              variant="secondary"
-              onPress={() => router.push('/edit-profile')}
-              className="mt-1"
-            />
-          </Card>
-        ) : null}
-
-        <View className="gap-2">
-          <Text variant="label">{t('profile.language')}</Text>
-
-          <SegmentedControl
-            options={LANGUAGE_OPTIONS}
-            value={currentLanguage()}
-            onChange={setLanguage}
-          />
-        </View>
-
-        <View className="gap-3">
-          {__DEV__ ? (
-            <Button
-              title="Design system"
-              variant="secondary"
-              onPress={() => router.push('/design')}
-            />
-          ) : null}
-
-          <Button
-            title={t('profile.signOut')}
-            variant="secondary"
-            loading={isSigningOut}
-            onPress={handleSignOut}
-          />
-        </View>
+        {view === 'profile' ? <ProfileOverview /> : <MyReading />}
       </ScrollView>
     </Screen>
   );

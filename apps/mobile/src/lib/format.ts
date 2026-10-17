@@ -23,3 +23,23 @@ export function formatDuration(minutes: number, t: TFunction): string {
     ? t('common.duration.hoursMinutes', { hours, minutes: rest })
     : t('common.duration.minutes', { minutes: rest });
 }
+
+// "2026-10" → "October" / "Жовтень" (capitalized: Ukrainian month names aren't)
+export function formatMonth(month: string, language: Language): string {
+  const [year, monthNumber] = month.split('-').map(Number);
+  const name = new Intl.DateTimeFormat(language, { month: 'long' }).format(
+    new Date(year, monthNumber - 1, 1),
+  );
+
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+// ["Mon", …, "Sun"] / ["пн", …, "нд"], Monday first
+export function weekdayNames(language: Language): string[] {
+  const format = new Intl.DateTimeFormat(language, { weekday: 'short' });
+
+  // 5 January 2026 is a Monday
+  return Array.from({ length: 7 }, (_, i) =>
+    format.format(new Date(2026, 0, 5 + i)),
+  );
+}

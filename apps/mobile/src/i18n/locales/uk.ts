@@ -204,6 +204,23 @@ const uk: Translation = {
     language: 'Мова',
     signOut: 'Вийти',
     editProfile: 'Редагувати профіль',
+    views: {
+      profile: 'Профіль',
+      reading: 'Моє',
+    },
+  },
+  stats: {
+    previousMonth: 'Попередній місяць',
+    nextMonth: 'Наступний місяць',
+    monthSummary: '{{books}} · {{pages}}',
+    booksFinished_one: '{{count}} книжка цього місяця',
+    booksFinished_few: '{{count}} книжки цього місяця',
+    booksFinished_many: '{{count}} книжок цього місяця',
+    booksFinished_other: '{{count}} книжки цього місяця',
+    pages_one: '{{count}} сторінка',
+    pages_few: '{{count}} сторінки',
+    pages_many: '{{count}} сторінок',
+    pages_other: '{{count}} сторінки',
   },
   onboarding: {
     title: 'Вітаємо!',
