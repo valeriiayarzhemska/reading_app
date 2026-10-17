@@ -18,6 +18,7 @@ import {
 
 import { IsProfileLink } from '../link.validator.js';
 import { IsValidNickname } from '../nickname.validator.js';
+import { IsTimeZone } from '../timezone.validator.js';
 
 const trim = ({ value }: { value: unknown }) =>
   typeof value === 'string' ? value.trim() : value;
@@ -52,4 +53,9 @@ export class UpdateProfileDto {
   @ArrayMaxSize(LINKS_MAX_COUNT)
   @Validate(IsProfileLink, { each: true })
   links?: string[];
+
+  // Sent by the app when the phone's timezone changes (calendar days use it)
+  @IsOptional()
+  @Validate(IsTimeZone)
+  timezone?: string;
 }

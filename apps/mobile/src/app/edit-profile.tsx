@@ -36,7 +36,10 @@ import {
 import { useAuth } from '@/auth/AuthContext';
 
 // Only fields that actually changed are sent: PATCH means "change these"
-function diff(user: Me, form: Required<ProfileChanges>): ProfileChanges {
+function diff(
+  user: Me,
+  form: Required<Omit<ProfileChanges, 'timezone'>>,
+): ProfileChanges {
   const changes: ProfileChanges = {};
 
   if (form.displayName !== user.displayName) {

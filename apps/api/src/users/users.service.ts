@@ -54,6 +54,7 @@ export class UsersService {
         // "No bio" has one representation: null, never ""
         bio: dto.bio === undefined ? undefined : dto.bio || null,
         links: dto.links,
+        timezone: dto.timezone,
       },
       select: ME_SELECT,
     });

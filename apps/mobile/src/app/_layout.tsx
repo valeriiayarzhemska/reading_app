@@ -18,6 +18,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 
 import { createQueryClient } from '@/api/queryClient';
 import { AuthProvider, useAuth } from '@/auth/AuthContext';
+import { useTimezoneSync } from '@/hooks/useTimezoneSync';
 import { loadSavedLanguage } from '@/i18n';
 import { COLORS } from '@/theme/colors';
 import { useSessionSync } from '@/timer/useSessionSync';
@@ -72,6 +73,7 @@ function RootNavigator() {
   const isOnboarded = isSignedIn && state.user.onboardedAt !== null;
 
   useSessionSync(isSignedIn ? state.user.id : null);
+  useTimezoneSync();
 
   useEffect(() => {
     if (state.status !== 'loading') {

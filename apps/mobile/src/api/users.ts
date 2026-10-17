@@ -30,6 +30,7 @@ export interface ProfileChanges {
   nickname?: string;
   bio?: string;
   links?: string[];
+  timezone?: string;
 }
 
 export function updateProfile(changes: ProfileChanges) {
