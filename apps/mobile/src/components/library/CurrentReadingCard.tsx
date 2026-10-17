@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 
 import {
   dayWithBook,
+  minutesLeft,
   pagesLeft,
   progressFraction,
   type UserBookWithBook,
@@ -16,10 +17,15 @@ import { Card } from '@/components/ui/Card';
 import { ProgressRing } from '@/components/ui/ProgressRing';
 import { Text } from '@/components/ui/Text';
 
+import { useReadingSpeed } from '@/api/sessions';
+import { formatDuration } from '@/lib/format';
+
 export function CurrentReadingCard({ entry }: { entry: UserBookWithBook }) {
   const { t } = useTranslation();
   const fraction = progressFraction(entry);
   const left = pagesLeft(entry);
+  const { data: speed } = useReadingSpeed();
+  const timeLeft = minutesLeft(entry, speed);
 
   return (
     <Pressable
@@ -67,11 +73,22 @@ export function CurrentReadingCard({ entry }: { entry: UserBookWithBook }) {
                   </Text>
                 </ProgressRing>
 
-                {left !== null ? (
-                  <Text variant="muted" className="flex-1">
-                    {t('library.pagesLeft', { count: left })}
-                  </Text>
-                ) : null}
+                <View className="flex-1">
+                  {left !== null ? (
+                    <Text variant="muted">
+                      {t('library.pagesLeft', { count: left })}
+                    </Text>
+                  ) : null}
+
+                  {/* Hidden until there are enough sessions to estimate */}
+                  {timeLeft !== null ? (
+                    <Text variant="muted" className="text-xs">
+                      {t('common.approx', {
+                        value: formatDuration(timeLeft, t),
+                      })}
+                    </Text>
+                  ) : null}
+                </View>
               </View>
             ) : null}
           </View>

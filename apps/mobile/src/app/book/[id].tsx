@@ -12,6 +12,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 
 import {
   dayWithBook,
+  minutesLeft,
   progressFraction,
   ProgressUnit,
   ShelfStatus,
@@ -31,11 +32,13 @@ import {
 } from '@/components/ui/SegmentedControl';
 import { Text } from '@/components/ui/Text';
 
+import { useReadingSpeed } from '@/api/sessions';
 import {
   useRemoveFromShelf,
   useShelfEntry,
   useUpdateStatus,
 } from '@/api/shelf';
+import { formatDuration } from '@/lib/format';
 import { COLORS } from '@/theme/colors';
 
 export default function BookScreen() {
@@ -64,6 +67,8 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
   const updateStatus = useUpdateStatus(entry.id);
   const remove = useRemoveFromShelf(entry.id);
   const fraction = progressFraction(entry);
+  const { data: speed } = useReadingSpeed();
+  const timeLeft = minutesLeft(entry, speed);
 
   const statusOptions: SegmentOption<ShelfStatus>[] = [
     {
@@ -131,6 +136,16 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
             value={fraction !== null ? `${Math.round(fraction * 100)}%` : '—'}
             label={t('book.progress')}
           />
+
+          {timeLeft !== null ? (
+            <Stat
+              value={t('common.approx', {
+                value: formatDuration(timeLeft, t),
+              })}
+              label={t('book.timeLeftLabel')}
+              compact
+            />
+          ) : null}
 
           <Stat
             value={entry.startedAt ? String(dayWithBook(entry.startedAt)) : '—'}
@@ -211,10 +226,23 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
   );
 }
 
-function Stat({ value, label }: { value: string; label: string }) {
+function Stat({
+  value,
+  label,
+  compact = false,
+}: {
+  value: string;
+  label: string;
+  // Long values ("≈ 9 h 48 min") use a smaller size, as in the design
+  compact?: boolean;
+}) {
   return (
-    <View className="items-center gap-0.5">
-      <Text className="font-serif text-2xl">{value}</Text>
+    <View className="items-center justify-end gap-0.5">
+      <Text
+        className={compact ? 'font-serif text-base' : 'font-serif text-2xl'}
+      >
+        {value}
+      </Text>
 
       <Text variant="muted" className="text-xs">
         {label}

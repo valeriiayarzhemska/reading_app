@@ -5,7 +5,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { sessionProgressError, ShelfStatus } from '@reading/shared';
+import {
+  readingSpeed,
+  sessionProgressError,
+  ShelfStatus,
+  type ReadingSpeed,
+} from '@reading/shared';
 
 import { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -21,6 +26,29 @@ const include = { book: true } satisfies Prisma.UserBookInclude;
 @Injectable()
 export class ReadingSessionsService {
   constructor(private readonly prisma: PrismaService) {}
+
+  // Pages per hour from all of the user's sessions; the math is in shared
+  async speed(userId: string): Promise<ReadingSpeed> {
+    const sessions = await this.prisma.readingSession.findMany({
+      where: { userId },
+      select: {
+        userBookId: true,
+        unit: true,
+        progressFrom: true,
+        progressTo: true,
+        durationSec: true,
+        // A nested select follows the relation (a JOIN) and loads only this
+        userBook: { select: { book: { select: { pageCount: true } } } },
+      },
+    });
+
+    return readingSpeed(
+      sessions.map(({ userBook, ...session }) => ({
+        ...session,
+        pageCount: userBook.book.pageCount,
+      })),
+    );
+  }
 
   // Idempotent: saving the same clientId again returns the first result and
   // changes nothing, so the app can safely retry after a lost response

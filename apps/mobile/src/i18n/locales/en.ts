@@ -9,6 +9,11 @@ const en = {
   common: {
     retry: 'Retry',
     comingSoon: 'Coming soon',
+    duration: {
+      hoursMinutes: '{{hours}} h {{minutes}} min',
+      minutes: '{{minutes}} min',
+    },
+    approx: '≈ {{value}}',
   },
   library: {
     title: 'Library',
@@ -45,6 +50,7 @@ const en = {
     pages: 'pages',
     progress: 'Progress',
     dayLabel: 'day with book',
+    timeLeftLabel: 'to the end',
     update: 'Update',
     updateProgressTitle: 'Update progress',
     save: 'Save',

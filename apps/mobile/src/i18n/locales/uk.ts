@@ -10,6 +10,11 @@ const uk: Translation = {
   common: {
     retry: 'Спробувати ще',
     comingSoon: 'Скоро буде',
+    duration: {
+      hoursMinutes: '{{hours}} год {{minutes}} хв',
+      minutes: '{{minutes}} хв',
+    },
+    approx: '≈ {{value}}',
   },
   library: {
     title: 'Бібліотека',
@@ -52,6 +57,7 @@ const uk: Translation = {
     pages: 'сторінок',
     progress: 'Прогрес',
     dayLabel: 'день з книжкою',
+    timeLeftLabel: 'до кінця',
     update: 'Оновити',
     updateProgressTitle: 'Оновити прогрес',
     save: 'Зберегти',

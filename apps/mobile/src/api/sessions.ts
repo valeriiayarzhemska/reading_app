@@ -1,5 +1,6 @@
 import {
   useMutation,
+  useQuery,
   useQueryClient,
   type QueryClient,
 } from '@tanstack/react-query';
@@ -7,6 +8,7 @@ import {
 import {
   ShelfStatus,
   type NewReadingSession,
+  type ReadingSpeed,
   type SavedReadingSession,
   type UserBookWithBook,
 } from '@reading/shared';
@@ -22,6 +24,16 @@ import { entryKey, shelfKey } from './shelf';
 
 export type SaveOutcome =
   { status: 'saved'; result: SavedReadingSession } | { status: 'queued' };
+
+const speedKey = ['readingSpeed'] as const;
+
+// Pages per hour from the reader's sessions; refreshed after each new session
+export function useReadingSpeed() {
+  return useQuery({
+    queryKey: speedKey,
+    queryFn: () => apiFetch<ReadingSpeed>('/me/sessions/speed'),
+  });
+}
 
 export function saveSession(session: NewReadingSession) {
   return apiFetch<SavedReadingSession>('/me/sessions', {
@@ -77,6 +89,7 @@ function applySaved(
   // refresh the list (Library home, shelves) behind it
   queryClient.setQueryData(entryKey(userBook.id), userBook);
   queryClient.invalidateQueries({ queryKey: shelfKey });
+  queryClient.invalidateQueries({ queryKey: speedKey });
 }
 
 // Not confirmed yet, but show the new progress anyway (optimistic). After a
