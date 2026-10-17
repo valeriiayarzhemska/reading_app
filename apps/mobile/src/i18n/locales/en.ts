@@ -118,6 +118,23 @@ const en = {
     ok: 'OK',
     pending_one: '{{count}} session waiting to sync',
     pending_other: '{{count}} sessions waiting to sync',
+    log: {
+      link: 'Reading without a timer? Log pages',
+      title: 'Log reading',
+      today: 'Today',
+      yesterday: 'Yesterday',
+      earlier: 'Earlier day',
+      later: 'Later day',
+      minutes: 'Minutes',
+      amount: {
+        PAGES: 'Pages read',
+        PERCENT: 'Percent read',
+        MINUTES: 'Minutes listened',
+      },
+      minutesRange: 'From 1 to {{max}}',
+      amountMin: 'At least 1',
+      save: 'Save',
+    },
   },
   search: {
     title: 'Search',

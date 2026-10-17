@@ -130,6 +130,23 @@ const uk: Translation = {
     pending_few: '{{count}} сесії чекають на синхронізацію',
     pending_many: '{{count}} сесій чекають на синхронізацію',
     pending_other: '{{count}} сесії чекають на синхронізацію',
+    log: {
+      link: 'Читання без таймера? Запиши сторінки',
+      title: 'Записати читання',
+      today: 'Сьогодні',
+      yesterday: 'Вчора',
+      earlier: 'Раніший день',
+      later: 'Пізніший день',
+      minutes: 'Хвилин',
+      amount: {
+        PAGES: 'Сторінок',
+        PERCENT: 'Відсотків',
+        MINUTES: 'Хвилин прослухано',
+      },
+      minutesRange: 'Від 1 до {{max}}',
+      amountMin: 'Щонайменше 1',
+      save: 'Зберегти',
+    },
   },
   search: {
     title: 'Пошук',

@@ -19,6 +19,7 @@ import {
 } from '@reading/shared';
 
 import { UpdateProgressSheet } from '@/components/library/update-progress-sheet';
+import { LogReadingSheet } from '@/components/timer/log-reading-sheet';
 import { StartSessionButton } from '@/components/timer/start-session-button';
 import { BookCover } from '@/components/ui/book-cover';
 import { Card } from '@/components/ui/card';
@@ -59,6 +60,7 @@ export default function BookScreen() {
 function BookDetails({ entry }: { entry: UserBookWithBook }) {
   const { t } = useTranslation();
   const [isProgressOpen, setIsProgressOpen] = useState(false);
+  const [isLogOpen, setIsLogOpen] = useState(false);
   const updateStatus = useUpdateStatus(entry.id);
   const remove = useRemoveFromShelf(entry.id);
   const fraction = progressFraction(entry);
@@ -105,7 +107,19 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
           </View>
         </View>
 
-        <StartSessionButton entry={entry} />
+        <View className="gap-1">
+          <StartSessionButton entry={entry} />
+
+          <Pressable
+            onPress={() => setIsLogOpen(true)}
+            accessibilityRole="button"
+            className="items-center py-2 active:opacity-60"
+          >
+            <Text variant="muted" className="text-sm">
+              {t('timer.log.link')}
+            </Text>
+          </Pressable>
+        </View>
 
         <Card className="flex-row justify-around">
           <Stat
@@ -181,6 +195,12 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
           </Text>
         ) : null}
       </ScrollView>
+
+      <LogReadingSheet
+        entry={entry}
+        open={isLogOpen}
+        onClose={() => setIsLogOpen(false)}
+      />
 
       <UpdateProgressSheet
         entry={entry}
