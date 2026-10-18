@@ -1,16 +1,17 @@
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Feather } from '@expo/vector-icons';
 
-import type { CalendarDay, DaySession } from '@reading/shared';
+import type { CalendarBook, CalendarDay, DaySession } from '@reading/shared';
 
 import { EditSessionForm } from '@/components/stats/EditSessionForm';
 import { BookCover } from '@/components/ui/BookCover';
 import { Sheet } from '@/components/ui/Sheet';
 import { Text } from '@/components/ui/Text';
 
+import { useRemoveFinish } from '@/api/shelf';
 import { useDaySessions } from '@/api/stats';
 import { currentLanguage } from '@/i18n';
 import { formatDate, formatDuration } from '@/lib/format';
@@ -31,6 +32,10 @@ export function DaySheet({ day: openDay, onClose }: DaySheetProps) {
   const [wasOpen, setWasOpen] = useState(isOpen);
   // One sheet, two views: the day's list, or the form for one session
   const [editing, setEditing] = useState<DaySession | null>(null);
+  // `day` is the snapshot taken on tap; hide removed finishes right away
+  // instead of waiting for a new snapshot
+  const [removed, setRemoved] = useState<string[]>([]);
+  const removeFinish = useRemoveFinish();
 
   if (openDay && openDay !== lastDay) {
     setLastDay(openDay);
@@ -42,10 +47,35 @@ export function DaySheet({ day: openDay, onClose }: DaySheetProps) {
 
     if (isOpen) {
       setEditing(null);
+      setRemoved([]);
     }
   }
 
   const day = openDay ?? lastDay;
+  const finished =
+    day?.finished.filter((book) => !removed.includes(book.userBookId)) ?? [];
+
+  // The book stays on its shelf; only the "finished on this day" goes
+  function confirmRemoveFinish(book: CalendarBook) {
+    Alert.alert(
+      t('stats.day.removeFinishTitle'),
+      t('stats.day.removeFinishMessage', { title: book.title }),
+      [
+        { text: t('book.cancel'), style: 'cancel' },
+        {
+          text: t('stats.day.removeFinish'),
+          style: 'destructive',
+          onPress: () =>
+            removeFinish.mutate(
+              { id: book.userBookId },
+              {
+                onSuccess: () => setRemoved((ids) => [...ids, book.userBookId]),
+              },
+            ),
+        },
+      ],
+    );
+  }
   const dateLabel = day ? formatDate(day.date, currentLanguage()) : '';
   const sessions = useDaySessions(day?.date ?? null);
 
@@ -64,11 +94,11 @@ export function DaySheet({ day: openDay, onClose }: DaySheetProps) {
         />
       ) : (
         <>
-          {day && day.finished.length > 0 ? (
+          {finished.length > 0 ? (
             <View className="gap-2">
               <Text variant="label">{t('stats.day.finished')}</Text>
 
-              {day.finished.map((book) => (
+              {finished.map((book) => (
                 <View
                   key={book.userBookId}
                   className="flex-row items-center gap-3"
@@ -78,6 +108,16 @@ export function DaySheet({ day: openDay, onClose }: DaySheetProps) {
                   <Text className="flex-1 font-serif" numberOfLines={2}>
                     {book.title}
                   </Text>
+
+                  <Pressable
+                    onPress={() => confirmRemoveFinish(book)}
+                    accessibilityRole="button"
+                    accessibilityLabel={t('stats.day.removeFinish')}
+                    hitSlop={8}
+                    className="h-8 w-8 items-center justify-center active:opacity-60"
+                  >
+                    <Feather name="x" size={18} color={COLORS.fgFaint} />
+                  </Pressable>
                 </View>
               ))}
             </View>

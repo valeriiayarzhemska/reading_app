@@ -1,10 +1,16 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type QueryClient,
+} from '@tanstack/react-query';
 
 import {
   BookFormat,
   ShelfStatus,
   type Book,
   type BookSearchResult,
+  type DatePrecision,
   type UserBookWithBook,
 } from '@reading/shared';
 
@@ -77,9 +83,19 @@ export function useUpdateStatus(id: string) {
       queryClient.setQueryData(shelfKey, context?.previousList);
       queryClient.setQueryData(entryKey(id), context?.previousEntry);
     },
-    // Either way, sync with the server (it also sets startedAt / finishedAt)
-    onSettled: () => queryClient.invalidateQueries({ queryKey: shelfKey }),
+    // Either way, sync with the server (it also sets startedAt / finishedAt,
+    // which count in the stats and as "finished" days in the calendar)
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: shelfKey });
+      invalidateBookStats(queryClient);
+    },
   });
+}
+
+// Stats that count books (read, finished this year) and calendar days
+function invalidateBookStats(queryClient: QueryClient) {
+  queryClient.invalidateQueries({ queryKey: ['stats'] });
+  queryClient.invalidateQueries({ queryKey: ['calendar'] });
 }
 
 export function useUpdateProgress(id: string) {
@@ -95,6 +111,45 @@ export function useUpdateProgress(id: string) {
   });
 }
 
+export interface FinishDetails {
+  finishedAt: string;
+  finishedPrecision: DatePrecision;
+  startedAt?: string;
+  rating: number | null;
+}
+
+// The "finished, rate it?" sheet: real finish date (maybe years ago), its
+// precision, optionally the start, and the rating, in one request
+export function useSaveFinish(id: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (details: FinishDetails) => patchEntry(id, { ...details }),
+    onSuccess: (updated) => {
+      queryClient.setQueryData(entryKey(id), updated);
+      queryClient.invalidateQueries({ queryKey: shelfKey });
+      // The finish moved to another day (or year)
+      invalidateBookStats(queryClient);
+    },
+  });
+}
+
+// Removes a finish date: "Actually not finished yet" (with the status to go
+// back to) or the ✕ on a finished book in the calendar (status unchanged)
+export function useRemoveFinish() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, status }: { id: string; status?: ShelfStatus }) =>
+      patchEntry(id, { finishedAt: null, status }),
+    onSuccess: (updated) => {
+      queryClient.setQueryData(entryKey(updated.id), updated);
+      queryClient.invalidateQueries({ queryKey: shelfKey });
+      invalidateBookStats(queryClient);
+    },
+  });
+}
+
 export function useRemoveFromShelf(id: string) {
   const queryClient = useQueryClient();
 
@@ -105,6 +160,10 @@ export function useRemoveFromShelf(id: string) {
         list?.filter((entry) => entry.id !== id),
       );
       queryClient.removeQueries({ queryKey: entryKey(id) });
+      // Its sessions are deleted with it (cascade): every total changes
+      invalidateBookStats(queryClient);
+      queryClient.invalidateQueries({ queryKey: ['readingSpeed'] });
+      queryClient.invalidateQueries({ queryKey: ['daySessions'] });
     },
   });
 }

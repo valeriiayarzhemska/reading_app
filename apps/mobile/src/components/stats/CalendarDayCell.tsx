@@ -31,8 +31,7 @@ export function CalendarDayCell({
     return <View className="flex-1" style={{ aspectRatio: CELL_RATIO }} />;
   }
 
-  // A day with only a finished book still shows that book
-  const books = day ? (day.books.length > 0 ? day.books : day.finished) : [];
+  const books = day ? dayCovers(day) : [];
   const dayNumber = Number(date.slice(8));
 
   return (
@@ -58,6 +57,15 @@ export function CalendarDayCell({
           <View className="absolute bottom-0.5 left-0.5 rounded bg-black/55 px-1">
             <Text className="text-[9px] text-white">{dayNumber}</Text>
           </View>
+
+          {/* Books that don't fit as covers; the day sheet lists them all */}
+          {books.length > MAX_COVERS ? (
+            <View className="absolute right-0.5 top-0.5 h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1">
+              <Text className="font-sans-bold text-[9px] text-accent-fg">
+                +{books.length - MAX_COVERS}
+              </Text>
+            </View>
+          ) : null}
         </>
       ) : (
         <View className="flex-1 items-center justify-center">
@@ -70,6 +78,22 @@ export function CalendarDayCell({
       )}
     </Pressable>
   );
+}
+
+// Books finished that day first (the bigger event), then the ones read.
+// The same book can be in both lists: read and finished on one day.
+function dayCovers(day: CalendarDay): CalendarBook[] {
+  const seen = new Set<string>();
+
+  return [...day.finished, ...day.books].filter((book) => {
+    if (seen.has(book.userBookId)) {
+      return false;
+    }
+
+    seen.add(book.userBookId);
+
+    return true;
+  });
 }
 
 function CellCover({ book }: { book: CalendarBook }) {

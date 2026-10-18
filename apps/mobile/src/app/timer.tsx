@@ -110,8 +110,17 @@ function TimerContent() {
         { text: t('timer.notYet'), style: 'cancel', onPress: close },
         {
           text: t('timer.markRead'),
+          // Then the book screen with its "finished, rate it?" sheet
           onPress: () =>
-            updateStatus.mutate(ShelfStatus.READ, { onSettled: close }),
+            updateStatus.mutate(ShelfStatus.READ, {
+              onSettled: () => {
+                close();
+                router.push({
+                  pathname: '/book/[id]',
+                  params: { id: userBook.id, rate: '1' },
+                });
+              },
+            }),
         },
       ],
     );

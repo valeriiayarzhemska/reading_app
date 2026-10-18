@@ -43,3 +43,20 @@ export function weekdayNames(language: Language): string[] {
     format.format(new Date(2026, 0, 5 + i)),
   );
 }
+
+// 950 → "950", 6812 → "6.8k" / "6,8 тис." (decimal separator per language)
+export function formatCount(
+  value: number,
+  language: Language,
+  t: TFunction,
+): string {
+  if (value < 1000) {
+    return value.toLocaleString(language);
+  }
+
+  return t('common.thousands', {
+    value: (value / 1000).toLocaleString(language, {
+      maximumFractionDigits: 1,
+    }),
+  });
+}

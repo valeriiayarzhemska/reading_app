@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildCalendar, monthRange, type BookInfo } from './calendar.js';
+import {
+  buildCalendar,
+  monthRange,
+  yearIn,
+  type BookInfo,
+} from './calendar.js';
 
 const books = new Map<string, BookInfo>([
   ['a', { title: 'Book A', coverUrl: 'a.jpg' }],
@@ -59,5 +64,15 @@ describe('buildCalendar', () => {
     expect(calendar.days).toHaveLength(1);
     expect(calendar.days[0].finished[0].title).toBe('Book B');
     expect(calendar.summary.booksFinished).toBe(1);
+  });
+});
+
+describe('yearIn', () => {
+  // 31 Dec 23:30 UTC: already 1 Jan in Kyiv, still 31 Dec in New York
+  const newYearsEve = new Date('2026-12-31T23:30:00Z');
+
+  it('uses the reader timezone, not UTC', () => {
+    expect(yearIn('Europe/Kyiv', newYearsEve)).toBe(2027);
+    expect(yearIn('America/New_York', newYearsEve)).toBe(2026);
   });
 });

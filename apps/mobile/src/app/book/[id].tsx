@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { Feather } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 
 import {
@@ -19,6 +20,7 @@ import {
   type UserBookWithBook,
 } from '@reading/shared';
 
+import { FinishedSheet } from '@/components/library/FinishedSheet';
 import { UpdateProgressSheet } from '@/components/library/UpdateProgressSheet';
 import { LogReadingSheet } from '@/components/timer/LogReadingSheet';
 import { StartSessionButton } from '@/components/timer/StartSessionButton';
@@ -34,11 +36,14 @@ import { Text } from '@/components/ui/Text';
 
 import { useReadingSpeed } from '@/api/sessions';
 import {
+  useRemoveFinish,
   useRemoveFromShelf,
   useShelfEntry,
   useUpdateStatus,
 } from '@/api/shelf';
+import { currentLanguage } from '@/i18n';
 import { formatDuration } from '@/lib/format';
+import { formatFinishDate } from '@/library/finishDate';
 import { COLORS } from '@/theme/colors';
 
 export default function BookScreen() {
@@ -62,9 +67,15 @@ export default function BookScreen() {
 
 function BookDetails({ entry }: { entry: UserBookWithBook }) {
   const { t } = useTranslation();
+  // ?rate=1: opened from the timer's "Mark as read", show the sheet at once
+  const { rate } = useLocalSearchParams<{ rate?: string }>();
   const [isProgressOpen, setIsProgressOpen] = useState(false);
   const [isLogOpen, setIsLogOpen] = useState(false);
+  const [isFinishedOpen, setIsFinishedOpen] = useState(rate === '1');
+  // Where "Actually not finished yet" puts the book back
+  const previousStatus = useRef<ShelfStatus>(ShelfStatus.READING);
   const updateStatus = useUpdateStatus(entry.id);
+  const removeFinish = useRemoveFinish();
   const remove = useRemoveFromShelf(entry.id);
   const fraction = progressFraction(entry);
   const { data: speed } = useReadingSpeed();
@@ -78,6 +89,22 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
     { value: ShelfStatus.READING, label: t('library.sections.READING') },
     { value: ShelfStatus.READ, label: t('library.sections.READ') },
   ];
+
+  function changeStatus(status: ShelfStatus) {
+    if (status === ShelfStatus.READ && entry.status !== ShelfStatus.READ) {
+      previousStatus.current = entry.status;
+      setIsFinishedOpen(true);
+    }
+
+    updateStatus.mutate(status);
+  }
+
+  // A correction: back to the previous shelf and today's finish removed, in
+  // one request (leaving Read on its own keeps the date, for rereads)
+  function markNotFinished() {
+    setIsFinishedOpen(false);
+    removeFinish.mutate({ id: entry.id, status: previousStatus.current });
+  }
 
   function confirmRemove() {
     Alert.alert(t('book.removeTitle'), t('book.removeMessage'), [
@@ -102,6 +129,18 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
           />
 
           <View className="items-center gap-1">
+            {entry.status === ShelfStatus.READ && entry.finishedAt ? (
+              <Text variant="label">
+                {t('book.finished.label', {
+                  date: formatFinishDate(
+                    entry.finishedAt,
+                    entry.finishedPrecision,
+                    currentLanguage(),
+                  ),
+                })}
+              </Text>
+            ) : null}
+
             <Text variant="heading" className="text-center text-2xl">
               {entry.book.title}
             </Text>
@@ -157,7 +196,7 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
           <SegmentedControl
             options={statusOptions}
             value={entry.status}
-            onChange={(status) => updateStatus.mutate(status)}
+            onChange={changeStatus}
           />
 
           {updateStatus.isError ? (
@@ -166,6 +205,48 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
             </Text>
           ) : null}
         </View>
+
+        {entry.status === ShelfStatus.READ ? (
+          <Card className="gap-1 py-2">
+            <Pressable
+              onPress={() => setIsFinishedOpen(true)}
+              accessibilityRole="button"
+              className="flex-row items-center justify-between py-2 active:opacity-60"
+            >
+              <Text className="font-sans-semibold text-accent-light">
+                {entry.rating === null
+                  ? t('book.finished.rate')
+                  : t('book.finished.yourRating', { rating: entry.rating })}
+              </Text>
+
+              <Feather name="chevron-right" size={18} color={COLORS.fgFaint} />
+            </Pressable>
+
+            {entry.finishedAt ? (
+              <Pressable
+                onPress={() => setIsFinishedOpen(true)}
+                accessibilityRole="button"
+                className="flex-row items-center justify-between border-t border-border py-2 active:opacity-60"
+              >
+                <Text>
+                  {t('book.finished.row', {
+                    date: formatFinishDate(
+                      entry.finishedAt,
+                      entry.finishedPrecision,
+                      currentLanguage(),
+                    ),
+                  })}
+                </Text>
+
+                <Feather
+                  name="chevron-right"
+                  size={18}
+                  color={COLORS.fgFaint}
+                />
+              </Pressable>
+            ) : null}
+          </Card>
+        ) : null}
 
         <Card className="gap-3">
           <View className="flex-row items-center justify-between">
@@ -210,6 +291,13 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
           </Text>
         ) : null}
       </ScrollView>
+
+      <FinishedSheet
+        entry={entry}
+        open={isFinishedOpen}
+        onClose={() => setIsFinishedOpen(false)}
+        onNotFinished={markNotFinished}
+      />
 
       <LogReadingSheet
         entry={entry}

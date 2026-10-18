@@ -93,9 +93,11 @@ function applySaved(
   invalidateStats(queryClient);
 }
 
-// Everything computed from sessions: speed (time left), calendar, day lists
+// Everything computed from sessions: speed (time left), totals, calendar,
+// day lists
 function invalidateStats(queryClient: QueryClient) {
   queryClient.invalidateQueries({ queryKey: speedKey });
+  queryClient.invalidateQueries({ queryKey: ['stats'] });
   queryClient.invalidateQueries({ queryKey: ['calendar'] });
   queryClient.invalidateQueries({ queryKey: ['daySessions'] });
 }

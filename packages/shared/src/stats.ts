@@ -60,3 +60,28 @@ export interface ReadingGoal {
 }
 
 export const GOAL_TARGET_MAX = 1000;
+
+// GET /me/calendar/year?year=2026: the heatmap
+export interface CalendarYear {
+  year: number;
+  timezone: string;
+  // Only days with reading: { "2026-10-03": 155 }
+  minutesByDay: Record<string, number>;
+  summary: {
+    booksFinished: number;
+    minutes: number;
+  };
+}
+
+export const YEAR_PATTERN = /^\d{4}$/;
+
+// Heatmap color level of a day: fixed steps (like GitHub's contribution
+// graph) read better at a glance than a smooth gradient
+export const HEAT_LEVELS = [1, 15, 30, 60] as const;
+
+// 0 = no reading … 4 = an hour or more
+export function heatLevel(minutes: number): 0 | 1 | 2 | 3 | 4 {
+  const level = HEAT_LEVELS.filter((threshold) => minutes >= threshold).length;
+
+  return level as 0 | 1 | 2 | 3 | 4;
+}

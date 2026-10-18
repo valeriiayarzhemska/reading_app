@@ -91,3 +91,14 @@ export function buildCalendar(
     },
   };
 }
+
+// The current year on the reader's clock: at 23:30 UTC on 31 Dec it's
+// already next year in Kyiv but still this year in New York
+export function yearIn(timezone: string, now = new Date()): number {
+  return Number(
+    new Intl.DateTimeFormat('en', {
+      timeZone: timezone,
+      year: 'numeric',
+    }).format(now),
+  );
+}

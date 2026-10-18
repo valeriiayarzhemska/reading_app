@@ -7,6 +7,7 @@ import { Feather } from '@expo/vector-icons';
 import type { CalendarDay } from '@reading/shared';
 
 import { CalendarDayCell } from '@/components/stats/CalendarDayCell';
+import { YearHeatmap } from '@/components/stats/YearHeatmap';
 import { Card } from '@/components/ui/Card';
 import { Text } from '@/components/ui/Text';
 
@@ -29,11 +30,28 @@ export function MonthCalendar({ onPressDay }: MonthCalendarProps) {
     todayDate: today(),
   }));
   const [month, setMonth] = useState(thisMonth);
+  // The same card shows a month or the whole year as a heatmap
+  const [view, setView] = useState<'month' | 'year'>('month');
   const { data, isPending, error } = useCalendar(month);
 
   const days = new Map(data?.days.map((day) => [day.date, day]));
-  const isCurrentMonth = month === thisMonth;
+  // "YYYY-MM" strings compare correctly as text
+  const isLatestMonth = month >= thisMonth;
   const [year] = month.split('-');
+
+  if (view === 'year') {
+    return (
+      <YearHeatmap
+        initialYear={Number(year)}
+        thisYear={Number(thisMonth.slice(0, 4))}
+        onOpenMonth={(picked) => {
+          setMonth(picked);
+          setView('month');
+        }}
+        onBack={() => setView('month')}
+      />
+    );
+  }
 
   return (
     <Card className="gap-4">
@@ -49,17 +67,22 @@ export function MonthCalendar({ onPressDay }: MonthCalendarProps) {
             onPress={() => setMonth((current) => shiftMonth(current, -1))}
           />
 
-          <View className="rounded-full border border-border px-3 py-1">
+          <Pressable
+            onPress={() => setView('year')}
+            accessibilityRole="button"
+            accessibilityLabel={t('stats.openYear', { year })}
+            className="rounded-full border border-border px-3 py-1 active:opacity-70"
+          >
             <Text variant="muted" className="text-xs">
               {year}
             </Text>
-          </View>
+          </Pressable>
 
           {/* No future months: there's nothing to show there yet */}
           <MonthArrow
             icon="chevron-right"
             label={t('stats.nextMonth')}
-            disabled={isCurrentMonth}
+            disabled={isLatestMonth}
             onPress={() => setMonth((current) => shiftMonth(current, 1))}
           />
         </View>
