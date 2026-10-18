@@ -21,6 +21,7 @@ import { AuthProvider, useAuth } from '@/auth/AuthContext';
 import { useTimezoneSync } from '@/hooks/useTimezoneSync';
 import { loadSavedLanguage } from '@/i18n';
 import { COLORS } from '@/theme/colors';
+import { useLiveActivitySync } from '@/timer/useLiveActivitySync';
 import { useSessionSync } from '@/timer/useSessionSync';
 
 import '../../global.css';
@@ -74,6 +75,7 @@ function RootNavigator() {
 
   useSessionSync(isSignedIn ? state.user.id : null);
   useTimezoneSync();
+  useLiveActivitySync();
 
   useEffect(() => {
     if (state.status !== 'loading') {

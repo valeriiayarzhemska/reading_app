@@ -45,6 +45,12 @@
           "cameraPermission": "Take a photo of a book cover.",
           "microphonePermission": false
         }
+      ],
+      [
+        "expo-widgets",
+        {
+          "widgets": []
+        }
       ]
     ],
     "experiments": {
