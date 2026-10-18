@@ -48,11 +48,8 @@ describe('datesForStatus', () => {
     });
   });
 
-  it('clears finishedAt when a book leaves READ', () => {
-    expect(datesForStatus(ShelfStatus.READING, read, NOW)).toEqual({
-      finishedAt: null,
-      finishedPrecision: DatePrecision.DAY,
-    });
+  it('keeps finishedAt when a book leaves READ (a reread)', () => {
+    expect(datesForStatus(ShelfStatus.READING, read, NOW)).toEqual({});
   });
 
   it('changes nothing when the status stays the same', () => {

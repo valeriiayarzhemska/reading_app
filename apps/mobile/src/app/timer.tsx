@@ -1,9 +1,9 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Feather } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
@@ -35,12 +35,26 @@ export default function TimerScreen() {
 
 function TimerContent() {
   const { t } = useTranslation();
+  // ?finish=1: opened by the ■ button of the Live Activity
+  const { finish } = useLocalSearchParams<{ finish?: string }>();
   const { session, pause, resume, clear } = useActiveSession();
   const now = useNow(session !== undefined);
-  const [isFinishOpen, setIsFinishOpen] = useState(false);
+  const [isFinishOpen, setIsFinishOpen] = useState(finish === '1');
   const wasRunning = useRef(false);
   const isSaved = useRef(false);
   const updateStatus = useUpdateStatus(session?.userBookId ?? '');
+
+  // Same as pressing ■ here: freeze the clock at the moment of the tap
+  const isRunning = session !== undefined && session.pausedAt === null;
+  const handledFinish = useRef(false);
+
+  useEffect(() => {
+    if (finish === '1' && isRunning && !handledFinish.current) {
+      handledFinish.current = true;
+      wasRunning.current = true;
+      pause();
+    }
+  }, [finish, isRunning, pause]);
 
   // A stale link, or the session was just saved / discarded while the modal
   // closes. Not a <Redirect>: that would navigate away during the animation.

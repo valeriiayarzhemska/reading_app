@@ -40,10 +40,11 @@ export class UpdateUserBookDto {
   rating?: number | null;
 
   // When the book was really finished, e.g. years ago from the rating sheet.
-  // Only for books on the Read shelf; checked against startedAt and "now".
+  // Setting it: only for books on the Read shelf; checked against startedAt
+  // and "now". null removes the finish (a mistake, or from the calendar).
   @IsOptional()
   @IsISO8601({ strict: true })
-  finishedAt?: string;
+  finishedAt?: string | null;
 
   // How exactly finishedAt is known; sent together with finishedAt
   @IsOptional()

@@ -89,7 +89,14 @@ export class UserBooksService {
     const status = dto.status ?? current.status;
 
     // 2. Dates set by hand win over that ("finished in Sept 2021")
-    if (dto.finishedAt !== undefined || dto.finishedPrecision !== undefined) {
+    if (dto.finishedAt === null) {
+      // Removing a finish is allowed on any shelf
+      dates.finishedAt = null;
+      dates.finishedPrecision = DatePrecision.DAY;
+    } else if (
+      dto.finishedAt !== undefined ||
+      dto.finishedPrecision !== undefined
+    ) {
       if (status !== ShelfStatus.READ || dto.finishedAt === undefined) {
         throw new BadRequestException(
           'finishedAt (with an optional finishedPrecision) is only for books on the Read shelf',

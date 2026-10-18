@@ -24,10 +24,11 @@ interface ShelfDates {
 }
 
 // Which dates change with a status change (current = null: a new shelf entry)
-//   → READ           finishedAt = now: finishing again moves it to today
-//   READ → other     finishedAt cleared: not finished any more
-//   → READING        startedAt = now, only the first time: READING →
-//                    WANT_TO_READ → READING keeps the original start
+//   → READ       finishedAt = now: finishing again moves it to today
+//   → READING    startedAt = now, only the first time: READING →
+//                WANT_TO_READ → READING keeps the original start
+// Leaving READ keeps finishedAt: the book was finished then, even if it's
+// being reread now. Only an explicit finishedAt: null removes it.
 export function datesForStatus(
   status: ShelfStatus | undefined,
   current: ShelfState | null,
@@ -41,18 +42,11 @@ export function datesForStatus(
     return { finishedAt: now, finishedPrecision: DatePrecision.DAY };
   }
 
-  const dates: Partial<ShelfDates> = {};
-
-  if (current?.status === ShelfStatus.READ) {
-    dates.finishedAt = null;
-    dates.finishedPrecision = DatePrecision.DAY;
-  }
-
   if (status === ShelfStatus.READING && !current?.startedAt) {
-    dates.startedAt = now;
+    return { startedAt: now };
   }
 
-  return dates;
+  return {};
 }
 
 // The phone's clock can be a bit ahead of the server's

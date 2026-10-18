@@ -23,6 +23,7 @@ import { loadSavedLanguage } from '@/i18n';
 import { COLORS } from '@/theme/colors';
 import { useLiveActivitySync } from '@/timer/useLiveActivitySync';
 import { useSessionSync } from '@/timer/useSessionSync';
+import { useTimerNotificationSync } from '@/timer/useTimerNotificationSync';
 
 import '../../global.css';
 
@@ -76,6 +77,7 @@ function RootNavigator() {
   useSessionSync(isSignedIn ? state.user.id : null);
   useTimezoneSync();
   useLiveActivitySync();
+  useTimerNotificationSync();
 
   useEffect(() => {
     if (state.status !== 'loading') {
