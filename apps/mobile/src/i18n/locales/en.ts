@@ -149,6 +149,11 @@ const en = {
     ok: 'OK',
     pending_one: '{{count}} session waiting to sync',
     pending_other: '{{count}} sessions waiting to sync',
+    notification: {
+      channel: 'Reading timer',
+      paused: 'Paused · {{time}} · {{progress}}',
+      finish: 'Finish',
+    },
     log: {
       link: 'Reading without a timer? Log pages',
       title: 'Log reading',

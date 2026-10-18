@@ -161,6 +161,11 @@ const uk: Translation = {
     pending_few: '{{count}} сесії чекають на синхронізацію',
     pending_many: '{{count}} сесій чекають на синхронізацію',
     pending_other: '{{count}} сесії чекають на синхронізацію',
+    notification: {
+      channel: 'Таймер читання',
+      paused: 'Пауза · {{time}} · {{progress}}',
+      finish: 'Завершити',
+    },
     log: {
       link: 'Читання без таймера? Запиши сторінки',
       title: 'Записати читання',

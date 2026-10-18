@@ -1,4 +1,4 @@
-import { requireOptionalNativeModule } from 'expo';
+import { requireOptionalNativeModule, type NativeModule } from 'expo';
 
 export interface TimerNotificationOptions {
   title: string;
@@ -6,10 +6,22 @@ export interface TimerNotificationOptions {
   // startedAt + finished pauses, epoch ms: the chronometer counts up from it
   startedAtMs: number;
   paused: boolean;
+  // 0–1, null when the book's length is unknown
+  progress: number | null;
+  // file:// path of the downloaded cover
+  coverPath: string | null;
   channelName: string;
+  pauseLabel: string;
+  resumeLabel: string;
+  finishLabel: string;
 }
 
-interface TimerNotificationModule {
+type TimerNotificationEvents = {
+  // The notification's Pause/Resume button
+  onToggle: () => void;
+};
+
+declare class TimerNotificationModule extends NativeModule<TimerNotificationEvents> {
   show(options: TimerNotificationOptions): void;
   hide(): void;
 }
@@ -24,4 +36,8 @@ export function showTimerNotification(options: TimerNotificationOptions) {
 
 export function hideTimerNotification() {
   native?.hide();
+}
+
+export function addToggleListener(listener: () => void) {
+  return native?.addListener('onToggle', listener) ?? { remove() {} };
 }
