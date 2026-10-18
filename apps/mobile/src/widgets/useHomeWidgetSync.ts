@@ -17,8 +17,9 @@ import ContinueReading, {
   type ContinueReadingProps,
 } from '@/widgets/ContinueReading';
 import { prepareWidgetCover } from '@/widgets/widgetCover';
+import { updateAndroidHomeWidget } from '../../modules/home-widget';
 
-// Keeps the iOS home screen widget in step with the "Reading now" book: a
+// Keeps the home screen widget (iOS and Android) in step with the "Reading now" book: a
 // new snapshot whenever the book, its progress or the reading speed changes.
 // Mounted in the tabs layout, where the user is signed in.
 export function useHomeWidgetSync() {
@@ -29,7 +30,7 @@ export function useHomeWidgetSync() {
   const lastSnapshot = useRef('');
 
   useEffect(() => {
-    if (Platform.OS !== 'ios' || !shelf) {
+    if (!shelf) {
       return;
     }
 
@@ -72,7 +73,14 @@ export function useHomeWidgetSync() {
 
       if (isCurrent && snapshot !== lastSnapshot.current) {
         lastSnapshot.current = snapshot;
-        ContinueReading.updateSnapshot(props);
+
+        // Same props on both platforms: iOS through expo-widgets, Android
+        // through our home-widget module
+        if (Platform.OS === 'ios') {
+          ContinueReading.updateSnapshot(props);
+        } else {
+          updateAndroidHomeWidget(props);
+        }
       }
     }
 
