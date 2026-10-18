@@ -29,6 +29,13 @@ enum ProgressUnit {
   MINUTES
 }
 
+// How exactly a date is known: a book read years ago may only have a year
+enum DatePrecision {
+  DAY
+  MONTH
+  YEAR
+}
+
 model User {
   id          String   @id @default(uuid())
   email       String?  @unique
@@ -47,6 +54,7 @@ model User {
   userBooks       UserBook[]
   readingSessions ReadingSession[]
   createdBooks    Book[]
+  readingGoals    ReadingGoal[]
 }
 
 // One row per signed-in device. Only the refresh token's hash is stored.
@@ -106,6 +114,8 @@ model UserBook {
   rating          Int? // 1–10
   startedAt       DateTime?
   finishedAt      DateTime?
+  // MONTH: finishedAt is the 15th; YEAR: 1 July. The app shows "≈ 2021".
+  finishedPrecision DatePrecision @default(DAY)
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
 
@@ -135,4 +145,19 @@ model ReadingSession {
 
   @@index([userId, startedAt]) // calendar queries
   @@index([userBookId])
+}
+
+// "Read 25 books in 2026". One per user per year: saving again updates it.
+model ReadingGoal {
+  id        String   @id @default(uuid())
+  userId    String
+  year      Int
+  // Number of books to finish that year
+  target    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, year])
 }

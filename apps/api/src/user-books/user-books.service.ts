@@ -4,13 +4,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import type { ShelfStatus } from '@reading/shared';
+import { DatePrecision, ShelfStatus } from '@reading/shared';
 
 import type { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { AddUserBookDto } from './dto/add-user-book.dto.js';
 import type { UpdateUserBookDto } from './dto/update-user-book.dto.js';
 import {
+  bookDatesError,
   datesForStatus,
   defaultProgressUnit,
   validateProgress,
@@ -83,6 +84,37 @@ export class UserBooksService {
       }
     }
 
+    // 1. What the status change implies (finish = now, leaving Read clears it)
+    const dates = datesForStatus(dto.status, current);
+    const status = dto.status ?? current.status;
+
+    // 2. Dates set by hand win over that ("finished in Sept 2021")
+    if (dto.finishedAt !== undefined || dto.finishedPrecision !== undefined) {
+      if (status !== ShelfStatus.READ || dto.finishedAt === undefined) {
+        throw new BadRequestException(
+          'finishedAt (with an optional finishedPrecision) is only for books on the Read shelf',
+        );
+      }
+
+      dates.finishedAt = new Date(dto.finishedAt);
+      dates.finishedPrecision = dto.finishedPrecision ?? DatePrecision.DAY;
+    }
+
+    if (dto.startedAt !== undefined) {
+      dates.startedAt = new Date(dto.startedAt);
+    }
+
+    // 3. Check the result, not just the request: an old start with a new
+    // finish (or the other way round) must still be in order
+    const datesError = bookDatesError(
+      dates.startedAt ?? current.startedAt,
+      dates.finishedAt === undefined ? current.finishedAt : dates.finishedAt,
+    );
+
+    if (datesError) {
+      throw new BadRequestException(datesError);
+    }
+
     return this.prisma.userBook.update({
       where: { id },
       // Fields listed explicitly (not ...dto): only what we expect reaches the DB
@@ -92,7 +124,7 @@ export class UserBooksService {
         progressUnit: dto.progressUnit,
         currentProgress: dto.currentProgress,
         rating: dto.rating,
-        ...datesForStatus(dto.status, current),
+        ...dates,
       },
       include,
     });

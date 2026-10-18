@@ -1,6 +1,12 @@
-import { BookFormat, ProgressUnit, ShelfStatus } from '@reading/shared';
+import {
+  BookFormat,
+  DatePrecision,
+  ProgressUnit,
+  ShelfStatus,
+} from '@reading/shared';
 
 import {
+  bookDatesError,
   datesForStatus,
   defaultProgressUnit,
   validateProgress,
@@ -21,6 +27,9 @@ describe('defaultProgressUnit', () => {
 });
 
 describe('datesForStatus', () => {
+  const reading = { status: ShelfStatus.READING, startedAt: EARLIER };
+  const read = { status: ShelfStatus.READ, startedAt: EARLIER };
+
   it('sets startedAt when a book becomes READING for the first time', () => {
     expect(datesForStatus(ShelfStatus.READING, null, NOW)).toEqual({
       startedAt: NOW,
@@ -28,21 +37,47 @@ describe('datesForStatus', () => {
   });
 
   it('keeps the original startedAt when READING again', () => {
-    const current = { startedAt: EARLIER, finishedAt: null };
-    expect(datesForStatus(ShelfStatus.READING, current, NOW)).toEqual({});
+    const wanted = { status: ShelfStatus.WANT_TO_READ, startedAt: EARLIER };
+    expect(datesForStatus(ShelfStatus.READING, wanted, NOW)).toEqual({});
   });
 
-  it('sets finishedAt when a book becomes READ', () => {
-    const current = { startedAt: EARLIER, finishedAt: null };
-    expect(datesForStatus(ShelfStatus.READ, current, NOW)).toEqual({
+  it('sets finishedAt to now when a book becomes READ', () => {
+    expect(datesForStatus(ShelfStatus.READ, reading, NOW)).toEqual({
       finishedAt: NOW,
+      finishedPrecision: DatePrecision.DAY,
     });
+  });
+
+  it('clears finishedAt when a book leaves READ', () => {
+    expect(datesForStatus(ShelfStatus.READING, read, NOW)).toEqual({
+      finishedAt: null,
+      finishedPrecision: DatePrecision.DAY,
+    });
+  });
+
+  it('changes nothing when the status stays the same', () => {
+    expect(datesForStatus(ShelfStatus.READ, read, NOW)).toEqual({});
   });
 
   it('changes nothing for WANT_TO_READ, ABANDONED or no status', () => {
     expect(datesForStatus(ShelfStatus.WANT_TO_READ, null, NOW)).toEqual({});
     expect(datesForStatus(ShelfStatus.ABANDONED, null, NOW)).toEqual({});
     expect(datesForStatus(undefined, null, NOW)).toEqual({});
+  });
+});
+
+describe('bookDatesError', () => {
+  it('accepts a start before the finish, both in the past', () => {
+    expect(bookDatesError(EARLIER, NOW, NOW)).toBeNull();
+  });
+
+  it('rejects a finish in the future', () => {
+    const nextWeek = new Date(NOW.getTime() + 7 * 86_400_000);
+    expect(bookDatesError(null, nextWeek, NOW)).toMatch('future');
+  });
+
+  it('rejects a start after the finish', () => {
+    expect(bookDatesError(NOW, EARLIER, NOW)).toMatch('after finishedAt');
   });
 });
 

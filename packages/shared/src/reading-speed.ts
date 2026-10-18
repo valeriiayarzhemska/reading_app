@@ -1,4 +1,5 @@
 import { ProgressUnit } from './enums.js';
+import { sessionPages } from './reading-sessions.js';
 import type { UserBookWithBook } from './user-books.js';
 
 // Less data than this gives a wild guess, so no estimate is shown
@@ -21,21 +22,6 @@ export interface SpeedSession {
   pageCount: number | null;
 }
 
-function pagesRead(session: SpeedSession): number | null {
-  const read = session.progressTo - session.progressFrom;
-
-  if (session.unit === ProgressUnit.PAGES) {
-    return read;
-  }
-
-  if (session.unit === ProgressUnit.PERCENT && session.pageCount) {
-    return (read / 100) * session.pageCount;
-  }
-
-  // Audiobooks: minutes listened aren't pages
-  return null;
-}
-
 function pagesPerHour(pages: number, seconds: number): number | null {
   if (pages < SPEED_MIN_PAGES || seconds < SPEED_MIN_MINUTES * 60) {
     return null;
@@ -50,7 +36,7 @@ export function readingSpeed(sessions: SpeedSession[]): ReadingSpeed {
   let seconds = 0;
 
   for (const session of sessions) {
-    const read = pagesRead(session);
+    const read = sessionPages(session, session.pageCount);
 
     if (read === null) {
       continue;

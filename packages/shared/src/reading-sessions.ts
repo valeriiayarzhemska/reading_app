@@ -1,4 +1,4 @@
-import type { ProgressUnit } from './enums.js';
+import { ProgressUnit } from './enums.js';
 import { progressError, type ProgressError } from './reading-progress.js';
 import type { UserBookWithBook } from './user-books.js';
 
@@ -26,6 +26,32 @@ export interface SavedReadingSession {
   // The book after its progress was updated: the app checks whether it's
   // finished and offers to mark it Read
   userBook: UserBookWithBook;
+}
+
+// One session of a day, for the day sheet: GET /me/sessions?date=2026-10-03
+export interface DaySession extends Omit<ReadingSession, 'clientId'> {
+  // Pages read in it (percent converted); null for audiobooks
+  pages: number | null;
+  book: { title: string; coverUrl: string | null };
+}
+
+// Pages a session covers. Percent is converted with the page count; minutes
+// (audiobooks) aren't pages, so null.
+export function sessionPages(
+  session: Pick<ReadingSession, 'unit' | 'progressFrom' | 'progressTo'>,
+  pageCount: number | null,
+): number | null {
+  const read = session.progressTo - session.progressFrom;
+
+  if (session.unit === ProgressUnit.PAGES) {
+    return read;
+  }
+
+  if (session.unit === ProgressUnit.PERCENT && pageCount) {
+    return (read / 100) * pageCount;
+  }
+
+  return null;
 }
 
 export type SessionProgressError = ProgressError | 'beforeStart';

@@ -1,6 +1,18 @@
-import { IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsISO8601,
+  IsOptional,
+  Max,
+  Min,
+} from 'class-validator';
 
-import { BookFormat, ProgressUnit, ShelfStatus } from '@reading/shared';
+import {
+  BookFormat,
+  DatePrecision,
+  ProgressUnit,
+  ShelfStatus,
+} from '@reading/shared';
 
 export class UpdateUserBookDto {
   @IsOptional()
@@ -26,4 +38,19 @@ export class UpdateUserBookDto {
   @Min(1)
   @Max(10)
   rating?: number | null;
+
+  // When the book was really finished, e.g. years ago from the rating sheet.
+  // Only for books on the Read shelf; checked against startedAt and "now".
+  @IsOptional()
+  @IsISO8601({ strict: true })
+  finishedAt?: string;
+
+  // How exactly finishedAt is known; sent together with finishedAt
+  @IsOptional()
+  @IsEnum(DatePrecision)
+  finishedPrecision?: DatePrecision;
+
+  @IsOptional()
+  @IsISO8601({ strict: true })
+  startedAt?: string;
 }

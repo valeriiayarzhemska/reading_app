@@ -1,5 +1,6 @@
 import {
   BookFormat,
+  DatePrecision,
   progressError,
   ProgressUnit,
   ShelfStatus,
@@ -11,27 +12,73 @@ export function defaultProgressUnit(format: BookFormat): ProgressUnit {
     : ProgressUnit.PAGES;
 }
 
-interface ShelfDates {
+interface ShelfState {
+  status: ShelfStatus;
   startedAt: Date | null;
-  finishedAt: Date | null;
 }
 
-// Which dates to set when the status changes. Existing dates are never
-// overwritten: moving READING → WANT_TO_READ → READING keeps the first start.
+interface ShelfDates {
+  startedAt: Date;
+  finishedAt: Date | null;
+  finishedPrecision: DatePrecision;
+}
+
+// Which dates change with a status change (current = null: a new shelf entry)
+//   → READ           finishedAt = now: finishing again moves it to today
+//   READ → other     finishedAt cleared: not finished any more
+//   → READING        startedAt = now, only the first time: READING →
+//                    WANT_TO_READ → READING keeps the original start
 export function datesForStatus(
   status: ShelfStatus | undefined,
-  current: ShelfDates | null,
+  current: ShelfState | null,
   now = new Date(),
 ): Partial<ShelfDates> {
+  if (!status || status === current?.status) {
+    return {};
+  }
+
+  if (status === ShelfStatus.READ) {
+    return { finishedAt: now, finishedPrecision: DatePrecision.DAY };
+  }
+
+  const dates: Partial<ShelfDates> = {};
+
+  if (current?.status === ShelfStatus.READ) {
+    dates.finishedAt = null;
+    dates.finishedPrecision = DatePrecision.DAY;
+  }
+
   if (status === ShelfStatus.READING && !current?.startedAt) {
-    return { startedAt: now };
+    dates.startedAt = now;
   }
 
-  if (status === ShelfStatus.READ && !current?.finishedAt) {
-    return { finishedAt: now };
+  return dates;
+}
+
+// The phone's clock can be a bit ahead of the server's
+const CLOCK_SKEW_MS = 5 * 60 * 1000;
+
+// Dates the reader sets by hand ("finished in Sept 2021, started in July")
+export function bookDatesError(
+  startedAt: Date | null,
+  finishedAt: Date | null,
+  now = new Date(),
+): string | null {
+  const latest = now.getTime() + CLOCK_SKEW_MS;
+
+  if (finishedAt && finishedAt.getTime() > latest) {
+    return 'finishedAt cannot be in the future';
   }
 
-  return {};
+  if (startedAt && startedAt.getTime() > latest) {
+    return 'startedAt cannot be in the future';
+  }
+
+  if (startedAt && finishedAt && startedAt > finishedAt) {
+    return 'startedAt cannot be after finishedAt';
+  }
+
+  return null;
 }
 
 // The rule lives in packages/shared (the app checks it too); this turns its

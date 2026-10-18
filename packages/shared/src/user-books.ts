@@ -1,4 +1,9 @@
-import type { BookFormat, ProgressUnit, ShelfStatus } from './enums.js';
+import type {
+  BookFormat,
+  DatePrecision,
+  ProgressUnit,
+  ShelfStatus,
+} from './enums.js';
 
 // Shapes as they arrive over JSON: dates are ISO strings, not Date objects
 
@@ -28,6 +33,7 @@ export interface UserBookWithBook {
   rating: number | null;
   startedAt: string | null;
   finishedAt: string | null;
+  finishedPrecision: DatePrecision;
   createdAt: string;
   updatedAt: string;
   book: Book;

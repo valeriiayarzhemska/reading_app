@@ -8,6 +8,14 @@ export const ShelfStatus = {
 } as const;
 export type ShelfStatus = (typeof ShelfStatus)[keyof typeof ShelfStatus];
 
+// How exactly a finish date is known ("≈ 2021" for YEAR)
+export const DatePrecision = {
+  DAY: 'DAY',
+  MONTH: 'MONTH',
+  YEAR: 'YEAR',
+} as const;
+export type DatePrecision = (typeof DatePrecision)[keyof typeof DatePrecision];
+
 export const BookFormat = {
   PAPER: 'PAPER',
   EBOOK: 'EBOOK',
