@@ -46,6 +46,14 @@ export function Sheet({
     wasOpen.current = open;
   }, [open]);
 
+  // A swipe or backdrop tap closes the sheet inside the library. Mark it
+  // closed before telling the screen, so the effect above doesn't call
+  // dismiss() a second time on a closed sheet (which blocks the next open).
+  const handleDismiss = useCallback(() => {
+    wasOpen.current = false;
+    onClose();
+  }, [onClose]);
+
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
@@ -64,7 +72,7 @@ export function Sheet({
     <BottomSheetModal
       ref={ref}
       // Fires for swipe-down and backdrop taps too, keeping `open` in sync
-      onDismiss={onClose}
+      onDismiss={handleDismiss}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: COLORS.sheet, borderRadius: 28 }}
       handleIndicatorStyle={{ backgroundColor: COLORS.fgFaint, width: 40 }}
