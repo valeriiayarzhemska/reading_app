@@ -1,18 +1,26 @@
 import {
+  Button,
   HStack,
   Image,
+  Link,
   ProgressView,
   Spacer,
   Text,
   VStack,
 } from '@expo/ui/swift-ui';
 import {
+  activityBackgroundTint,
+  aspectRatio,
+  background,
+  buttonStyle,
+  clipShape,
   font,
   foregroundStyle,
   frame,
   lineLimit,
   monospacedDigit,
   padding,
+  resizable,
   tint,
 } from '@expo/ui/swift-ui/modifiers';
 import { createLiveActivity, type LiveActivityEnvironment } from 'expo-widgets';
@@ -30,12 +38,20 @@ export interface ReadingActivityProps {
   progressLabel: string;
   // 0–1, null when the book's length is unknown
   fraction: number | null;
+  // file:// path of the cover in the shared App Group folder: the widget
+  // runs in its own process and can't read the app's files or the network
+  coverPath: string | null;
 }
+
+// Button targets, reported to the app by addUserInteractionListener
+export const TOGGLE_TARGET = 'toggle';
+// The stop button opens the app: finishing asks for the end page
+export const FINISH_URL = 'readingapp://timer?finish=1';
 
 // The layout iOS draws on the Lock Screen and in the Dynamic Island. The
 // 'widget' directive makes expo-widgets compile it into the widget extension:
-// it runs inside iOS, not in our app, so no hooks, no imports used inside,
-// nothing from outside the function (colors are written out here).
+// it runs inside iOS, not in our app, so no hooks, nothing from outside the
+// function (colors and the URL are written out inside it).
 // The seconds tick on their own: SwiftUI's timer text counts from
 // timerStartMs, so the app doesn't need to send updates every second. The
 // timer's upper end is a day later: the API rejects longer sessions anyway.
@@ -47,25 +63,58 @@ const ReadingActivity = (
 ) => {
   'widget';
 
+  const isPaused = props.pausedAtMs !== null;
   const accent = environment.isLuminanceReduced ? '#FFFFFF' : '#F0A877';
+  const fg = '#F4EFFF';
   const muted = '#B9AEDB';
   const timerInterval = {
     lower: new Date(props.timerStartMs),
     upper: new Date(props.timerStartMs + 24 * 60 * 60 * 1000),
   };
-  const pauseTime =
-    props.pausedAtMs === null ? undefined : new Date(props.pausedAtMs);
-  const icon = props.pausedAtMs === null ? 'book.fill' : 'pause.fill';
+  const pauseTime = isPaused ? new Date(props.pausedAtMs ?? 0) : undefined;
 
-  const timer = (size: number) => (
+  const timer = (size: number, color: string) => (
     <Text
       timerInterval={timerInterval}
       countsDown={false}
       pauseTime={pauseTime}
       modifiers={[
-        font({ design: 'serif', size }),
+        font({ design: 'serif', weight: 'light', size }),
         monospacedDigit(),
-        foregroundStyle('#F4EFFF'),
+        foregroundStyle(color),
+      ]}
+    />
+  );
+
+  const cover = (width: number, height: number) =>
+    props.coverPath ? (
+      <Image
+        uiImage={props.coverPath}
+        modifiers={[
+          resizable(),
+          aspectRatio({ contentMode: 'fill' }),
+          frame({ width, height }),
+          clipShape('roundedRectangle', 5),
+        ]}
+      />
+    ) : (
+      <Image
+        systemName="book.closed.fill"
+        size={width * 0.6}
+        color={accent}
+        modifiers={[frame({ width, height })]}
+      />
+    );
+
+  const circleButton = (icon: 'play.fill' | 'pause.fill' | 'stop.fill') => (
+    <Image
+      systemName={icon}
+      size={15}
+      color={fg}
+      modifiers={[
+        frame({ width: 40, height: 40 }),
+        background('#FFFFFF26'),
+        clipShape('circle'),
       ]}
     />
   );
@@ -77,14 +126,14 @@ const ReadingActivity = (
       )}
 
       <HStack>
-        <Text modifiers={[font({ size: 12 }), foregroundStyle(muted)]}>
+        <Text modifiers={[font({ size: 13 }), foregroundStyle(muted)]}>
           {props.progressLabel}
         </Text>
 
         <Spacer />
 
         {props.fraction === null ? null : (
-          <Text modifiers={[font({ size: 12 }), foregroundStyle(muted)]}>
+          <Text modifiers={[font({ size: 13 }), foregroundStyle(muted)]}>
             {`${Math.round(props.fraction * 100)}%`}
           </Text>
         )}
@@ -94,16 +143,23 @@ const ReadingActivity = (
 
   return {
     banner: (
-      <VStack spacing={10} modifiers={[padding({ all: 16 })]}>
+      <VStack
+        alignment="leading"
+        spacing={8}
+        modifiers={[
+          padding({ horizontal: 16, vertical: 12 }),
+          activityBackgroundTint('#1A1333E6'),
+        ]}
+      >
         <HStack spacing={12}>
-          <Image systemName={icon} size={26} color={accent} />
+          {cover(36, 52)}
 
-          <VStack alignment="leading" spacing={2}>
+          <VStack alignment="leading" spacing={3}>
             <Text
               modifiers={[
-                font({ weight: 'semibold', size: 16 }),
+                font({ weight: 'bold', size: 17 }),
                 lineLimit(1),
-                foregroundStyle('#F4EFFF'),
+                foregroundStyle(fg),
               ]}
             >
               {props.title}
@@ -111,7 +167,7 @@ const ReadingActivity = (
 
             <Text
               modifiers={[
-                font({ size: 13 }),
+                font({ size: 14 }),
                 lineLimit(1),
                 foregroundStyle(muted),
               ]}
@@ -121,18 +177,27 @@ const ReadingActivity = (
           </VStack>
 
           <Spacer />
+
+          <Button target="toggle" modifiers={[buttonStyle('plain')]}>
+            {circleButton(isPaused ? 'play.fill' : 'pause.fill')}
+          </Button>
+
+          <Link destination="readingapp://timer?finish=1">
+            {circleButton('stop.fill')}
+          </Link>
         </HStack>
 
-        <HStack>
-          {timer(34)}
-
-          <Spacer />
-        </HStack>
+        {timer(38, '#DCD4EE')}
 
         {progress}
       </VStack>
     ),
-    compactLeading: <Image systemName={icon} color={accent} />,
+    compactLeading: (
+      <Image
+        systemName={isPaused ? 'pause.fill' : 'book.closed.fill'}
+        color={accent}
+      />
+    ),
     compactTrailing: (
       <Text
         timerInterval={timerInterval}
@@ -146,13 +211,38 @@ const ReadingActivity = (
         ]}
       />
     ),
-    minimal: <Image systemName={icon} color={accent} />,
-    expandedLeading: <Image systemName={icon} size={24} color={accent} />,
-    expandedTrailing: timer(22),
+    minimal: (
+      <Image
+        systemName={isPaused ? 'pause.fill' : 'book.closed.fill'}
+        color={accent}
+      />
+    ),
+    expandedLeading: cover(36, 52),
+    expandedTrailing: (
+      <HStack spacing={8}>
+        <Button target="toggle" modifiers={[buttonStyle('plain')]}>
+          {circleButton(isPaused ? 'play.fill' : 'pause.fill')}
+        </Button>
+
+        <Link destination="readingapp://timer?finish=1">
+          {circleButton('stop.fill')}
+        </Link>
+      </HStack>
+    ),
     expandedCenter: (
-      <Text modifiers={[font({ weight: 'semibold', size: 15 }), lineLimit(1)]}>
-        {props.title}
-      </Text>
+      <VStack alignment="leading" spacing={2}>
+        <Text
+          modifiers={[
+            font({ weight: 'semibold', size: 15 }),
+            lineLimit(1),
+            foregroundStyle(fg),
+          ]}
+        >
+          {props.title}
+        </Text>
+
+        {timer(28, fg)}
+      </VStack>
     ),
     expandedBottom: progress,
   };

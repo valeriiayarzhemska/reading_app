@@ -49,7 +49,16 @@
       [
         "expo-widgets",
         {
-          "widgets": []
+          "widgets": [
+            {
+              "name": "ContinueReading",
+              "displayName": "Continue reading",
+              "description": "The book you're reading now, with your progress.",
+              "ios": {
+                "supportedFamilies": ["systemSmall", "systemMedium"]
+              }
+            }
+          ]
         }
       ]
     ],

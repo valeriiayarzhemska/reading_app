@@ -69,7 +69,11 @@ export function useTimerNotificationSync() {
       }
 
       // Instant after the first time: the file is kept per book
-      const coverPath = await prepareWidgetCover(userBookId, book.coverUrl);
+      const coverPath = await prepareWidgetCover(
+        'activity',
+        userBookId,
+        book.coverUrl,
+      );
 
       if (isCurrent) {
         showTimerNotification({

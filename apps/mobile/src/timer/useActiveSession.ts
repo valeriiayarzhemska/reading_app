@@ -15,6 +15,23 @@ export interface StartSessionInput {
   progressFrom: number;
 }
 
+// Pause ↔ resume from outside React (the Live Activity's button). Writing
+// MMKV directly still reaches every component: useMMKVObject listens to the key.
+export function togglePauseActiveSession() {
+  const raw = timerStorage.getString(KEY);
+
+  if (!raw) {
+    return;
+  }
+
+  const session = JSON.parse(raw) as ActiveSession;
+  const now = Date.now();
+  const next =
+    session.pausedAt === null ? pause(session, now) : resume(session, now);
+
+  timerStorage.set(KEY, JSON.stringify(next));
+}
+
 // Every component using this hook re-renders when the session changes:
 // the mini-timer and the timer screen always agree
 export function useActiveSession() {

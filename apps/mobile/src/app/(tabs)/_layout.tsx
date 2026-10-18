@@ -4,8 +4,12 @@ import { Tabs } from 'expo-router';
 
 import { TabBar } from '@/components/TabBar';
 
+import { useHomeWidgetSync } from '@/widgets/useHomeWidgetSync';
+
 export default function TabsLayout() {
   const { t } = useTranslation();
+
+  useHomeWidgetSync();
 
   return (
     <Tabs

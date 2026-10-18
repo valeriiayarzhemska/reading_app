@@ -107,6 +107,10 @@ const uk: Translation = {
     removeMessage: 'Її прогрес і сесії читання теж буде видалено.',
     cancel: 'Скасувати',
   },
+  widget: {
+    emptyTitle: 'Зараз нічого не читаєте',
+    emptyText: 'Почніть книжку — і вона зʼявиться тут.',
+  },
   timer: {
     startButton: 'Почати читати',
     startTitle: 'З чого починаєте?',

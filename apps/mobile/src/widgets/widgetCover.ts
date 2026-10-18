@@ -21,10 +21,15 @@ function coversFolder(): Directory {
   return folder;
 }
 
-// Downloads the cover once per book and removes covers of other books.
+// The timer (Live Activity / notification) and the home screen widget can
+// show different books, so each keeps its own cover
+export type CoverSlot = 'activity' | 'home';
+
+// Downloads the cover once per book and removes the slot's other covers.
 // Returns its file:// path, or null (no cover, or the download failed: the
-// Live Activity / notification then shows an icon).
+// widget then shows an icon).
 export async function prepareWidgetCover(
+  slot: CoverSlot,
   userBookId: string,
   coverUrl: string | null,
 ): Promise<string | null> {
@@ -34,13 +39,14 @@ export async function prepareWidgetCover(
 
   try {
     const folder = coversFolder();
-    const name = `${PREFIX}${userBookId}.jpg`;
+    const prefix = `${PREFIX}${slot}-`;
+    const name = `${prefix}${userBookId}.jpg`;
     const file = new File(folder, name);
 
     for (const item of folder.list()) {
       if (
         item instanceof File &&
-        item.name.startsWith(PREFIX) &&
+        item.name.startsWith(prefix) &&
         item.name !== name
       ) {
         item.delete();

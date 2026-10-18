@@ -100,6 +100,10 @@ const en = {
     removeMessage: 'Its progress and reading sessions will be deleted too.',
     cancel: 'Cancel',
   },
+  widget: {
+    emptyTitle: 'Nothing in progress',
+    emptyText: 'Start a book and it will show up here.',
+  },
   timer: {
     startButton: 'Start reading',
     startTitle: 'Where do you start?',
