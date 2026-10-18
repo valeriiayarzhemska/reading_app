@@ -7,6 +7,7 @@ import {
 
 import {
   readingSpeed,
+  sessionPages,
   sessionProgressError,
   ShelfStatus,
   type ReadingSpeed,
@@ -19,9 +20,35 @@ import {
   validateProgress,
 } from '../user-books/user-books.rules.js';
 import type { CreateReadingSessionDto } from './dto/create-reading-session.dto.js';
+import type { UpdateReadingSessionDto } from './dto/update-reading-session.dto.js';
 import { sessionTimeError } from './reading-sessions.rules.js';
 
 const include = { book: true } satisfies Prisma.UserBookInclude;
+
+// What the day sheet needs: the session (without internal fields) + its book
+const daySessionShape = {
+  omit: { clientId: true, userId: true },
+  include: {
+    userBook: {
+      select: {
+        book: { select: { title: true, coverUrl: true, pageCount: true } },
+      },
+    },
+  },
+} satisfies Prisma.ReadingSessionDefaultArgs;
+
+type DaySessionRow = Prisma.ReadingSessionGetPayload<typeof daySessionShape>;
+
+function toDaySession({ userBook, ...session }: DaySessionRow) {
+  const { pageCount, ...book } = userBook.book;
+  const pages = sessionPages(session, pageCount);
+
+  return {
+    ...session,
+    pages: pages === null ? null : Math.round(pages),
+    book,
+  };
+}
 
 @Injectable()
 export class ReadingSessionsService {
@@ -48,6 +75,97 @@ export class ReadingSessionsService {
         pageCount: userBook.book.pageCount,
       })),
     );
+  }
+
+  async listDay(userId: string, date: string) {
+    const { timezone } = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: { timezone: true },
+    });
+
+    // Raw SQL only for what Prisma can't do: the UTC moments where this local
+    // day starts and ends (Postgres knows the timezone rules, incl. DST)
+    const [day] = await this.prisma.$queryRaw<{ start: Date; end: Date }[]>`
+      SELECT
+        (${date}::timestamp AT TIME ZONE ${timezone}) AT TIME ZONE 'UTC' AS "start",
+        ((${date}::date + 1)::timestamp AT TIME ZONE ${timezone}) AT TIME ZONE 'UTC' AS "end"
+    `;
+
+    // The rest is a normal Prisma query
+    const sessions = await this.prisma.readingSession.findMany({
+      where: { userId, startedAt: { gte: day.start, lt: day.end } },
+      orderBy: { startedAt: 'asc' },
+      ...daySessionShape,
+    });
+
+    return sessions.map(toDaySession);
+  }
+
+  // Fixes a record for the calendar and stats. The book's current progress
+  // is deliberately left alone: correcting yesterday must not move the bookmark.
+  async update(userId: string, id: string, dto: UpdateReadingSessionDto) {
+    const session = await this.prisma.readingSession.findFirst({
+      where: { id, userId },
+      include: {
+        userBook: { select: { book: { select: { pageCount: true } } } },
+      },
+    });
+
+    if (!session) {
+      throw new NotFoundException('Session not found');
+    }
+
+    const progressTo = dto.progressTo ?? session.progressTo;
+    const { pageCount } = session.userBook.book;
+
+    if (
+      sessionProgressError(
+        session.unit,
+        session.progressFrom,
+        progressTo,
+        pageCount,
+      ) === 'beforeStart'
+    ) {
+      throw new BadRequestException(
+        'progressTo cannot be less than progressFrom',
+      );
+    }
+
+    const progressError = validateProgress(session.unit, progressTo, pageCount);
+
+    if (progressError) {
+      throw new BadRequestException(progressError);
+    }
+
+    // Longer than the span between start and end: move the start earlier,
+    // so "duration ≤ endedAt - startedAt" keeps holding
+    const durationSec = dto.durationSec ?? session.durationSec;
+    const spanSec =
+      (session.endedAt.getTime() - session.startedAt.getTime()) / 1000;
+    const startedAt =
+      durationSec > spanSec
+        ? new Date(session.endedAt.getTime() - durationSec * 1000)
+        : session.startedAt;
+
+    const updated = await this.prisma.readingSession.update({
+      where: { id },
+      data: { durationSec, progressTo, startedAt },
+      ...daySessionShape,
+    });
+
+    return toDaySession(updated);
+  }
+
+  async remove(userId: string, id: string) {
+    // userId in the filter is the ownership check: someone else's session
+    // matches 0 rows, the same answer as one that doesn't exist
+    const { count } = await this.prisma.readingSession.deleteMany({
+      where: { id, userId },
+    });
+
+    if (count === 0) {
+      throw new NotFoundException('Session not found');
+    }
   }
 
   // Idempotent: saving the same clientId again returns the first result and

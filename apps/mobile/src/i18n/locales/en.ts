@@ -203,6 +203,20 @@ const en = {
     booksFinished_other: '{{count}} books this month',
     pages_one: '{{count}} page',
     pages_other: '{{count}} pages',
+    day: {
+      finished: 'Finished',
+      sessions: 'Sessions',
+      noSessions: 'No reading sessions this day.',
+    },
+    edit: {
+      title: 'Reading time',
+      entryFor: 'Entry for {{date}}',
+      note: 'This only changes the calendar and statistics: your position in the book stays the same.',
+      save: 'Save',
+      delete: 'Delete entry',
+      deleteTitle: 'Delete this entry?',
+      deleteMessage: 'It disappears from the calendar and statistics.',
+    },
   },
   onboarding: {
     title: 'Welcome!',

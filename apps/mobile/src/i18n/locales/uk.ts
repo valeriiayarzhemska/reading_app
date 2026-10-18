@@ -221,6 +221,20 @@ const uk: Translation = {
     pages_few: '{{count}} сторінки',
     pages_many: '{{count}} сторінок',
     pages_other: '{{count}} сторінки',
+    day: {
+      finished: 'Дочитано',
+      sessions: 'Сесії',
+      noSessions: 'Цього дня сесій не було.',
+    },
+    edit: {
+      title: 'Час читання',
+      entryFor: 'Запис за {{date}}',
+      note: 'Це лише про запис у календарі й статистиці — позиція в книжці не зміниться.',
+      save: 'Зберегти',
+      delete: 'Видалити запис',
+      deleteTitle: 'Видалити запис?',
+      deleteMessage: 'Він зникне з календаря та статистики.',
+    },
   },
   onboarding: {
     title: 'Вітаємо!',

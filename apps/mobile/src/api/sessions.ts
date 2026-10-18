@@ -7,6 +7,7 @@ import {
 
 import {
   ShelfStatus,
+  type DaySession,
   type NewReadingSession,
   type ReadingSpeed,
   type SavedReadingSession,
@@ -89,8 +90,44 @@ function applySaved(
   // refresh the list (Library home, shelves) behind it
   queryClient.setQueryData(entryKey(userBook.id), userBook);
   queryClient.invalidateQueries({ queryKey: shelfKey });
+  invalidateStats(queryClient);
+}
+
+// Everything computed from sessions: speed (time left), calendar, day lists
+function invalidateStats(queryClient: QueryClient) {
   queryClient.invalidateQueries({ queryKey: speedKey });
   queryClient.invalidateQueries({ queryKey: ['calendar'] });
+  queryClient.invalidateQueries({ queryKey: ['daySessions'] });
+}
+
+export interface SessionChanges {
+  durationSec?: number;
+  progressTo?: number;
+}
+
+// Editing and deleting change only stats, never the shelf: the book's
+// progress stays where it is
+export function useUpdateSession() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, ...changes }: SessionChanges & { id: string }) =>
+      apiFetch<DaySession>(`/me/sessions/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(changes),
+      }),
+    onSuccess: () => invalidateStats(queryClient),
+  });
+}
+
+export function useDeleteSession() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) =>
+      apiFetch<void>(`/me/sessions/${id}`, { method: 'DELETE' }),
+    onSuccess: () => invalidateStats(queryClient),
+  });
 }
 
 // Not confirmed yet, but show the new progress anyway (optimistic). After a
