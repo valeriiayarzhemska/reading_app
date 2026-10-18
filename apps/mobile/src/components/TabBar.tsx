@@ -75,12 +75,15 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
               accessibilityLabel={label}
               className="flex-1 items-center gap-0.5"
             >
-              <View
-                className={cn(
-                  'h-8 w-12 items-center justify-center rounded-full',
-                  isFocused && 'bg-accent/20',
-                )}
-              >
+              <View className="h-8 w-12 items-center justify-center">
+                {/* The pill never changes its background, only its opacity:
+                    on Android, changing a rounded view's background color
+                    can redraw it square */}
+                <View
+                  className="absolute inset-0 bg-accent/20"
+                  style={{ borderRadius: 16, opacity: isFocused ? 1 : 0 }}
+                />
+
                 <Feather
                   name={ICONS[route.name] ?? 'circle'}
                   size={20}
