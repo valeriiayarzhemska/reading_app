@@ -9,20 +9,97 @@ import { FlashList } from '@shopify/flash-list';
 import { bookMatchKey, type BookSearchResult } from '@reading/shared';
 
 import { BookRow } from '@/components/BookRow';
+import { ReaderRow } from '@/components/profile/ReaderRow';
 import { Screen } from '@/components/ui/Screen';
+import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Text } from '@/components/ui/Text';
 import { TextField } from '@/components/ui/TextField';
 
 import { resultKey, savedBookKeys, useBookSearch } from '@/api/books';
 import { ApiError } from '@/api/client';
+import { useReaderSearch } from '@/api/follows';
 import { useAddToShelf, useShelf } from '@/api/shelf';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { COLORS } from '@/theme/colors';
 
+type SearchMode = 'books' | 'readers';
+
 export default function SearchScreen() {
   const { t } = useTranslation();
+  const [mode, setMode] = useState<SearchMode>('books');
+  // One text for both tabs: switching keeps what you typed
   const [text, setText] = useState('');
   const query = useDebouncedValue(text.trim(), 400);
+
+  return (
+    <Screen className="px-4 pt-2">
+      <SegmentedControl
+        options={[
+          { value: 'books', label: t('search.modes.books') },
+          { value: 'readers', label: t('search.modes.readers') },
+        ]}
+        value={mode}
+        onChange={setMode}
+        className="mb-3"
+      />
+
+      <TextField
+        placeholder={t(
+          mode === 'books' ? 'search.placeholder' : 'search.readersPlaceholder',
+        )}
+        value={text}
+        onChangeText={setText}
+        autoFocus
+        autoCorrect={false}
+        autoCapitalize={mode === 'readers' ? 'none' : 'sentences'}
+        clearButtonMode="while-editing"
+      />
+
+      {mode === 'books' ? (
+        <BookResults query={query} />
+      ) : (
+        <ReaderResults query={query} />
+      )}
+    </Screen>
+  );
+}
+
+function ReaderResults({ query }: { query: string }) {
+  const { t } = useTranslation();
+  const search = useReaderSearch(query);
+
+  return (
+    <>
+      {search.isFetching ? (
+        <ActivityIndicator className="mt-3" color={COLORS.fg} />
+      ) : null}
+
+      {search.error ? (
+        <Text className="mt-2 text-danger">
+          {t('search.failed', { message: search.error.message })}
+        </Text>
+      ) : null}
+
+      <FlashList
+        data={search.data ?? []}
+        keyExtractor={(reader) => reader.id}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ paddingTop: 8, paddingBottom: 32 }}
+        ListEmptyComponent={
+          query.length >= 2 && search.isSuccess ? (
+            <Text variant="muted" className="mt-4 text-center">
+              {t('search.noReaders')}
+            </Text>
+          ) : null
+        }
+        renderItem={({ item }) => <ReaderRow reader={item} />}
+      />
+    </>
+  );
+}
+
+function BookResults({ query }: { query: string }) {
+  const { t } = useTranslation();
   const search = useBookSearch(query);
   const shelf = useShelf();
   const addToShelf = useAddToShelf();
@@ -70,16 +147,7 @@ export default function SearchScreen() {
   }
 
   return (
-    <Screen className="px-4 pt-2">
-      <TextField
-        placeholder={t('search.placeholder')}
-        value={text}
-        onChangeText={setText}
-        autoFocus
-        autoCorrect={false}
-        clearButtonMode="while-editing"
-      />
-
+    <>
       {addToShelf.error ? (
         <Text className="mt-2 text-danger">
           {addToShelf.error instanceof ApiError &&
@@ -141,6 +209,6 @@ export default function SearchScreen() {
           />
         )}
       />
-    </Screen>
+    </>
   );
 }

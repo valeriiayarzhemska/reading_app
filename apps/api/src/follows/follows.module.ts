@@ -6,5 +6,7 @@ import { FollowsService } from './follows.service.js';
 @Module({
   controllers: [FollowsController],
   providers: [FollowsService],
+  // UsersModule's reader search shows Follow buttons too
+  exports: [FollowsService],
 })
 export class FollowsModule {}

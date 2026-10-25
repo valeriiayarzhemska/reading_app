@@ -14,6 +14,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { CurrentUserId } from '../auth/current-user-id.decorator.js';
 import { CompleteOnboardingDto } from './dto/complete-onboarding.dto.js';
 import { NicknameAvailabilityQuery } from './dto/nickname-availability.query.js';
+import { SearchUsersQuery } from './dto/search-users.query.js';
 import { SetFavoritesDto } from './dto/set-favorites.dto.js';
 import { UpdateProfileDto } from './dto/update-profile.dto.js';
 import { UsersService } from './users.service.js';
@@ -35,9 +36,17 @@ export class UsersController {
   }
 
   /**
+   * Find readers by nickname or name (at least 2 characters, a leading @ is ignored). At most 20.
+   */
+  @Get('users/search')
+  search(@CurrentUserId() userId: string, @Query() query: SearchUsersQuery) {
+    return this.users.search(userId, query.query);
+  }
+
+  /**
    * A reader's public profile: name, bio, links, reading now, totals, recently read.
-   * Declared after 'users/nickname-available': routes match in order, and
-   * ':nickname' would otherwise swallow that path.
+   * Declared after 'users/nickname-available' and 'users/search': routes
+   * match in order, and ':nickname' would otherwise swallow those paths.
    */
   @Get('users/:nickname')
   publicProfile(

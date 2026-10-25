@@ -203,6 +203,12 @@ const uk: Translation = {
     pageCount_other: '{{count}} сторінки',
     cantFind: 'Не знайшли свою книжку?',
     addManually: 'Додати вручну',
+    modes: {
+      books: 'Книжки',
+      readers: 'Читачі',
+    },
+    readersPlaceholder: 'Нікнейм або імʼя',
+    noReaders: 'Нікого не знайдено',
   },
   addBook: {
     title: 'Додати книжку',

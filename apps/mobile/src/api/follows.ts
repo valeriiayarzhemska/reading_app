@@ -1,6 +1,7 @@
 import {
   useInfiniteQuery,
   useMutation,
+  useQuery,
   useQueryClient,
   type InfiniteData,
 } from '@tanstack/react-query';
@@ -19,6 +20,18 @@ type FollowPages = InfiniteData<Page<ReaderSummary>, string | null>;
 
 export const followListKey = (nickname: string, list: FollowList) =>
   ['follows', nickname.toLowerCase(), list] as const;
+
+// ['readers', 'search', query]: the Readers tab of Search
+export function useReaderSearch(query: string) {
+  return useQuery({
+    queryKey: ['readers', 'search', query],
+    queryFn: () =>
+      apiFetch<ReaderSummary[]>(
+        `/users/search?query=${encodeURIComponent(query)}`,
+      ),
+    enabled: query.length >= 2,
+  });
+}
 
 // Pages are stored side by side in data.pages; fetchNextPage() asks for the
 // next one with the last page's nextCursor
@@ -55,6 +68,7 @@ export function useToggleFollow() {
       // A response already on its way would overwrite the optimistic values
       await queryClient.cancelQueries({ queryKey: profileKey(nickname) });
       await queryClient.cancelQueries({ queryKey: ['follows'] });
+      await queryClient.cancelQueries({ queryKey: ['readers'] });
 
       const previousProfile = queryClient.getQueryData<PublicProfile>(
         profileKey(nickname),
@@ -62,6 +76,13 @@ export function useToggleFollow() {
       const previousLists = queryClient.getQueriesData<FollowPages>({
         queryKey: ['follows'],
       });
+      const previousSearches = queryClient.getQueriesData<ReaderSummary[]>({
+        queryKey: ['readers'],
+      });
+      const withFollow = (reader: ReaderSummary) =>
+        reader.nickname === nickname
+          ? { ...reader, isFollowing: follow }
+          : reader;
 
       queryClient.setQueryData<PublicProfile>(
         profileKey(nickname),
@@ -81,22 +102,26 @@ export function useToggleFollow() {
             ...data,
             pages: data.pages.map((page) => ({
               ...page,
-              items: page.items.map((reader) =>
-                reader.nickname === nickname
-                  ? { ...reader, isFollowing: follow }
-                  : reader,
-              ),
+              items: page.items.map(withFollow),
             })),
           },
       );
 
+      queryClient.setQueriesData<ReaderSummary[]>(
+        { queryKey: ['readers'] },
+        (readers) => readers?.map(withFollow),
+      );
+
       // Handed to onError as its third argument
-      return { previousProfile, previousLists };
+      return { previousProfile, previousLists, previousSearches };
     },
     onError: (_error, { nickname }, context) => {
       queryClient.setQueryData(profileKey(nickname), context?.previousProfile);
 
-      for (const [key, data] of context?.previousLists ?? []) {
+      for (const [key, data] of [
+        ...(context?.previousLists ?? []),
+        ...(context?.previousSearches ?? []),
+      ]) {
         queryClient.setQueryData(key, data);
       }
     },

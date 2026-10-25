@@ -14,8 +14,10 @@ import {
   type Me,
   type NicknameAvailability,
   type PublicProfile,
+  type ReaderSummary,
 } from '@reading/shared';
 
+import { FollowsService, READER_SELECT } from '../follows/follows.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { StatsService } from '../stats/stats.service.js';
 import type { CompleteOnboardingDto } from './dto/complete-onboarding.dto.js';
@@ -23,12 +25,14 @@ import type { UpdateProfileDto } from './dto/update-profile.dto.js';
 import { ME_SELECT, toMe } from './me.js';
 
 const RECENTLY_READ_LIMIT = 10;
+const READER_SEARCH_LIMIT = 20;
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly stats: StatsService,
+    private readonly follows: FollowsService,
   ) {}
 
   async publicProfile(
@@ -122,6 +126,26 @@ export class UsersService {
         finishedPrecision: entry.finishedPrecision,
       })),
     };
+  }
+
+  // Readers whose nickname or name contains the text, any case. No paging:
+  // if 20 aren't enough, the query is too vague and the person types more.
+  async search(viewerId: string, query: string): Promise<ReaderSummary[]> {
+    const readers = await this.prisma.user.findMany({
+      where: {
+        // Still in onboarding: no chosen nickname yet, the profile is a 404
+        onboardedAt: { not: null },
+        OR: [
+          { nickname: { contains: query, mode: 'insensitive' } },
+          { displayName: { contains: query, mode: 'insensitive' } },
+        ],
+      },
+      orderBy: { nickname: 'asc' },
+      take: READER_SEARCH_LIMIT,
+      select: READER_SELECT,
+    });
+
+    return this.follows.summaries(viewerId, readers);
   }
 
   private async favorites(userId: string): Promise<FavoriteBook[]> {

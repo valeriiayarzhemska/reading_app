@@ -14,12 +14,17 @@ import {
 
 import { PrismaService } from '../prisma/prisma.service.js';
 
-const READER_SELECT = {
+export const READER_SELECT = {
   id: true,
   nickname: true,
   displayName: true,
   avatarUrl: true,
 } as const;
+
+type Reader = Pick<
+  ReaderSummary,
+  'id' | 'nickname' | 'displayName' | 'avatarUrl'
+>;
 
 @Injectable()
 export class FollowsService {
@@ -86,33 +91,34 @@ export class FollowsService {
     const readers = rows
       .slice(0, FOLLOWS_PAGE_SIZE)
       .map((row) => (isFollowers ? row.follower : row.following));
-    const followed = await this.followedAmong(
-      viewerId,
-      readers.map((reader) => reader.id),
-    );
 
     return {
-      items: readers.map((reader) => ({
-        ...reader,
-        isFollowing: followed.has(reader.id),
-        isMe: reader.id === viewerId,
-      })),
+      items: await this.summaries(viewerId, readers),
       nextCursor: hasMore ? readers[readers.length - 1].id : null,
     };
   }
 
-  // Which of these readers the viewer follows, in one query for the whole
-  // page instead of one per row
-  private async followedAmong(
+  // Adds the viewer's side to each reader. Whom the viewer follows comes in
+  // one query for the whole list instead of one per row. Also used by the
+  // reader search in UsersModule.
+  async summaries(
     viewerId: string,
-    ids: string[],
-  ): Promise<Set<string>> {
+    readers: Reader[],
+  ): Promise<ReaderSummary[]> {
     const rows = await this.prisma.follow.findMany({
-      where: { followerId: viewerId, followingId: { in: ids } },
+      where: {
+        followerId: viewerId,
+        followingId: { in: readers.map((reader) => reader.id) },
+      },
       select: { followingId: true },
     });
+    const followed = new Set(rows.map((row) => row.followingId));
 
-    return new Set(rows.map((row) => row.followingId));
+    return readers.map((reader) => ({
+      ...reader,
+      isFollowing: followed.has(reader.id),
+      isMe: reader.id === viewerId,
+    }));
   }
 
   private async userId(nickname: string): Promise<string> {

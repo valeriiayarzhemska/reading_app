@@ -189,6 +189,12 @@ const en = {
     pageCount_other: '{{count}} pages',
     cantFind: "Can't find your book?",
     addManually: 'Add it manually',
+    modes: {
+      books: 'Books',
+      readers: 'Readers',
+    },
+    readersPlaceholder: 'Nickname or name',
+    noReaders: 'No readers found',
   },
   addBook: {
     title: 'Add a book',
