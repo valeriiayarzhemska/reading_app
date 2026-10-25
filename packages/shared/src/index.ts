@@ -1,6 +1,7 @@
 export * from './auth.js';
 export * from './book-matching.js';
 export * from './books.js';
+export * from './clubs.js';
 export * from './collections.js';
 export * from './dev-users.js';
 export * from './enums.js';

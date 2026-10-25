@@ -223,7 +223,6 @@ const en = {
   },
   placeholders: {
     feed: 'Posts from readers you follow.',
-    clubs: 'Reading clubs with real-time chat.',
     profile: 'Your stats, calendar, goals and settings.',
   },
   profile: {
@@ -277,6 +276,35 @@ const en = {
     ratingCount_other: '{{count}} ratings',
     addToShelf: '+ Add to shelf',
     openOnShelf: 'On your shelf →',
+  },
+  clubs: {
+    title: 'Clubs',
+    mine: 'Mine',
+    all: 'All',
+    memberOf_one: 'Where you are a member · {{count}}',
+    memberOf_other: 'Where you are a member · {{count}}',
+    emptyMine:
+      'You are not in any club yet. Find one in All or create your own.',
+    quiet: 'quiet',
+    reading: 'Reading «{{title}}»',
+    readingTogether: 'Reading together',
+    rooms: 'Rooms',
+    searchPlaceholder: 'Room name, nickname or book',
+    nothingFound: 'No rooms found',
+    members_one: '{{count}} member',
+    members_other: '{{count}} members',
+    entry: 'Entry',
+    entryOpen: 'Open',
+    join: 'Join the room',
+    chatSoon: 'The chat arrives in the next step.',
+    create: {
+      title: 'New room',
+      hint: 'Anyone can join.',
+      name: 'Room name',
+      description: 'What will you talk about here (optional)',
+      color: 'Room colour',
+      submit: 'Create room',
+    },
   },
   collections: {
     title: 'Collections',

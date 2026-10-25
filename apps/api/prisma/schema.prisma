@@ -61,6 +61,8 @@ model User {
   followers       Follow[]         @relation("followers")
   collections     Collection[]
   collectionLikes CollectionLike[]
+  hostedClubs     Club[]
+  clubMemberships ClubMember[]
 }
 
 // One row per signed-in device. Only the refresh token's hash is stored.
@@ -110,6 +112,7 @@ model Book {
   createdBy     User?            @relation(fields: [createdById], references: [id], onDelete: SetNull)
   userBooks     UserBook[]
   inCollections CollectionBook[]
+  readInClubs   Club[]
 
   @@index([createdById])
 }
@@ -269,4 +272,41 @@ model CollectionLike {
   // collection's likes needs its own
   @@id([userId, collectionId])
   @@index([collectionId])
+}
+
+// A reading club ("room"): open to everyone, one host
+model Club {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  // One of CLUB_COLORS: the avatar circle
+  color       String
+  hostId      String
+  // "Reading together": the book the club reads now, chosen by the host
+  bookId      String?
+  createdAt   DateTime @default(now())
+
+  // Cascade: a club without its host goes too
+  host    User         @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  book    Book?        @relation(fields: [bookId], references: [id], onDelete: SetNull)
+  members ClubMember[]
+
+  @@index([hostId])
+  @@index([createdAt])
+}
+
+model ClubMember {
+  clubId     String
+  userId     String
+  joinedAt   DateTime @default(now())
+  // Messages after this are unread (the dots and counts, CLB-2)
+  lastReadAt DateTime @default(now())
+
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // "My clubs" searches by userId: the key starts with clubId, so it needs
+  // its own index
+  @@id([clubId, userId])
+  @@index([userId])
 }
