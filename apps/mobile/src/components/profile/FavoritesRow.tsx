@@ -2,11 +2,11 @@ import { Pressable, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Feather } from '@expo/vector-icons';
-import { Image } from 'expo-image';
 import { router } from 'expo-router';
 
 import { FAVORITES_MAX, type FavoriteBook } from '@reading/shared';
 
+import { RemoteImage } from '@/components/ui/RemoteImage';
 import { Text } from '@/components/ui/Text';
 
 import { COLORS } from '@/theme/colors';
@@ -88,10 +88,9 @@ function FavoriteCover({ book }: { book: FavoriteBook }) {
   }
 
   return (
-    <Image
-      source={book.coverUrl}
+    <RemoteImage
+      uri={book.coverUrl}
       style={{ flex: 1, aspectRatio: COVER_RATIO, borderRadius: 8 }}
-      contentFit="cover"
       accessibilityLabel={book.title}
     />
   );

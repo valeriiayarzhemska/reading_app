@@ -1,7 +1,9 @@
-import { FlatList, Pressable } from 'react-native';
+import { Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { router, Stack, useLocalSearchParams } from 'expo-router';
+
+import { FlashList } from '@shopify/flash-list';
 
 import { ShelfStatus } from '@reading/shared';
 
@@ -30,10 +32,15 @@ export default function ShelfListScreen() {
     <Screen>
       <Stack.Screen options={{ title: t(`library.sections.${status}`) }} />
 
-      <FlatList
+      <FlashList
         data={entries}
         keyExtractor={(entry) => entry.id}
-        contentContainerClassName="px-4 pb-8 pt-2"
+        // NativeWind's contentContainerClassName only works on core lists
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingTop: 8,
+          paddingBottom: 32,
+        }}
         ListEmptyComponent={
           <Text variant="muted" className="mt-6 text-center">
             {t('library.shelfEmpty')}

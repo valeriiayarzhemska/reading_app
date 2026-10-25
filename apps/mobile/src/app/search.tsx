@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable } from 'react-native';
+import { ActivityIndicator, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { router } from 'expo-router';
+
+import { FlashList } from '@shopify/flash-list';
 
 import { bookMatchKey, type BookSearchResult } from '@reading/shared';
 
@@ -97,11 +99,11 @@ export default function SearchScreen() {
         </Text>
       ) : null}
 
-      <FlatList
+      <FlashList
         data={search.data ?? []}
         keyExtractor={resultKey}
         keyboardShouldPersistTaps="handled"
-        contentContainerClassName="pb-8 pt-2"
+        contentContainerStyle={{ paddingTop: 8, paddingBottom: 32 }}
         ListEmptyComponent={
           query.length >= 2 && search.isSuccess ? (
             <Text variant="muted" className="mt-4 text-center">

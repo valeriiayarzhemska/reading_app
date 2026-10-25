@@ -1,7 +1,6 @@
 import { View } from 'react-native';
 
-import { Image } from 'expo-image';
-
+import { RemoteImage } from '@/components/ui/RemoteImage';
 import { Text } from '@/components/ui/Text';
 
 interface AvatarProps {
@@ -14,10 +13,9 @@ interface AvatarProps {
 export function Avatar({ name, url, size = 72 }: AvatarProps) {
   if (url) {
     return (
-      <Image
-        source={url}
+      <RemoteImage
+        uri={url}
         style={{ width: size, height: size, borderRadius: size / 2 }}
-        contentFit="cover"
         accessibilityLabel={name}
       />
     );

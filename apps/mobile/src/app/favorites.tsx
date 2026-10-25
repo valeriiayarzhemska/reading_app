@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import { ActivityIndicator, Pressable, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Image } from 'expo-image';
 import { router } from 'expo-router';
+
+import { FlashList } from '@shopify/flash-list';
 
 import {
   FAVORITES_MAX,
@@ -12,6 +13,7 @@ import {
 } from '@reading/shared';
 
 import { Button } from '@/components/ui/Button';
+import { RemoteImage } from '@/components/ui/RemoteImage';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 
@@ -86,72 +88,39 @@ function FavoritesPicker({
 
   return (
     <Screen>
-      <ScrollView contentContainerClassName="gap-4 px-4 pb-32 pt-2">
-        <View className="gap-1">
-          <Text variant="label">
-            {t('profile.favorites.picked', {
-              count: picked.length,
-              max: FAVORITES_MAX,
-            })}
-          </Text>
+      <FlashList
+        data={books}
+        keyExtractor={(entry) => entry.id}
+        numColumns={3}
+        // Cells only re-render when data changes; picked lives outside it
+        extraData={picked}
+        // 16 minus the cell's 6 of padding: the covers line up with the header
+        contentContainerStyle={{
+          paddingHorizontal: 10,
+          paddingTop: 8,
+          paddingBottom: 128,
+        }}
+        ListHeaderComponent={
+          <View className="mb-3 gap-1 px-1.5">
+            <Text variant="label">
+              {t('profile.favorites.picked', {
+                count: picked.length,
+                max: FAVORITES_MAX,
+              })}
+            </Text>
 
-          <Text variant="muted">{t('profile.favorites.hint')}</Text>
-        </View>
-
-        <View className="flex-row flex-wrap" style={{ marginHorizontal: -6 }}>
-          {books.map((entry) => {
-            const position = picked.indexOf(entry.id);
-            const isPicked = position !== -1;
-
-            return (
-              <Pressable
-                key={entry.id}
-                onPress={() => toggle(entry.id)}
-                disabled={isFull && !isPicked}
-                accessibilityRole="checkbox"
-                accessibilityState={{ checked: isPicked }}
-                accessibilityLabel={entry.book.title}
-                style={{ width: '33.33%', padding: 6 }}
-                className={cn(
-                  'active:opacity-70',
-                  isFull && !isPicked && 'opacity-40',
-                )}
-              >
-                <View style={{ aspectRatio: COVER_RATIO }}>
-                  {entry.book.coverUrl ? (
-                    <Image
-                      source={entry.book.coverUrl}
-                      style={{ flex: 1, borderRadius: 8 }}
-                      contentFit="cover"
-                    />
-                  ) : (
-                    <View className="flex-1 items-center justify-center rounded-lg border border-border bg-card-strong">
-                      <Text className="font-serif text-3xl text-fg-muted">
-                        {entry.book.title.charAt(0).toUpperCase()}
-                      </Text>
-                    </View>
-                  )}
-
-                  {isPicked ? (
-                    <View
-                      className="absolute inset-0 rounded-lg border-2 border-accent"
-                      pointerEvents="none"
-                    />
-                  ) : null}
-
-                  {isPicked ? (
-                    <View className="absolute right-1.5 top-1.5 h-7 w-7 items-center justify-center rounded-full bg-accent">
-                      <Text className="font-sans-bold text-sm text-accent-fg">
-                        {position + 1}
-                      </Text>
-                    </View>
-                  ) : null}
-                </View>
-              </Pressable>
-            );
-          })}
-        </View>
-      </ScrollView>
+            <Text variant="muted">{t('profile.favorites.hint')}</Text>
+          </View>
+        }
+        renderItem={({ item }) => (
+          <PickableCover
+            entry={item}
+            position={picked.indexOf(item.id)}
+            isFull={isFull}
+            onToggle={toggle}
+          />
+        )}
+      />
 
       <View className="absolute bottom-0 left-0 right-0 gap-2 px-4 pb-10 pt-3">
         {save.error ? (
@@ -169,5 +138,64 @@ function FavoritesPicker({
         />
       </View>
     </Screen>
+  );
+}
+
+interface PickableCoverProps {
+  entry: UserBookWithBook;
+  // Index in the picked list, -1 when not picked
+  position: number;
+  isFull: boolean;
+  onToggle: (userBookId: string) => void;
+}
+
+function PickableCover({
+  entry,
+  position,
+  isFull,
+  onToggle,
+}: PickableCoverProps) {
+  const isPicked = position !== -1;
+
+  return (
+    <Pressable
+      onPress={() => onToggle(entry.id)}
+      disabled={isFull && !isPicked}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: isPicked }}
+      accessibilityLabel={entry.book.title}
+      style={{ padding: 6 }}
+      className={cn('active:opacity-70', isFull && !isPicked && 'opacity-40')}
+    >
+      <View style={{ aspectRatio: COVER_RATIO }}>
+        {entry.book.coverUrl ? (
+          <RemoteImage
+            uri={entry.book.coverUrl}
+            style={{ flex: 1, borderRadius: 8 }}
+          />
+        ) : (
+          <View className="flex-1 items-center justify-center rounded-lg border border-border bg-card-strong">
+            <Text className="font-serif text-3xl text-fg-muted">
+              {entry.book.title.charAt(0).toUpperCase()}
+            </Text>
+          </View>
+        )}
+
+        {isPicked ? (
+          <View
+            className="absolute inset-0 rounded-lg border-2 border-accent"
+            pointerEvents="none"
+          />
+        ) : null}
+
+        {isPicked ? (
+          <View className="absolute right-1.5 top-1.5 h-7 w-7 items-center justify-center rounded-full bg-accent">
+            <Text className="font-sans-bold text-sm text-accent-fg">
+              {position + 1}
+            </Text>
+          </View>
+        ) : null}
+      </View>
+    </Pressable>
   );
 }

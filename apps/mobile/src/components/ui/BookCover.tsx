@@ -1,7 +1,6 @@
 import { View } from 'react-native';
 
-import { Image } from 'expo-image';
-
+import { RemoteImage } from '@/components/ui/RemoteImage';
 import { Text } from '@/components/ui/Text';
 
 import { cn } from '@/lib/cn';
@@ -35,10 +34,9 @@ export function BookCover({
     return (
       <View className={className}>
         {/* expo-image is not a core component: it takes `style`, not className */}
-        <Image
-          source={uri}
+        <RemoteImage
+          uri={uri}
           style={{ width, height, borderRadius: radius }}
-          contentFit="cover"
           transition={150}
           accessibilityLabel={`Cover of ${title}`}
         />

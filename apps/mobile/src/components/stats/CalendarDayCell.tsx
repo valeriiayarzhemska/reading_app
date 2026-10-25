@@ -1,9 +1,8 @@
 import { Pressable, View } from 'react-native';
 
-import { Image } from 'expo-image';
-
 import type { CalendarBook, CalendarDay } from '@reading/shared';
 
+import { RemoteImage } from '@/components/ui/RemoteImage';
 import { Text } from '@/components/ui/Text';
 
 import { cn } from '@/lib/cn';
@@ -99,10 +98,9 @@ function dayCovers(day: CalendarDay): CalendarBook[] {
 function CellCover({ book }: { book: CalendarBook }) {
   if (book.coverUrl) {
     return (
-      <Image
-        source={book.coverUrl}
+      <RemoteImage
+        uri={book.coverUrl}
         style={{ flex: 1 }}
-        contentFit="cover"
         accessibilityLabel={book.title}
       />
     );
