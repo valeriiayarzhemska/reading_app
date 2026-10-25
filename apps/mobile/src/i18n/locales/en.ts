@@ -278,6 +278,13 @@ const en = {
     openOnShelf: 'On your shelf →',
   },
   chat: {
+    reply: 'Reply',
+    replyingTo: 'Replying to {{nickname}}',
+    cancelReply: 'Cancel reply',
+    photo: 'Photo',
+    photoQuote: '📷 Photo',
+    attachPhoto: 'Attach a photo',
+    removePhoto: 'Remove photo',
     back: 'Back',
     openChat: 'open chat',
     placeholder: 'Write in the chat…',

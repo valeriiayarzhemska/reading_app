@@ -17,10 +17,11 @@ import {
   CHAT_NAMESPACE,
   type ChatAck,
   type ChatMessage,
+  type ReactionsEvent,
 } from '@reading/shared';
 
 import { TokenService } from '../auth/token.service.js';
-import { JoinClubDto, SendMessageDto } from './dto/chat.dto.js';
+import { JoinClubDto, ReactDto, SendMessageDto } from './dto/chat.dto.js';
 import { MessagesService } from './messages.service.js';
 
 interface ChatSocketData {
@@ -142,6 +143,26 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       }
 
       return message;
+    });
+  }
+
+  // Sent to the whole room, the reacting user included: their other devices
+  // update too, and the phone that tapped gets the same answer as everyone
+  @SubscribeMessage(CHAT_EVENTS.react)
+  async react(
+    @ConnectedSocket() socket: ChatSocket,
+    @MessageBody() body: unknown,
+  ): Promise<ChatAck<ReactionsEvent>> {
+    return this.answer(ReactDto, body, async ({ messageId, emoji }) => {
+      const event = await this.messages.toggleReaction(
+        socket.data.userId,
+        messageId,
+        emoji,
+      );
+
+      this.server.to(room(event.clubId)).emit(CHAT_EVENTS.reactions, event);
+
+      return event;
     });
   }
 

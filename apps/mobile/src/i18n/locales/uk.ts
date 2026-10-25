@@ -297,6 +297,13 @@ const uk: Translation = {
     openOnShelf: 'На вашій полиці →',
   },
   chat: {
+    reply: 'Відповісти',
+    replyingTo: 'Відповідь для {{nickname}}',
+    cancelReply: 'Скасувати відповідь',
+    photo: 'Фото',
+    photoQuote: '📷 Фото',
+    attachPhoto: 'Додати фото',
+    removePhoto: 'Прибрати фото',
     back: 'Назад',
     openChat: 'відкритий чат',
     placeholder: 'Написати в чат…',

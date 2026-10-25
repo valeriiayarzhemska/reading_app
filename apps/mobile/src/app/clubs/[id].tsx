@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -15,6 +16,7 @@ import { FlashList } from '@shopify/flash-list';
 import type { ClubDetail } from '@reading/shared';
 
 import { ChatComposer } from '@/components/chat/ChatComposer';
+import { MessageActionsSheet } from '@/components/chat/MessageActionsSheet';
 import { MessageBubble } from '@/components/chat/MessageBubble';
 import { ClubAvatar } from '@/components/clubs/ClubAvatar';
 import { Button } from '@/components/ui/Button';
@@ -102,7 +104,12 @@ function Chat({ clubId }: { clubId: string }) {
   const { t } = useTranslation();
   const { state } = useAuth();
   const myId = state.status === 'signedIn' ? state.user.id : '';
-  const { history, messages, send, retry } = useClubChat(clubId);
+  const { history, messages, send, retry, react } = useClubChat(clubId);
+  const [replyTo, setReplyTo] = useState<ChatItem | null>(null);
+  // The long-pressed message; kept after closing so the sheet doesn't empty
+  // while it slides away
+  const [selected, setSelected] = useState<ChatItem | null>(null);
+  const [isActionsOpen, setIsActionsOpen] = useState(false);
 
   return (
     <KeyboardAvoidingView
@@ -121,9 +128,14 @@ function Chat({ clubId }: { clubId: string }) {
           renderItem={({ item, index }) => (
             <MessageBubble
               message={item}
-              isMine={item.author.id === myId}
+              myId={myId}
               isFirstInRun={startsRun(item, messages[index - 1])}
               onRetry={retry}
+              onReact={react}
+              onLongPress={(message) => {
+                setSelected(message);
+                setIsActionsOpen(true);
+              }}
             />
           )}
           // Opens at the newest message; follows new ones only when you're
@@ -153,7 +165,20 @@ function Chat({ clubId }: { clubId: string }) {
         />
       )}
 
-      <ChatComposer onSend={send} />
+      <ChatComposer
+        replyTo={replyTo}
+        onCancelReply={() => setReplyTo(null)}
+        onSend={send}
+      />
+
+      <MessageActionsSheet
+        message={selected}
+        myId={myId}
+        open={isActionsOpen}
+        onClose={() => setIsActionsOpen(false)}
+        onReact={react}
+        onReply={setReplyTo}
+      />
     </KeyboardAvoidingView>
   );
 }

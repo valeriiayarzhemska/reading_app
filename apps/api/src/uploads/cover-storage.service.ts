@@ -9,6 +9,9 @@ import type { CoverUpload } from '@reading/shared';
 
 const UPLOAD_URL_TTL_SECONDS = 5 * 60;
 
+// Book covers and chat photos, each in its own folder per user
+export type ImageFolder = 'covers' | 'chat';
+
 // Cloudflare R2 speaks the S3 protocol, so the AWS SDK works with it:
 // only the endpoint differs from Amazon
 @Injectable()
@@ -34,9 +37,13 @@ export class CoverStorage {
       .replace(/\/$/, '');
   }
 
-  async createUpload(userId: string, size: number): Promise<CoverUpload> {
+  async createUpload(
+    userId: string,
+    size: number,
+    folder: ImageFolder = 'covers',
+  ): Promise<CoverUpload> {
     // A random name per upload: replacing a cover never shows a cached old one
-    const key = `covers/${userId}/${randomUUID()}.jpg`;
+    const key = `${folder}/${userId}/${randomUUID()}.jpg`;
     const command = new PutObjectCommand({
       Bucket: this.bucket,
       Key: key,
@@ -54,9 +61,13 @@ export class CoverStorage {
     return { uploadUrl, publicUrl: `${this.publicUrl}/${key}` };
   }
 
-  // Only a file from this user's own folder, with a name we generated
   isOwnCover(userId: string, url: string): boolean {
-    const prefix = `${this.publicUrl}/covers/${userId}/`;
+    return this.isOwnImage(userId, url, 'covers');
+  }
+
+  // Only a file from this user's own folder, with a name we generated
+  isOwnImage(userId: string, url: string, folder: ImageFolder): boolean {
+    const prefix = `${this.publicUrl}/${folder}/${userId}/`;
 
     return (
       url.startsWith(prefix) &&

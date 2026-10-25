@@ -57,13 +57,14 @@ model User {
   readingGoals    ReadingGoal[]
   favoriteBooks   FavoriteBook[]
   // Two relations to Follow: the names pair each list with its foreign key
-  following       Follow[]         @relation("following")
-  followers       Follow[]         @relation("followers")
+  following       Follow[]          @relation("following")
+  followers       Follow[]          @relation("followers")
   collections     Collection[]
   collectionLikes CollectionLike[]
   hostedClubs     Club[]
   clubMemberships ClubMember[]
   messages        Message[]
+  reactions       MessageReaction[]
 }
 
 // One row per signed-in device. Only the refresh token's hash is stored.
@@ -321,12 +322,35 @@ model Message {
   clientId  String   @unique
   clubId    String
   authorId  String
+  // May be "" when the message is a photo
   text      String
+  photoUrl  String?
+  // The message this one answers (quoted above it)
+  replyToId String?
   createdAt DateTime @default(now())
 
-  club   Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
-  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  club      Club              @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  author    User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  // A self-relation: a message points at another message. SetNull: if the
+  // original goes, the reply stays as a normal message.
+  replyTo   Message?          @relation("replies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies   Message[]         @relation("replies")
+  reactions MessageReaction[]
 
   // History pages and unread counts: one club's messages by time
   @@index([clubId, createdAt])
+}
+
+// One emoji from one reader on one message
+model MessageReaction {
+  messageId String
+  userId    String
+  emoji     String
+  createdAt DateTime @default(now())
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // The same emoji twice from one reader is impossible; different emojis are fine
+  @@id([messageId, userId, emoji])
 }
