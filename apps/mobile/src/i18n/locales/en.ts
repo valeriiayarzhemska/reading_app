@@ -228,6 +228,16 @@ const en = {
       profile: 'Profile',
       reading: 'My reading',
     },
+    public: {
+      readingDay: 'Reading now · day {{day}}',
+      booksInYear: 'books {{year}}',
+      total: 'total',
+      averageRating: 'avg rating',
+      recentlyRead: 'Recently read',
+    },
+  },
+  settings: {
+    title: 'Settings',
   },
   stats: {
     previousMonth: 'Previous month',

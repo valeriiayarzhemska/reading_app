@@ -4,6 +4,7 @@ import {
   nicknameError,
   type Me,
   type NicknameAvailability,
+  type PublicProfile,
 } from '@reading/shared';
 
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
@@ -58,4 +59,16 @@ export function useNicknameAvailability(nickname: string) {
     available: !isChecking && query.data?.available === true,
     taken: !isChecking && query.data?.available === false,
   };
+}
+
+// ['profile', nickname]; invalidating ['profile'] refreshes every loaded one
+export const profileKey = (nickname: string) =>
+  ['profile', nickname.toLowerCase()] as const;
+
+export function usePublicProfile(nickname: string) {
+  return useQuery({
+    queryKey: profileKey(nickname),
+    queryFn: () =>
+      apiFetch<PublicProfile>(`/users/${encodeURIComponent(nickname)}`),
+  });
 }

@@ -114,6 +114,13 @@ function RootNavigator() {
 
         <Stack.Screen name="book/[id]" options={{ title: '' }} />
 
+        <Stack.Screen name="user/[nickname]" options={{ title: '' }} />
+
+        <Stack.Screen
+          name="settings"
+          options={{ title: t('settings.title') }}
+        />
+
         {/* Slides up over everything; swiping down minimizes it */}
         <Stack.Screen
           name="timer"

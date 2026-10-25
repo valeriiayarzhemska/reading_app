@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { ScrollView } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { ProfileOverview } from '@/components/profile/ProfileOverview';
+import { Feather } from '@expo/vector-icons';
+import { router } from 'expo-router';
+
+import { PublicProfileView } from '@/components/profile/PublicProfileView';
 import { MyReading } from '@/components/stats/MyReading';
 import { useTabBarInset } from '@/components/TabBar';
 import { Screen } from '@/components/ui/Screen';
@@ -10,6 +13,11 @@ import {
   SegmentedControl,
   type SegmentOption,
 } from '@/components/ui/SegmentedControl';
+import { Text } from '@/components/ui/Text';
+
+import { usePublicProfile } from '@/api/users';
+import { useAuth } from '@/auth/AuthContext';
+import { COLORS } from '@/theme/colors';
 
 type ProfileView = 'profile' | 'reading';
 
@@ -17,6 +25,9 @@ export default function ProfileScreen() {
   const { t } = useTranslation();
   const tabBarInset = useTabBarInset();
   const [view, setView] = useState<ProfileView>('profile');
+  const { state } = useAuth();
+  // The tabs are reachable only when signed in
+  const nickname = state.status === 'signedIn' ? state.user.nickname : '';
 
   const viewOptions: SegmentOption<ProfileView>[] = [
     { value: 'profile', label: t('profile.views.profile') },
@@ -29,14 +40,49 @@ export default function ProfileScreen() {
         contentContainerClassName="gap-6 px-4 pt-2"
         contentContainerStyle={{ paddingBottom: tabBarInset }}
       >
-        <SegmentedControl
-          options={viewOptions}
-          value={view}
-          onChange={setView}
-        />
+        <View className="flex-row items-center gap-3">
+          <SegmentedControl
+            options={viewOptions}
+            value={view}
+            onChange={setView}
+            className="flex-1"
+          />
 
-        {view === 'profile' ? <ProfileOverview /> : <MyReading />}
+          <Pressable
+            onPress={() => router.push('/settings')}
+            accessibilityRole="button"
+            accessibilityLabel={t('settings.title')}
+            className="h-11 w-11 items-center justify-center rounded-full border border-border bg-card active:opacity-70"
+          >
+            <Feather name="settings" size={20} color={COLORS.fg} />
+          </Pressable>
+        </View>
+
+        {view === 'profile' ? (
+          <OwnProfile nickname={nickname} />
+        ) : (
+          <MyReading />
+        )}
       </ScrollView>
     </Screen>
   );
+}
+
+// Your profile as others see it (with Edit)
+function OwnProfile({ nickname }: { nickname: string }) {
+  const { data, error } = usePublicProfile(nickname);
+
+  if (error) {
+    return (
+      <Text variant="muted" className="text-center">
+        {error.message}
+      </Text>
+    );
+  }
+
+  if (!data) {
+    return <ActivityIndicator className="py-8" color={COLORS.fg} />;
+  }
+
+  return <PublicProfileView profile={data} />;
 }

@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import { router } from 'expo-router';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
   BIO_MAX_LENGTH,
@@ -80,6 +80,7 @@ function EditProfileForm({
   onSaved: (user: Me) => void;
 }) {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const [displayName, setDisplayName] = useState(user.displayName);
   const [nickname, setNickname] = useState(user.nickname);
   const [bio, setBio] = useState(user.bio ?? '');
@@ -106,6 +107,8 @@ function EditProfileForm({
     mutationFn: () => updateProfile(changes),
     onSuccess: (updated) => {
       onSaved(updated);
+      // The public profile shows the same name, bio and links
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
       router.back();
     },
   });

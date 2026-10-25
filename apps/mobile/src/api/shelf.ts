@@ -92,10 +92,12 @@ export function useUpdateStatus(id: string) {
   });
 }
 
-// Stats that count books (read, finished this year) and calendar days
+// Stats that count books (read, finished this year), calendar days, and the
+// public profile (reading now, ratings, recently read)
 function invalidateBookStats(queryClient: QueryClient) {
   queryClient.invalidateQueries({ queryKey: ['stats'] });
   queryClient.invalidateQueries({ queryKey: ['calendar'] });
+  queryClient.invalidateQueries({ queryKey: ['profile'] });
 }
 
 export function useUpdateProgress(id: string) {
@@ -107,6 +109,7 @@ export function useUpdateProgress(id: string) {
     onSuccess: (updated) => {
       queryClient.setQueryData(entryKey(id), updated);
       queryClient.invalidateQueries({ queryKey: shelfKey });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
   });
 }

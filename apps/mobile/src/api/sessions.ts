@@ -100,6 +100,8 @@ function invalidateStats(queryClient: QueryClient) {
   queryClient.invalidateQueries({ queryKey: ['stats'] });
   queryClient.invalidateQueries({ queryKey: ['calendar'] });
   queryClient.invalidateQueries({ queryKey: ['daySessions'] });
+  // Public profiles show progress and totals
+  queryClient.invalidateQueries({ queryKey: ['profile'] });
 }
 
 export interface SessionChanges {

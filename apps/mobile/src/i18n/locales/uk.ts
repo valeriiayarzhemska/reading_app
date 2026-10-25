@@ -242,6 +242,16 @@ const uk: Translation = {
       profile: 'Профіль',
       reading: 'Моє',
     },
+    public: {
+      readingDay: 'Зараз читаю · день {{day}}',
+      booksInYear: 'книжок {{year}}',
+      total: 'усього',
+      averageRating: 'середня оцінка',
+      recentlyRead: 'Останні прочитані',
+    },
+  },
+  settings: {
+    title: 'Налаштування',
   },
   stats: {
     previousMonth: 'Попередній місяць',
