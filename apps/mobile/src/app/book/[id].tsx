@@ -21,7 +21,10 @@ import {
 } from '@reading/shared';
 
 import { FinishedSheet } from '@/components/library/FinishedSheet';
+import { ReviewSheet } from '@/components/library/ReviewSheet';
 import { UpdateProgressSheet } from '@/components/library/UpdateProgressSheet';
+import { RatingSummary } from '@/components/reviews/RatingSummary';
+import { ReviewsPreview } from '@/components/reviews/ReviewsPreview';
 import { LogReadingSheet } from '@/components/timer/LogReadingSheet';
 import { StartSessionButton } from '@/components/timer/StartSessionButton';
 import { BookCover } from '@/components/ui/BookCover';
@@ -72,6 +75,7 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
   const [isProgressOpen, setIsProgressOpen] = useState(false);
   const [isLogOpen, setIsLogOpen] = useState(false);
   const [isFinishedOpen, setIsFinishedOpen] = useState(rate === '1');
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
   // Where "Actually not finished yet" puts the book back
   const previousStatus = useRef<ShelfStatus>(ShelfStatus.READING);
   const updateStatus = useUpdateStatus(entry.id);
@@ -149,6 +153,22 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
               {entry.book.authors.join(', ')}
             </Text>
           </View>
+
+          <Pressable
+            onPress={() =>
+              router.push({
+                pathname: '/books/[bookId]',
+                params: { bookId: entry.bookId },
+              })
+            }
+            accessibilityRole="link"
+            className="active:opacity-60"
+          >
+            <RatingSummary
+              ratingAvg={entry.book.ratingAvg}
+              ratingCount={entry.book.ratingCount}
+            />
+          </Pressable>
         </View>
 
         <View className="gap-1">
@@ -222,6 +242,24 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
               <Feather name="chevron-right" size={18} color={COLORS.fgFaint} />
             </Pressable>
 
+            <Pressable
+              onPress={() => setIsReviewOpen(true)}
+              accessibilityRole="button"
+              className="flex-row items-center justify-between gap-3 border-t border-border py-2 active:opacity-60"
+            >
+              {entry.review ? (
+                <View className="flex-1 gap-0.5">
+                  <Text variant="label">{t('reviews.yours')}</Text>
+
+                  <Text numberOfLines={2}>{entry.review.text}</Text>
+                </View>
+              ) : (
+                <Text>{t('reviews.write')}</Text>
+              )}
+
+              <Feather name="chevron-right" size={18} color={COLORS.fgFaint} />
+            </Pressable>
+
             {entry.finishedAt ? (
               <Pressable
                 onPress={() => setIsFinishedOpen(true)}
@@ -277,6 +315,8 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
           </Text>
         </Card>
 
+        <ReviewsPreview bookId={entry.bookId} />
+
         <Pressable
           onPress={confirmRemove}
           disabled={remove.isPending}
@@ -297,6 +337,12 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
         open={isFinishedOpen}
         onClose={() => setIsFinishedOpen(false)}
         onNotFinished={markNotFinished}
+      />
+
+      <ReviewSheet
+        entry={entry}
+        open={isReviewOpen}
+        onClose={() => setIsReviewOpen(false)}
       />
 
       <LogReadingSheet

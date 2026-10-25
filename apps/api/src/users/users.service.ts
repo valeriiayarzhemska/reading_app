@@ -8,6 +8,7 @@ import {
 import {
   nicknameError,
   normalizeNickname,
+  PROFILE_REVIEWS_LIMIT,
   progressFraction,
   ShelfStatus,
   type FavoriteBook,
@@ -60,40 +61,60 @@ export class UsersService {
 
     const { _count: counts, ...profile } = user;
 
-    const [summary, reading, recent, favorites, follow] = await Promise.all([
-      this.stats.summary(user.id),
-      this.prisma.userBook.findFirst({
-        where: { userId: user.id, status: ShelfStatus.READING },
-        orderBy: { updatedAt: 'desc' },
-        include: { book: true },
-      }),
-      this.prisma.userBook.findMany({
-        where: {
-          userId: user.id,
-          status: ShelfStatus.READ,
-          finishedAt: { not: null },
-        },
-        orderBy: { finishedAt: 'desc' },
-        take: RECENTLY_READ_LIMIT,
-        select: {
-          id: true,
-          rating: true,
-          finishedAt: true,
-          finishedPrecision: true,
-          book: { select: { title: true, coverUrl: true } },
-        },
-      }),
-      this.favorites(user.id),
-      this.prisma.follow.findUnique({
-        where: {
-          followerId_followingId: {
-            followerId: viewerId,
-            followingId: user.id,
+    const [summary, reading, recent, favorites, follow, reviews, reviewsCount] =
+      await Promise.all([
+        this.stats.summary(user.id),
+        this.prisma.userBook.findFirst({
+          where: { userId: user.id, status: ShelfStatus.READING },
+          orderBy: { updatedAt: 'desc' },
+          include: { book: true },
+        }),
+        this.prisma.userBook.findMany({
+          where: {
+            userId: user.id,
+            status: ShelfStatus.READ,
+            finishedAt: { not: null },
           },
-        },
-        select: { createdAt: true },
-      }),
-    ]);
+          orderBy: { finishedAt: 'desc' },
+          take: RECENTLY_READ_LIMIT,
+          select: {
+            id: true,
+            rating: true,
+            finishedAt: true,
+            finishedPrecision: true,
+            book: { select: { title: true, coverUrl: true } },
+          },
+        }),
+        this.favorites(user.id),
+        this.prisma.follow.findUnique({
+          where: {
+            followerId_followingId: {
+              followerId: viewerId,
+              followingId: user.id,
+            },
+          },
+          select: { createdAt: true },
+        }),
+        this.prisma.review.findMany({
+          where: { userBook: { userId: user.id } },
+          orderBy: { createdAt: 'desc' },
+          take: PROFILE_REVIEWS_LIMIT,
+          select: {
+            id: true,
+            text: true,
+            hasSpoilers: true,
+            createdAt: true,
+            userBook: {
+              select: {
+                bookId: true,
+                rating: true,
+                book: { select: { title: true, coverUrl: true } },
+              },
+            },
+          },
+        }),
+        this.prisma.review.count({ where: { userBook: { userId: user.id } } }),
+      ]);
 
     return {
       ...profile,
@@ -116,6 +137,18 @@ export class UsersService {
         averageRating: summary.total.averageRating,
       },
       favorites,
+      reviews: reviews.map(({ userBook, ...review }) => ({
+        id: review.id,
+        bookId: userBook.bookId,
+        title: userBook.book.title,
+        coverUrl: userBook.book.coverUrl,
+        rating: userBook.rating,
+        // Not sent at all: hidden text in a response is still readable
+        text: review.hasSpoilers ? null : review.text,
+        hasSpoilers: review.hasSpoilers,
+        createdAt: review.createdAt.toISOString(),
+      })),
+      reviewsCount,
       recentlyRead: recent.map((entry) => ({
         userBookId: entry.id,
         title: entry.book.title,

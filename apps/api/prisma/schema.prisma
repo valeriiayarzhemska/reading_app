@@ -99,6 +99,10 @@ model Book {
   // what marks them as manual is having neither external ID. SetNull: when
   // the creator deletes their account, the book stays on others' shelves.
   createdById      String?
+  // Stored, not computed on every read: recalculated whenever a rating
+  // changes or a shelf entry goes (see src/books/book-rating.ts)
+  ratingAvg        Float?
+  ratingCount      Int      @default(0)
   createdAt        DateTime @default(now())
 
   createdBy User?      @relation(fields: [createdById], references: [id], onDelete: SetNull)
@@ -127,9 +131,28 @@ model UserBook {
   book     Book             @relation(fields: [bookId], references: [id], onDelete: Cascade)
   sessions ReadingSession[]
   favorite FavoriteBook?
+  review   Review?
 
   @@unique([userId, bookId, format])
   @@index([userId, status])
+  // A book's ratings and reviews: all entries of one book
+  @@index([bookId])
+}
+
+// One per shelf entry. The rating stays on UserBook: you can rate without
+// writing anything.
+model Review {
+  id          String   @id @default(uuid())
+  userBookId  String   @unique
+  text        String
+  hasSpoilers Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userBook UserBook @relation(fields: [userBookId], references: [id], onDelete: Cascade)
+
+  // Newest first on the book page
+  @@index([createdAt])
 }
 
 model ReadingSession {

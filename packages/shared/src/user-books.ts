@@ -4,6 +4,7 @@ import type {
   ProgressUnit,
   ShelfStatus,
 } from './enums.js';
+import type { OwnReview } from './reviews.js';
 
 // Shapes as they arrive over JSON: dates are ISO strings, not Date objects
 
@@ -19,6 +20,9 @@ export interface Book {
   language: string | null;
   // Who added the book by hand (null for imported books, or if they left)
   createdById: string | null;
+  // Over all readers' shelf entries; null until someone rates it
+  ratingAvg: number | null;
+  ratingCount: number;
   createdAt: string;
 }
 
@@ -37,4 +41,5 @@ export interface UserBookWithBook {
   createdAt: string;
   updatedAt: string;
   book: Book;
+  review: OwnReview | null;
 }

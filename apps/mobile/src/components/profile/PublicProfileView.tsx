@@ -13,6 +13,7 @@ import {
 
 import { FavoritesRow } from '@/components/profile/FavoritesRow';
 import { FollowButton } from '@/components/profile/FollowButton';
+import { ProfileReviews } from '@/components/profile/ProfileReviews';
 import { Avatar } from '@/components/ui/Avatar';
 import { BookCover } from '@/components/ui/BookCover';
 import { Button } from '@/components/ui/Button';
@@ -170,6 +171,8 @@ export function PublicProfileView({ profile }: { profile: PublicProfile }) {
       </View>
 
       <FavoritesRow favorites={profile.favorites} isMe={profile.isMe} />
+
+      <ProfileReviews reviews={profile.reviews} count={profile.reviewsCount} />
 
       {profile.recentlyRead.length > 0 ? (
         <View className="gap-3">

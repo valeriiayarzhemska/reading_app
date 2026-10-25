@@ -11,5 +11,6 @@ export * from './public-profile.js';
 export * from './reading-progress.js';
 export * from './reading-sessions.js';
 export * from './reading-speed.js';
+export * from './reviews.js';
 export * from './stats.js';
 export * from './user-books.js';

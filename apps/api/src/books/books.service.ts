@@ -8,6 +8,7 @@ import {
 import {
   BookSource,
   normalizeIsbn,
+  type BookPage,
   type BookSearchResult,
 } from '@reading/shared';
 
@@ -49,6 +50,34 @@ export class BooksService {
     private readonly google: GoogleBooksClient,
     private readonly covers: CoverStorage,
   ) {}
+
+  async page(viewerId: string, id: string): Promise<BookPage> {
+    const [book, reviewsCount, myEntry] = await Promise.all([
+      this.prisma.book.findUnique({
+        where: { id },
+        select: {
+          id: true,
+          title: true,
+          authors: true,
+          coverUrl: true,
+          pageCount: true,
+          ratingAvg: true,
+          ratingCount: true,
+        },
+      }),
+      this.prisma.review.count({ where: { userBook: { bookId: id } } }),
+      this.prisma.userBook.findFirst({
+        where: { bookId: id, userId: viewerId },
+        select: { id: true },
+      }),
+    ]);
+
+    if (!book) {
+      throw new NotFoundException('Book not found');
+    }
+
+    return { ...book, reviewsCount, myEntryId: myEntry?.id ?? null };
+  }
 
   // Open Library ranks by popularity (Google only by word match); Google
   // covers outages and editions Open Library lacks, e.g. some Ukrainian ones.

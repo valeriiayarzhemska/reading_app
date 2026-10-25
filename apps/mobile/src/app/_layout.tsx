@@ -112,7 +112,10 @@ function RootNavigator() {
 
         <Stack.Screen name="shelf/[status]" />
 
+        {/* book/[id]: my shelf entry; books/[bookId]: the book, for anyone */}
         <Stack.Screen name="book/[id]" options={{ title: '' }} />
+
+        <Stack.Screen name="books/[bookId]" options={{ title: '' }} />
 
         <Stack.Screen name="user/[nickname]" options={{ title: '' }} />
 

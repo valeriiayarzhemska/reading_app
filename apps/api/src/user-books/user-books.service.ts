@@ -6,6 +6,7 @@ import {
 
 import { DatePrecision, ShelfStatus } from '@reading/shared';
 
+import { lockBook, refreshBookRating } from '../books/book-rating.js';
 import type { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { AddUserBookDto } from './dto/add-user-book.dto.js';
@@ -17,7 +18,10 @@ import {
   validateProgress,
 } from './user-books.rules.js';
 
-const include = { book: true } satisfies Prisma.UserBookInclude;
+const include = {
+  book: true,
+  review: { select: { text: true, hasSpoilers: true, updatedAt: true } },
+} satisfies Prisma.UserBookInclude;
 
 @Injectable()
 export class UserBooksService {
@@ -122,23 +126,49 @@ export class UserBooksService {
       throw new BadRequestException(datesError);
     }
 
-    return this.prisma.userBook.update({
-      where: { id },
-      // Fields listed explicitly (not ...dto): only what we expect reaches the DB
-      data: {
-        status: dto.status,
-        format: dto.format,
-        progressUnit: dto.progressUnit,
-        currentProgress: dto.currentProgress,
-        rating: dto.rating,
-        ...dates,
-      },
-      include,
+    // Fields listed explicitly (not ...dto): only what we expect reaches the DB
+    const data = {
+      status: dto.status,
+      format: dto.format,
+      progressUnit: dto.progressUnit,
+      currentProgress: dto.currentProgress,
+      rating: dto.rating,
+      ...dates,
+    };
+
+    if (dto.rating === undefined) {
+      return this.prisma.userBook.update({ where: { id }, data, include });
+    }
+
+    // A new rating moves the book's average: both are saved, or neither
+    return this.prisma.$transaction(async (tx) => {
+      await lockBook(tx, current.bookId);
+
+      const updated = await tx.userBook.update({
+        where: { id },
+        data,
+        include,
+      });
+      const rating = await refreshBookRating(tx, current.bookId);
+
+      return { ...updated, book: { ...updated.book, ...rating } };
     });
   }
 
   async remove(userId: string, id: string) {
-    await this.get(userId, id);
-    await this.prisma.userBook.delete({ where: { id } });
+    const current = await this.get(userId, id);
+
+    if (current.rating === null) {
+      await this.prisma.userBook.delete({ where: { id } });
+
+      return;
+    }
+
+    // Its rating leaves the book's average with it
+    await this.prisma.$transaction(async (tx) => {
+      await lockBook(tx, current.bookId);
+      await tx.userBook.delete({ where: { id } });
+      await refreshBookRating(tx, current.bookId);
+    });
   }
 }

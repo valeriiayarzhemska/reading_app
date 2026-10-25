@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { CurrentUserId } from '../auth/current-user-id.decorator.js';
@@ -18,6 +26,18 @@ export class BooksController {
   @Get('search')
   search(@Query() query: SearchBooksQuery) {
     return this.books.search(query.q);
+  }
+
+  /**
+   * The public book page: details, average rating, review count, and my shelf entry if I have one.
+   * Declared after 'search': ':id' would otherwise take that path.
+   */
+  @Get(':id')
+  page(
+    @CurrentUserId() userId: string,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.books.page(userId, id);
   }
 
   /**

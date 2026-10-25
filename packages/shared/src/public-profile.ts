@@ -1,6 +1,8 @@
 import type { DatePrecision } from './enums.js';
+import type { ProfileReview } from './reviews.js';
 
 export const FAVORITES_MAX = 4;
+export const PROFILE_REVIEWS_LIMIT = 3;
 
 export interface FavoriteBook {
   userBookId: string;
@@ -41,6 +43,9 @@ export interface PublicProfile {
   };
   // In the order the reader chose, at most FAVORITES_MAX
   favorites: FavoriteBook[];
+  // Newest first, at most PROFILE_REVIEWS_LIMIT
+  reviews: ProfileReview[];
+  reviewsCount: number;
   // Newest first
   recentlyRead: {
     userBookId: string;

@@ -93,11 +93,14 @@ export function useUpdateStatus(id: string) {
 }
 
 // Stats that count books (read, finished this year), calendar days, and the
-// public profile (reading now, ratings, recently read)
+// public profile (reading now, ratings, recently read). A rating also moves
+// the book's average and shows next to its reviews.
 function invalidateBookStats(queryClient: QueryClient) {
   queryClient.invalidateQueries({ queryKey: ['stats'] });
   queryClient.invalidateQueries({ queryKey: ['calendar'] });
   queryClient.invalidateQueries({ queryKey: ['profile'] });
+  queryClient.invalidateQueries({ queryKey: ['bookPage'] });
+  queryClient.invalidateQueries({ queryKey: ['reviews'] });
 }
 
 export function useUpdateProgress(id: string) {
