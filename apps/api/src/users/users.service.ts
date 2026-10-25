@@ -18,6 +18,7 @@ import {
   type ReaderSummary,
 } from '@reading/shared';
 
+import { CollectionsService } from '../collections/collections.service.js';
 import { FollowsService, READER_SELECT } from '../follows/follows.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { StatsService } from '../stats/stats.service.js';
@@ -34,6 +35,7 @@ export class UsersService {
     private readonly prisma: PrismaService,
     private readonly stats: StatsService,
     private readonly follows: FollowsService,
+    private readonly collections: CollectionsService,
   ) {}
 
   async publicProfile(
@@ -61,60 +63,69 @@ export class UsersService {
 
     const { _count: counts, ...profile } = user;
 
-    const [summary, reading, recent, favorites, follow, reviews, reviewsCount] =
-      await Promise.all([
-        this.stats.summary(user.id),
-        this.prisma.userBook.findFirst({
-          where: { userId: user.id, status: ShelfStatus.READING },
-          orderBy: { updatedAt: 'desc' },
-          include: { book: true },
-        }),
-        this.prisma.userBook.findMany({
-          where: {
-            userId: user.id,
-            status: ShelfStatus.READ,
-            finishedAt: { not: null },
+    const [
+      summary,
+      reading,
+      recent,
+      favorites,
+      follow,
+      reviews,
+      reviewsCount,
+      collections,
+    ] = await Promise.all([
+      this.stats.summary(user.id),
+      this.prisma.userBook.findFirst({
+        where: { userId: user.id, status: ShelfStatus.READING },
+        orderBy: { updatedAt: 'desc' },
+        include: { book: true },
+      }),
+      this.prisma.userBook.findMany({
+        where: {
+          userId: user.id,
+          status: ShelfStatus.READ,
+          finishedAt: { not: null },
+        },
+        orderBy: { finishedAt: 'desc' },
+        take: RECENTLY_READ_LIMIT,
+        select: {
+          id: true,
+          rating: true,
+          finishedAt: true,
+          finishedPrecision: true,
+          book: { select: { title: true, coverUrl: true } },
+        },
+      }),
+      this.favorites(user.id),
+      this.prisma.follow.findUnique({
+        where: {
+          followerId_followingId: {
+            followerId: viewerId,
+            followingId: user.id,
           },
-          orderBy: { finishedAt: 'desc' },
-          take: RECENTLY_READ_LIMIT,
-          select: {
-            id: true,
-            rating: true,
-            finishedAt: true,
-            finishedPrecision: true,
-            book: { select: { title: true, coverUrl: true } },
-          },
-        }),
-        this.favorites(user.id),
-        this.prisma.follow.findUnique({
-          where: {
-            followerId_followingId: {
-              followerId: viewerId,
-              followingId: user.id,
+        },
+        select: { createdAt: true },
+      }),
+      this.prisma.review.findMany({
+        where: { userBook: { userId: user.id } },
+        orderBy: { createdAt: 'desc' },
+        take: PROFILE_REVIEWS_LIMIT,
+        select: {
+          id: true,
+          text: true,
+          hasSpoilers: true,
+          createdAt: true,
+          userBook: {
+            select: {
+              bookId: true,
+              rating: true,
+              book: { select: { title: true, coverUrl: true } },
             },
           },
-          select: { createdAt: true },
-        }),
-        this.prisma.review.findMany({
-          where: { userBook: { userId: user.id } },
-          orderBy: { createdAt: 'desc' },
-          take: PROFILE_REVIEWS_LIMIT,
-          select: {
-            id: true,
-            text: true,
-            hasSpoilers: true,
-            createdAt: true,
-            userBook: {
-              select: {
-                bookId: true,
-                rating: true,
-                book: { select: { title: true, coverUrl: true } },
-              },
-            },
-          },
-        }),
-        this.prisma.review.count({ where: { userBook: { userId: user.id } } }),
-      ]);
+        },
+      }),
+      this.prisma.review.count({ where: { userBook: { userId: user.id } } }),
+      this.collections.summaries(user.id),
+    ]);
 
     return {
       ...profile,
@@ -137,6 +148,7 @@ export class UsersService {
         averageRating: summary.total.averageRating,
       },
       favorites,
+      collections,
       reviews: reviews.map(({ userBook, ...review }) => ({
         id: review.id,
         bookId: userBook.bookId,

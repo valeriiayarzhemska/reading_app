@@ -13,6 +13,7 @@ import {
 
 import { FavoritesRow } from '@/components/profile/FavoritesRow';
 import { FollowButton } from '@/components/profile/FollowButton';
+import { ProfileCollections } from '@/components/profile/ProfileCollections';
 import { ProfileReviews } from '@/components/profile/ProfileReviews';
 import { Avatar } from '@/components/ui/Avatar';
 import { BookCover } from '@/components/ui/BookCover';
@@ -171,6 +172,11 @@ export function PublicProfileView({ profile }: { profile: PublicProfile }) {
       </View>
 
       <FavoritesRow favorites={profile.favorites} isMe={profile.isMe} />
+
+      <ProfileCollections
+        collections={profile.collections}
+        isMe={profile.isMe}
+      />
 
       <ProfileReviews reviews={profile.reviews} count={profile.reviewsCount} />
 

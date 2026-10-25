@@ -1,3 +1,4 @@
+import type { CollectionSummary } from './collections.js';
 import type { DatePrecision } from './enums.js';
 import type { ProfileReview } from './reviews.js';
 
@@ -43,6 +44,8 @@ export interface PublicProfile {
   };
   // In the order the reader chose, at most FAVORITES_MAX
   favorites: FavoriteBook[];
+  // Newest first, all of them
+  collections: CollectionSummary[];
   // Newest first, at most PROFILE_REVIEWS_LIMIT
   reviews: ProfileReview[];
   reviewsCount: number;

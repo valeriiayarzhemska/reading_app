@@ -1,42 +1,23 @@
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { router } from 'expo-router';
 
 import { FlashList } from '@shopify/flash-list';
 
-import {
-  FAVORITES_MAX,
-  ShelfStatus,
-  type UserBookWithBook,
-} from '@reading/shared';
+import { FAVORITES_MAX, type UserBookWithBook } from '@reading/shared';
 
+import { PickableCover } from '@/components/library/PickableCover';
 import { Button } from '@/components/ui/Button';
-import { RemoteImage } from '@/components/ui/RemoteImage';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 
 import { useShelf } from '@/api/shelf';
 import { usePublicProfile, useSetFavorites } from '@/api/users';
 import { useAuth } from '@/auth/AuthContext';
-import { cn } from '@/lib/cn';
+import { sortForPicking } from '@/library/sortForPicking';
 import { COLORS } from '@/theme/colors';
-
-const COVER_RATIO = 0.7;
-const STATUS_ORDER: ShelfStatus[] = [
-  ShelfStatus.READ,
-  ShelfStatus.READING,
-  ShelfStatus.WANT_TO_READ,
-  ShelfStatus.ABANDONED,
-];
-
-// Favorites are usually books you've finished: Read first, then the rest
-function sortForPicking(books: UserBookWithBook[]): UserBookWithBook[] {
-  return [...books].sort(
-    (a, b) => STATUS_ORDER.indexOf(a.status) - STATUS_ORDER.indexOf(b.status),
-  );
-}
 
 export default function FavoritesScreen() {
   const { state } = useAuth();
@@ -114,10 +95,11 @@ function FavoritesPicker({
         }
         renderItem={({ item }) => (
           <PickableCover
-            entry={item}
+            title={item.book.title}
+            coverUrl={item.book.coverUrl}
             position={picked.indexOf(item.id)}
             isFull={isFull}
-            onToggle={toggle}
+            onToggle={() => toggle(item.id)}
           />
         )}
       />
@@ -138,64 +120,5 @@ function FavoritesPicker({
         />
       </View>
     </Screen>
-  );
-}
-
-interface PickableCoverProps {
-  entry: UserBookWithBook;
-  // Index in the picked list, -1 when not picked
-  position: number;
-  isFull: boolean;
-  onToggle: (userBookId: string) => void;
-}
-
-function PickableCover({
-  entry,
-  position,
-  isFull,
-  onToggle,
-}: PickableCoverProps) {
-  const isPicked = position !== -1;
-
-  return (
-    <Pressable
-      onPress={() => onToggle(entry.id)}
-      disabled={isFull && !isPicked}
-      accessibilityRole="checkbox"
-      accessibilityState={{ checked: isPicked }}
-      accessibilityLabel={entry.book.title}
-      style={{ padding: 6 }}
-      className={cn('active:opacity-70', isFull && !isPicked && 'opacity-40')}
-    >
-      <View style={{ aspectRatio: COVER_RATIO }}>
-        {entry.book.coverUrl ? (
-          <RemoteImage
-            uri={entry.book.coverUrl}
-            style={{ flex: 1, borderRadius: 8 }}
-          />
-        ) : (
-          <View className="flex-1 items-center justify-center rounded-lg border border-border bg-card-strong">
-            <Text className="font-serif text-3xl text-fg-muted">
-              {entry.book.title.charAt(0).toUpperCase()}
-            </Text>
-          </View>
-        )}
-
-        {isPicked ? (
-          <View
-            className="absolute inset-0 rounded-lg border-2 border-accent"
-            pointerEvents="none"
-          />
-        ) : null}
-
-        {isPicked ? (
-          <View className="absolute right-1.5 top-1.5 h-7 w-7 items-center justify-center rounded-full bg-accent">
-            <Text className="font-sans-bold text-sm text-accent-fg">
-              {position + 1}
-            </Text>
-          </View>
-        ) : null}
-      </View>
-    </Pressable>
   );
 }

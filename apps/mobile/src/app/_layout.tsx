@@ -20,7 +20,7 @@ import { createQueryClient } from '@/api/queryClient';
 import { AuthProvider, useAuth } from '@/auth/AuthContext';
 import { useTimezoneSync } from '@/hooks/useTimezoneSync';
 import { loadSavedLanguage } from '@/i18n';
-import { COLORS } from '@/theme/colors';
+import { STACK_OPTIONS } from '@/navigation/stackOptions';
 import { useLiveActivitySync } from '@/timer/useLiveActivitySync';
 import { useSessionSync } from '@/timer/useSessionSync';
 import { useTimerNotificationSync } from '@/timer/useTimerNotificationSync';
@@ -90,18 +90,7 @@ function RootNavigator() {
   }
 
   return (
-    <Stack
-      screenOptions={{
-        headerStyle: { backgroundColor: COLORS.backgroundTop },
-        headerTintColor: COLORS.fg,
-        headerTitleStyle: { fontFamily: 'Lora_500Medium' },
-        headerShadowVisible: false,
-        // Otherwise iOS shows the previous route's name, here "(tabs)"
-        headerBackButtonDisplayMode: 'minimal',
-        // Prevents a white flash during screen transitions
-        contentStyle: { backgroundColor: COLORS.backgroundBottom },
-      }}
-    >
+    <Stack screenOptions={STACK_OPTIONS}>
       {/* When a guard flips, the router redirects to the first allowed screen */}
       <Stack.Protected guard={isOnboarded}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -120,6 +109,14 @@ function RootNavigator() {
         <Stack.Screen name="user/[nickname]" options={{ title: '' }} />
 
         <Stack.Screen name="follows/[nickname]" />
+
+        <Stack.Screen name="collections/[id]" options={{ title: '' }} />
+
+        {/* A modal with its own stack inside: form → book picker */}
+        <Stack.Screen
+          name="collection-editor/[id]"
+          options={{ presentation: 'modal', headerShown: false }}
+        />
 
         <Stack.Screen
           name="favorites"
