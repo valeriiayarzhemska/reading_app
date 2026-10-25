@@ -31,6 +31,10 @@ export interface ClubSummary {
   book: ClubBook | null;
   host: { nickname: string; avatarUrl: string | null };
   isMember: boolean;
+  // "34 a day": messages in the last 24 hours (0 shows "quiet")
+  messagesToday: number;
+  // Others' messages since you last opened the chat (0 when not a member)
+  unreadCount: number;
 }
 
 // GET /clubs/:id: the join sheet and About the room

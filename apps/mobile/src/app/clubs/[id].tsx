@@ -1,52 +1,181 @@
-import { ActivityIndicator, View } from 'react-native';
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  View,
+} from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
+import { router, useLocalSearchParams } from 'expo-router';
 
+import { FlashList } from '@shopify/flash-list';
+
+import type { ClubDetail } from '@reading/shared';
+
+import { ChatComposer } from '@/components/chat/ChatComposer';
+import { MessageBubble } from '@/components/chat/MessageBubble';
 import { ClubAvatar } from '@/components/clubs/ClubAvatar';
+import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 
-import { useClub } from '@/api/clubs';
+import { useClub, useJoinClub } from '@/api/clubs';
+import { useAuth } from '@/auth/AuthContext';
+import { useClubChat, type ChatItem } from '@/chat/useClubChat';
 import { COLORS } from '@/theme/colors';
 
-// The club's chat (CLB-2). For now: who's here and what's next.
-export default function ClubScreen() {
-  const { t } = useTranslation();
+// A new run (name + avatar again) after another author or a 5 min pause
+const RUN_GAP_MS = 5 * 60 * 1000;
+
+function startsRun(message: ChatItem, previous: ChatItem | undefined) {
+  return (
+    !previous ||
+    previous.author.id !== message.author.id ||
+    new Date(message.createdAt).getTime() -
+      new Date(previous.createdAt).getTime() >
+      RUN_GAP_MS
+  );
+}
+
+// The club's chat: readingapp://clubs/<id>
+export default function ClubChatScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data, error } = useClub(id);
 
-  if (!data) {
-    return (
-      <Screen className="items-center justify-center px-6">
-        {error ? (
-          <Text className="text-center">{error.message}</Text>
-        ) : (
-          <ActivityIndicator color={COLORS.fg} />
-        )}
-      </Screen>
-    );
-  }
+  return (
+    // Own header (as in the design), so the screen covers the top inset too
+    <Screen edges={['top', 'bottom']}>
+      {data ? (
+        <>
+          <ChatHeader club={data} />
+
+          {data.isMember ? (
+            <Chat clubId={data.id} />
+          ) : (
+            <JoinPrompt club={data} />
+          )}
+        </>
+      ) : (
+        <View className="flex-1 items-center justify-center px-6">
+          {error ? (
+            <Text className="text-center">{error.message}</Text>
+          ) : (
+            <ActivityIndicator color={COLORS.fg} />
+          )}
+        </View>
+      )}
+    </Screen>
+  );
+}
+
+function ChatHeader({ club }: { club: ClubDetail }) {
+  const { t } = useTranslation();
 
   return (
-    <Screen className="items-center justify-center gap-3 px-6">
-      <Stack.Screen options={{ title: data.name }} />
+    <View className="flex-row items-center gap-3 px-4 pb-2">
+      <Pressable
+        onPress={() => router.back()}
+        accessibilityRole="button"
+        accessibilityLabel={t('chat.back')}
+        className="h-11 w-11 items-center justify-center rounded-full border border-border bg-card active:opacity-70"
+      >
+        <Feather name="chevron-left" size={22} color={COLORS.fg} />
+      </Pressable>
 
-      <ClubAvatar name={data.name} color={data.color} size={72} />
+      <View className="flex-1">
+        <Text variant="heading" numberOfLines={1}>
+          {club.name}
+        </Text>
 
-      <Text variant="heading" className="text-center">
-        {data.name}
-      </Text>
-
-      <Text variant="muted">
-        {t('clubs.members', { count: data.membersCount })}
-      </Text>
-
-      <View className="mt-4">
-        <Text variant="muted" className="text-center">
-          {t('clubs.chatSoon')}
+        <Text variant="muted" className="text-xs" numberOfLines={1}>
+          {t('chat.openChat')} ·{' '}
+          {t('clubs.members', { count: club.membersCount })}
         </Text>
       </View>
-    </Screen>
+    </View>
+  );
+}
+
+function Chat({ clubId }: { clubId: string }) {
+  const { t } = useTranslation();
+  const { state } = useAuth();
+  const myId = state.status === 'signedIn' ? state.user.id : '';
+  const { history, messages, send, retry } = useClubChat(clubId);
+
+  return (
+    <KeyboardAvoidingView
+      className="flex-1"
+      // Android resizes the window for the keyboard by itself
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      {history.isPending ? (
+        <ActivityIndicator className="flex-1" color={COLORS.fg} />
+      ) : (
+        <FlashList
+          data={messages}
+          // clientId, not id: the optimistic bubble gets the server's id when
+          // confirmed, and a changed key would remount (flicker) the row
+          keyExtractor={(message) => message.clientId}
+          renderItem={({ item, index }) => (
+            <MessageBubble
+              message={item}
+              isMine={item.author.id === myId}
+              isFirstInRun={startsRun(item, messages[index - 1])}
+              onRetry={retry}
+            />
+          )}
+          // Opens at the newest message; follows new ones only when you're
+          // already near the bottom, so reading older ones isn't interrupted
+          maintainVisibleContentPosition={{
+            startRenderingFromBottom: true,
+            autoscrollToBottomThreshold: 0.2,
+          }}
+          // Scrolled up to the oldest loaded message: fetch the page before
+          onStartReached={() => {
+            if (history.hasNextPage && !history.isFetchingNextPage) {
+              void history.fetchNextPage();
+            }
+          }}
+          onStartReachedThreshold={0.5}
+          contentContainerStyle={{ paddingVertical: 8 }}
+          ListHeaderComponent={
+            history.isFetchingNextPage ? (
+              <ActivityIndicator className="py-3" color={COLORS.fg} />
+            ) : null
+          }
+          ListEmptyComponent={
+            <Text variant="muted" className="mt-8 px-6 text-center">
+              {t('chat.empty')}
+            </Text>
+          }
+        />
+      )}
+
+      <ChatComposer onSend={send} />
+    </KeyboardAvoidingView>
+  );
+}
+
+// Opened by link without being a member: the chat is for members only
+function JoinPrompt({ club }: { club: ClubDetail }) {
+  const { t } = useTranslation();
+  const join = useJoinClub(club.id);
+
+  return (
+    <View className="flex-1 items-center justify-center gap-4 px-6">
+      <ClubAvatar name={club.name} color={club.color} size={72} />
+
+      <Text variant="muted" className="text-center">
+        {t('chat.joinToRead')}
+      </Text>
+
+      <Button
+        title={t('clubs.join')}
+        loading={join.isPending}
+        onPress={() => join.mutate()}
+      />
+    </View>
   );
 }

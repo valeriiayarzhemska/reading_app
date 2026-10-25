@@ -277,6 +277,15 @@ const en = {
     addToShelf: '+ Add to shelf',
     openOnShelf: 'On your shelf →',
   },
+  chat: {
+    back: 'Back',
+    openChat: 'open chat',
+    placeholder: 'Write in the chat…',
+    send: 'Send',
+    failed: 'Not sent · tap to retry',
+    empty: 'No messages yet. Say hi!',
+    joinToRead: 'Join the room to read and write in its chat.',
+  },
   clubs: {
     title: 'Clubs',
     mine: 'Mine',
@@ -286,6 +295,10 @@ const en = {
     emptyMine:
       'You are not in any club yet. Find one in All or create your own.',
     quiet: 'quiet',
+    perDay_one: '{{count}} a day',
+    perDay_other: '{{count}} a day',
+    unread_one: '{{count}} unread message',
+    unread_other: '{{count}} unread messages',
     reading: 'Reading «{{title}}»',
     readingTogether: 'Reading together',
     rooms: 'Rooms',
@@ -296,7 +309,6 @@ const en = {
     entry: 'Entry',
     entryOpen: 'Open',
     join: 'Join the room',
-    chatSoon: 'The chat arrives in the next step.',
     create: {
       title: 'New room',
       hint: 'Anyone can join.',

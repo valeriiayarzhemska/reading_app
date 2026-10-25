@@ -63,6 +63,7 @@ model User {
   collectionLikes CollectionLike[]
   hostedClubs     Club[]
   clubMemberships ClubMember[]
+  messages        Message[]
 }
 
 // One row per signed-in device. Only the refresh token's hash is stored.
@@ -287,9 +288,10 @@ model Club {
   createdAt   DateTime @default(now())
 
   // Cascade: a club without its host goes too
-  host    User         @relation(fields: [hostId], references: [id], onDelete: Cascade)
-  book    Book?        @relation(fields: [bookId], references: [id], onDelete: SetNull)
-  members ClubMember[]
+  host     User         @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  book     Book?        @relation(fields: [bookId], references: [id], onDelete: SetNull)
+  members  ClubMember[]
+  messages Message[]
 
   @@index([hostId])
   @@index([createdAt])
@@ -309,4 +311,22 @@ model ClubMember {
   // its own index
   @@id([clubId, userId])
   @@index([userId])
+}
+
+// A chat message in a club
+model Message {
+  id        String   @id @default(uuid())
+  // Made by the app before sending: a retried send is recognised, not
+  // stored twice (as with reading sessions)
+  clientId  String   @unique
+  clubId    String
+  authorId  String
+  text      String
+  createdAt DateTime @default(now())
+
+  club   Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  // History pages and unread counts: one club's messages by time
+  @@index([clubId, createdAt])
 }

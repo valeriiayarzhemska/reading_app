@@ -32,7 +32,17 @@ export function ClubRow({ club, onPress, variant, isLast }: ClubRowProps) {
         variant === 'card' && 'rounded-3xl border border-border bg-card',
       )}
     >
-      <ClubAvatar name={club.name} color={club.color} />
+      <View>
+        <ClubAvatar name={club.name} color={club.color} />
+
+        {/* New messages since you last opened the chat */}
+        {club.unreadCount > 0 ? (
+          <View
+            accessibilityLabel={t('clubs.unread', { count: club.unreadCount })}
+            className="absolute right-0 top-0 h-3.5 w-3.5 rounded-full border-2 border-background-top bg-accent"
+          />
+        ) : null}
+      </View>
 
       <View className="flex-1 gap-0.5">
         <Text className="font-serif text-lg" numberOfLines={1}>
@@ -42,10 +52,19 @@ export function ClubRow({ club, onPress, variant, isLast }: ClubRowProps) {
         <View className="flex-row items-center gap-1">
           <Feather name="users" size={13} color={COLORS.fgFaint} />
 
-          {/* "34 a day" arrives with the chat; until then every club is quiet */}
           <Text variant="muted" className="text-sm">
-            {club.membersCount} · {t('clubs.quiet')}
+            {club.membersCount} ·{' '}
           </Text>
+
+          {club.messagesToday > 0 ? (
+            <Text className="text-sm text-accent">
+              {t('clubs.perDay', { count: club.messagesToday })}
+            </Text>
+          ) : (
+            <Text variant="muted" className="text-sm">
+              {t('clubs.quiet')}
+            </Text>
+          )}
         </View>
 
         {club.book ? (

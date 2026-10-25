@@ -5,6 +5,7 @@ import type { ClubDetail, ClubSummary } from '@reading/shared';
 import type { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { CreateClubDto } from './dto/create-club.dto.js';
+import { MessagesService, type ClubActivity } from './messages.service.js';
 
 const ALL_CLUBS_LIMIT = 50;
 
@@ -35,18 +36,40 @@ type SummaryRow = Prisma.ClubGetPayload<{
   select: ReturnType<typeof summarySelect>;
 }>;
 
-function toSummary({ _count, members, ...club }: SummaryRow): ClubSummary {
+const QUIET: ClubActivity = { messagesToday: 0, unreadCount: 0 };
+
+function toSummary(
+  { _count, members, ...club }: SummaryRow,
+  activity: ClubActivity = QUIET,
+): ClubSummary {
   return {
     ...club,
     host: { nickname: club.host.nickname, avatarUrl: club.host.avatarUrl },
     membersCount: _count.members,
     isMember: members.length > 0,
+    ...activity,
   };
 }
 
 @Injectable()
 export class ClubsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly messages: MessagesService,
+  ) {}
+
+  // The rows plus their chat activity, counted for all of them at once
+  private async withActivity(
+    viewerId: string,
+    rows: SummaryRow[],
+  ): Promise<ClubSummary[]> {
+    const activity = await this.messages.activity(
+      viewerId,
+      rows.map((row) => row.id),
+    );
+
+    return rows.map((row) => toSummary(row, activity.get(row.id)));
+  }
 
   async mine(viewerId: string): Promise<ClubSummary[]> {
     const rows = await this.prisma.club.findMany({
@@ -55,7 +78,7 @@ export class ClubsService {
       select: summarySelect(viewerId),
     });
 
-    return rows.map(toSummary);
+    return this.withActivity(viewerId, rows);
   }
 
   // Biggest first; optionally filtered by name, host or book
@@ -77,7 +100,7 @@ export class ClubsService {
       select: summarySelect(viewerId),
     });
 
-    return rows.map(toSummary);
+    return this.withActivity(viewerId, rows);
   }
 
   async detail(viewerId: string, id: string): Promise<ClubDetail> {
@@ -96,9 +119,10 @@ export class ClubsService {
     }
 
     const { description, hostId, createdAt, ...row } = club;
+    const [summary] = await this.withActivity(viewerId, [row]);
 
     return {
-      ...toSummary(row),
+      ...summary,
       host: club.host,
       description,
       isHost: hostId === viewerId,

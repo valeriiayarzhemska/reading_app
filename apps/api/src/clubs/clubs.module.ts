@@ -1,10 +1,17 @@
 import { Module } from '@nestjs/common';
 
+import { AuthModule } from '../auth/auth.module.js';
+import { ChatGateway } from './chat.gateway.js';
 import { ClubsController } from './clubs.controller.js';
 import { ClubsService } from './clubs.service.js';
+import { MessagesController } from './messages.controller.js';
+import { MessagesService } from './messages.service.js';
 
 @Module({
-  controllers: [ClubsController],
-  providers: [ClubsService],
+  // TokenService: the gateway checks the token when a socket connects
+  imports: [AuthModule],
+  controllers: [ClubsController, MessagesController],
+  // A gateway is a provider: Nest creates it and opens the socket endpoint
+  providers: [ClubsService, MessagesService, ChatGateway],
 })
 export class ClubsModule {}

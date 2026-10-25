@@ -8,6 +8,7 @@ export * from './enums.js';
 export * from './follows.js';
 export * from './isbn.js';
 export * from './manual-book.js';
+export * from './messages.js';
 export * from './profile.js';
 export * from './public-profile.js';
 export * from './reading-progress.js';

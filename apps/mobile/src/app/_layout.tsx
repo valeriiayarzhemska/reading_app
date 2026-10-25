@@ -112,7 +112,8 @@ function RootNavigator() {
 
         <Stack.Screen name="collections/[id]" options={{ title: '' }} />
 
-        <Stack.Screen name="clubs/[id]" options={{ title: '' }} />
+        {/* The chat draws its own header */}
+        <Stack.Screen name="clubs/[id]" options={{ headerShown: false }} />
 
         {/* A modal with its own stack inside: form → book picker */}
         <Stack.Screen
