@@ -9,9 +9,9 @@ import { MESSAGE_MAX_LENGTH } from '@reading/shared';
 import { RemoteImage } from '@/components/ui/RemoteImage';
 import { Text } from '@/components/ui/Text';
 
-import { pickChatPhoto } from '@/chat/chatPhoto';
 import type { ChatDraft, ChatItem } from '@/chat/useClubChat';
 import { cn } from '@/lib/cn';
+import { pickPhoto } from '@/lib/pickPhoto';
 import { COLORS } from '@/theme/colors';
 
 interface ChatComposerProps {
@@ -33,7 +33,7 @@ export function ChatComposer({
   const canSend = text.trim() !== '' || photoUri !== null;
 
   async function attach() {
-    const uri = await pickChatPhoto();
+    const uri = await pickPhoto();
 
     if (uri) {
       setPhotoUri(uri);

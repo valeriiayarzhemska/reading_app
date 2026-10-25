@@ -3,8 +3,8 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { CurrentUserId } from '../auth/current-user-id.decorator.js';
 import { CoverStorage } from './cover-storage.service.js';
-import { CreateChatPhotoUploadDto } from './dto/create-chat-photo-upload.dto.js';
 import { CreateCoverUploadDto } from './dto/create-cover-upload.dto.js';
+import { CreatePhotoUploadDto } from './dto/create-photo-upload.dto.js';
 
 @ApiTags('uploads')
 @Controller('uploads')
@@ -28,8 +28,19 @@ export class UploadsController {
   @Post('chat-photo')
   createChatPhotoUpload(
     @CurrentUserId() userId: string,
-    @Body() dto: CreateChatPhotoUploadDto,
+    @Body() dto: CreatePhotoUploadDto,
   ) {
     return this.covers.createUpload(userId, dto.size, 'chat');
+  }
+
+  /**
+   * Get a short-lived link to upload a post photo (JPEG) straight to storage.
+   */
+  @Post('post-photo')
+  createPostPhotoUpload(
+    @CurrentUserId() userId: string,
+    @Body() dto: CreatePhotoUploadDto,
+  ) {
+    return this.covers.createUpload(userId, dto.size, 'posts');
   }
 }

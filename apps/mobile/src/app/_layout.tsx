@@ -114,6 +114,13 @@ function RootNavigator() {
 
         <Stack.Screen name="collections/[id]" options={{ title: '' }} />
 
+        <Stack.Screen name="posts/[id]" options={{ headerShown: false }} />
+
+        <Stack.Screen
+          name="post-new"
+          options={{ presentation: 'modal', title: t('posts.new') }}
+        />
+
         {/* The chat and About the room draw their own headers */}
         <Stack.Screen name="clubs/[id]" options={{ headerShown: false }} />
 

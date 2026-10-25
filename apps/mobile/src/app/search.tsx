@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ActivityIndicator, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 
 import { FlashList } from '@shopify/flash-list';
 
@@ -26,7 +26,11 @@ type SearchMode = 'books' | 'readers';
 
 export default function SearchScreen() {
   const { t } = useTranslation();
-  const [mode, setMode] = useState<SearchMode>('books');
+  // ?mode=readers: opened from Shelves to find people
+  const params = useLocalSearchParams<{ mode?: string }>();
+  const [mode, setMode] = useState<SearchMode>(
+    params.mode === 'readers' ? 'readers' : 'books',
+  );
   // One text for both tabs: switching keeps what you typed
   const [text, setText] = useState('');
   const query = useDebouncedValue(text.trim(), 400);

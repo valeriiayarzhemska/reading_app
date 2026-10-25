@@ -40,3 +40,7 @@ export function uploadCover(localUri: string): Promise<string> {
 export function uploadChatPhoto(localUri: string): Promise<string> {
   return uploadImage(localUri, '/uploads/chat-photo');
 }
+
+export function uploadPostPhoto(localUri: string): Promise<string> {
+  return uploadImage(localUri, '/uploads/post-photo');
+}

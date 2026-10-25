@@ -7,7 +7,7 @@ const PHOTO_MAX_WIDTH = 1280;
 
 // Picks a photo from the library and returns a shrunk local JPEG, or null
 // when the picker was cancelled. Nothing is uploaded here.
-export async function pickChatPhoto(): Promise<string | null> {
+export async function pickPhoto(): Promise<string | null> {
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: 'images',
     quality: 1,

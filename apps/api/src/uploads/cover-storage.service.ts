@@ -9,8 +9,8 @@ import type { CoverUpload } from '@reading/shared';
 
 const UPLOAD_URL_TTL_SECONDS = 5 * 60;
 
-// Book covers and chat photos, each in its own folder per user
-export type ImageFolder = 'covers' | 'chat';
+// Book covers, chat and post photos, each in its own folder per user
+export type ImageFolder = 'covers' | 'chat' | 'posts';
 
 // Cloudflare R2 speaks the S3 protocol, so the AWS SDK works with it:
 // only the endpoint differs from Amazon

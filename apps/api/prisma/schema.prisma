@@ -65,6 +65,10 @@ model User {
   clubMemberships ClubMember[]
   messages        Message[]
   reactions       MessageReaction[]
+  posts           Post[]
+  postLikes       PostLike[]
+  comments        Comment[]
+  commentLikes    CommentLike[]
 }
 
 // One row per signed-in device. Only the refresh token's hash is stored.
@@ -115,6 +119,7 @@ model Book {
   userBooks     UserBook[]
   inCollections CollectionBook[]
   readInClubs   Club[]
+  inPosts       Post[]
 
   @@index([createdById])
 }
@@ -353,4 +358,62 @@ model MessageReaction {
 
   // The same emoji twice from one reader is impossible; different emojis are fine
   @@id([messageId, userId, emoji])
+}
+
+// A post on Shelves: text, optionally a book card and one photo
+model Post {
+  id        String   @id @default(uuid())
+  authorId  String
+  // May be "" when there is a photo
+  text      String
+  bookId    String?
+  photoUrl  String?
+  createdAt DateTime @default(now())
+
+  author   User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  // SetNull: deleting the book keeps the post, without its card
+  book     Book?      @relation(fields: [bookId], references: [id], onDelete: SetNull)
+  likes    PostLike[]
+  comments Comment[]
+
+  // "All": everyone's posts by time; "Subscriptions": by author, then time
+  @@index([createdAt])
+  @@index([authorId, createdAt])
+}
+
+model PostLike {
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([postId, userId])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  postId    String
+  authorId  String
+  text      String
+  createdAt DateTime @default(now())
+
+  post   Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  likes  CommentLike[]
+
+  // A post's comments in order
+  @@index([postId, createdAt])
+}
+
+model CommentLike {
+  commentId String
+  userId    String
+  createdAt DateTime @default(now())
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([commentId, userId])
 }
