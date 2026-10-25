@@ -316,6 +316,23 @@ const en = {
     entry: 'Entry',
     entryOpen: 'Open',
     join: 'Join the room',
+    info: {
+      title: 'About the room',
+      share: 'Share room',
+      shareMessage: 'Join «{{name}}» in Reading App: {{url}}',
+      host: 'Hosted by',
+      created: 'Room created {{date}}',
+      change: 'Change',
+      chooseBook: 'Choose what you read together',
+      youHost: 'You host this room',
+      leave: 'Leave the room',
+      leaveTitle: 'Leave this room?',
+      leaveMessage: 'You can join again any time.',
+    },
+    book: {
+      hint: 'Members see it in the room list and in Reading together.',
+      stop: 'Stop reading together',
+    },
     create: {
       title: 'New room',
       hint: 'Anyone can join.',

@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Feather } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { FlashList } from '@shopify/flash-list';
@@ -20,12 +19,14 @@ import { MessageActionsSheet } from '@/components/chat/MessageActionsSheet';
 import { MessageBubble } from '@/components/chat/MessageBubble';
 import { ClubAvatar } from '@/components/clubs/ClubAvatar';
 import { Button } from '@/components/ui/Button';
+import { IconButton } from '@/components/ui/IconButton';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 
 import { useClub, useJoinClub } from '@/api/clubs';
 import { useAuth } from '@/auth/AuthContext';
 import { useClubChat, type ChatItem } from '@/chat/useClubChat';
+import { shareClub } from '@/clubs/shareClub';
 import { COLORS } from '@/theme/colors';
 
 // A new run (name + avatar again) after another author or a 5 min pause
@@ -75,18 +76,20 @@ export default function ClubChatScreen() {
 function ChatHeader({ club }: { club: ClubDetail }) {
   const { t } = useTranslation();
 
-  return (
-    <View className="flex-row items-center gap-3 px-4 pb-2">
-      <Pressable
-        onPress={() => router.back()}
-        accessibilityRole="button"
-        accessibilityLabel={t('chat.back')}
-        className="h-11 w-11 items-center justify-center rounded-full border border-border bg-card active:opacity-70"
-      >
-        <Feather name="chevron-left" size={22} color={COLORS.fg} />
-      </Pressable>
+  function openInfo() {
+    router.push({ pathname: '/club-info/[id]', params: { id: club.id } });
+  }
 
-      <View className="flex-1">
+  return (
+    <View className="flex-row items-center gap-2 px-4 pb-2">
+      <IconButton
+        icon="chevron-left"
+        label={t('chat.back')}
+        onPress={() => router.back()}
+      />
+
+      {/* Tapping the name opens About the room, as in most chat apps */}
+      <Pressable onPress={openInfo} className="flex-1 px-1 active:opacity-70">
         <Text variant="heading" numberOfLines={1}>
           {club.name}
         </Text>
@@ -95,7 +98,19 @@ function ChatHeader({ club }: { club: ClubDetail }) {
           {t('chat.openChat')} ·{' '}
           {t('clubs.members', { count: club.membersCount })}
         </Text>
-      </View>
+      </Pressable>
+
+      <IconButton
+        icon="share"
+        label={t('clubs.info.share')}
+        onPress={() => shareClub(club, t)}
+      />
+
+      <IconButton
+        icon="info"
+        label={t('clubs.info.title')}
+        onPress={openInfo}
+      />
     </View>
   );
 }

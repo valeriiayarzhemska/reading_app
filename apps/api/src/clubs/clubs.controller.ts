@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -68,6 +69,18 @@ export class ClubsController {
     @Param('id', ParseUUIDPipe) id: string,
   ) {
     return this.clubs.join(userId, id);
+  }
+
+  /**
+   * Leave a club. Leaving again changes nothing; the host cannot leave (400).
+   */
+  @Delete(':id/membership')
+  @HttpCode(204)
+  leave(
+    @CurrentUserId() userId: string,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.clubs.leave(userId, id);
   }
 
   /**

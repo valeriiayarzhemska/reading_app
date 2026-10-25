@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import type { ClubDetail, ClubSummary } from '@reading/shared';
 
@@ -155,7 +159,26 @@ export class ClubsService {
     });
   }
 
-  // Host only. No UI yet (About the room, CLB-3).
+  // Leaving twice changes nothing. The host stays: a room needs someone to
+  // run it (handing it over is a feature of its own).
+  async leave(userId: string, id: string): Promise<void> {
+    const club = await this.prisma.club.findUnique({
+      where: { id },
+      select: { hostId: true },
+    });
+
+    if (!club) {
+      throw new NotFoundException('Club not found');
+    }
+
+    if (club.hostId === userId) {
+      throw new BadRequestException('The host cannot leave their room');
+    }
+
+    await this.prisma.clubMember.deleteMany({ where: { clubId: id, userId } });
+  }
+
+  // Host only: "Reading together" in About the room
   async setBook(
     userId: string,
     id: string,

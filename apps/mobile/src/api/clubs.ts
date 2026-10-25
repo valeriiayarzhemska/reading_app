@@ -54,6 +54,38 @@ export function useCreateClub() {
   });
 }
 
+export function useLeaveClub(id: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () =>
+      apiFetch<void>(`/clubs/${id}/membership`, { method: 'DELETE' }),
+    onSuccess: () => {
+      // Its chat is members-only: don't keep it around
+      queryClient.removeQueries({ queryKey: ['messages', id] });
+      queryClient.invalidateQueries({ queryKey: ['clubs'] });
+    },
+  });
+}
+
+// Host only: the "Reading together" book, null to stop
+export function useSetClubBook(id: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (bookId: string | null) =>
+      apiFetch<ClubDetail>(`/clubs/${id}/book`, {
+        method: 'PUT',
+        body: JSON.stringify({ bookId }),
+      }),
+    onSuccess: (club) => {
+      queryClient.setQueryData(clubKey(id), club);
+      // List rows and the carousel show the book too
+      queryClient.invalidateQueries({ queryKey: ['clubs'] });
+    },
+  });
+}
+
 export function useJoinClub(id: string) {
   const queryClient = useQueryClient();
 
