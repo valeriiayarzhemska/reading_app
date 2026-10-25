@@ -108,6 +108,16 @@ export class MessagesService {
     return toChatMessage(row);
   }
 
+  // Who should hear about a new message: every member but its author
+  async otherMemberIds(clubId: string, authorId: string): Promise<string[]> {
+    const members = await this.prisma.clubMember.findMany({
+      where: { clubId, userId: { not: authorId } },
+      select: { userId: true },
+    });
+
+    return members.map((member) => member.userId);
+  }
+
   // Opening the chat reads everything up to now
   async markRead(userId: string, clubId: string): Promise<void> {
     await this.prisma.clubMember.updateMany({

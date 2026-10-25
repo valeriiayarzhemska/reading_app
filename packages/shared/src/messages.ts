@@ -27,7 +27,14 @@ export const CHAT_EVENTS = {
   send: 'message:send',
   // server → app: someone else's new message in a joined club
   new: 'message:new',
+  // server → app: a new message in one of your clubs, for lists (unread
+  // dots, "N a day"); sent whether or not that chat is open
+  activity: 'club:activity',
 } as const;
+
+export interface ClubActivityEvent {
+  clubId: string;
+}
 
 export interface JoinClubPayload {
   clubId: string;

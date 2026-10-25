@@ -19,6 +19,7 @@ import {
 import { apiFetch } from '@/api/client';
 import { useAuth } from '@/auth/AuthContext';
 import { getChatSocket } from '@/chat/chatSocket';
+import { clearUnread, setOpenChat } from '@/chat/useClubActivity';
 
 const SEND_TIMEOUT_MS = 10_000;
 
@@ -121,10 +122,13 @@ export function useClubChat(clubId: string) {
 
     join();
     markRead(clubId);
+    clearUnread(queryClient, clubId);
+    setOpenChat(clubId);
     socket.io.on('reconnect', onReconnect);
     socket.on(CHAT_EVENTS.new, onNew);
 
     return () => {
+      setOpenChat(null);
       socket.emit(CHAT_EVENTS.leave, { clubId });
       socket.io.off('reconnect', onReconnect);
       socket.off(CHAT_EVENTS.new, onNew);

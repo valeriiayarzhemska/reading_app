@@ -5,6 +5,7 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  type OnGatewayConnection,
   type OnGatewayInit,
 } from '@nestjs/websockets';
 import { plainToInstance, type ClassConstructor } from 'class-transformer';
@@ -34,15 +35,21 @@ type ChatSocket = Socket<
   ChatSocketData
 >;
 
-// One Socket.IO room per club: emitting to it reaches exactly the people
-// who have that club's chat open
+// One room per club: emitting to it reaches exactly the people who have
+// that club's chat open
 function room(clubId: string): string {
   return `club:${clubId}`;
 }
 
+// One personal room per user, joined on every connection: whatever is sent
+// to it reaches all of that user's devices, wherever they are in the app
+function userRoom(userId: string): string {
+  return `user:${userId}`;
+}
+
 // The socket counterpart of a controller. ws://<api>/chat
 @WebSocketGateway({ namespace: CHAT_NAMESPACE })
-export class ChatGateway implements OnGatewayInit {
+export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
   private readonly logger = new Logger(ChatGateway.name);
 
   // With a namespace, this is the namespace (it has .to(), .use())
@@ -80,6 +87,12 @@ export class ChatGateway implements OnGatewayInit {
     });
   }
 
+  // After the middleware accepted the socket. Also after every reconnect,
+  // so the personal room is never lost.
+  async handleConnection(socket: ChatSocket) {
+    await socket.join(userRoom(socket.data.userId));
+  }
+
   // The chat screen opened: start receiving this club's new messages
   @SubscribeMessage(CHAT_EVENTS.join)
   async join(
@@ -102,17 +115,31 @@ export class ChatGateway implements OnGatewayInit {
     });
   }
 
-  // Saved first, then pushed to everyone else in the room. The sender gets
-  // the saved message back through the acknowledgement instead.
+  // Saved first, then pushed: the full message to those with the chat open,
+  // a small "activity" ping to every other member for their club lists. The
+  // sender gets the saved message back through the acknowledgement instead.
   @SubscribeMessage(CHAT_EVENTS.send)
   async send(
     @ConnectedSocket() socket: ChatSocket,
     @MessageBody() body: unknown,
   ): Promise<ChatAck<ChatMessage>> {
     return this.answer(SendMessageDto, body, async (payload) => {
-      const message = await this.messages.send(socket.data.userId, payload);
+      const userId = socket.data.userId;
+      const message = await this.messages.send(userId, payload);
 
       socket.to(room(payload.clubId)).emit(CHAT_EVENTS.new, message);
+
+      const memberIds = await this.messages.otherMemberIds(
+        payload.clubId,
+        userId,
+      );
+
+      // to() takes many rooms: one emit reaches all of them
+      if (memberIds.length > 0) {
+        this.server
+          .to(memberIds.map(userRoom))
+          .emit(CHAT_EVENTS.activity, { clubId: payload.clubId });
+      }
 
       return message;
     });

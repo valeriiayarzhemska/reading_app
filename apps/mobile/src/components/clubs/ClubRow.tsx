@@ -53,7 +53,7 @@ export function ClubRow({ club, onPress, variant, isLast }: ClubRowProps) {
           <Feather name="users" size={13} color={COLORS.fgFaint} />
 
           <Text variant="muted" className="text-sm">
-            {club.membersCount} ·{' '}
+            {club.membersCount} ·
           </Text>
 
           {club.messagesToday > 0 ? (
