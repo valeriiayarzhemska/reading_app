@@ -19,6 +19,10 @@ export interface PublicProfile {
   links: string[];
   // The viewer's own profile: the app shows Edit instead of Follow
   isMe: boolean;
+  // Whether the viewer follows this reader (false on your own profile)
+  isFollowing: boolean;
+  followersCount: number;
+  followingCount: number;
   currentlyReading: {
     userBookId: string;
     title: string;

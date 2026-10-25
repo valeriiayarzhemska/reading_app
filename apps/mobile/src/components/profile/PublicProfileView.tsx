@@ -7,10 +7,12 @@ import { router } from 'expo-router';
 import {
   DatePrecision,
   dayWithBook,
+  type FollowList,
   type PublicProfile,
 } from '@reading/shared';
 
 import { FavoritesRow } from '@/components/profile/FavoritesRow';
+import { FollowButton } from '@/components/profile/FollowButton';
 import { Avatar } from '@/components/ui/Avatar';
 import { BookCover } from '@/components/ui/BookCover';
 import { Button } from '@/components/ui/Button';
@@ -40,8 +42,7 @@ function finishedLabel(iso: string, precision: DatePrecision): string {
   }).format(new Date(iso));
 }
 
-// Anyone's profile, also your own (then with Edit). Social parts (follow,
-// favorites, reviews) join in their own stories.
+// Anyone's profile; your own has Edit instead of Follow
 export function PublicProfileView({ profile }: { profile: PublicProfile }) {
   const { t } = useTranslation();
   const { currentlyReading: reading, stats } = profile;
@@ -57,13 +58,36 @@ export function PublicProfileView({ profile }: { profile: PublicProfile }) {
             variant="secondary"
             onPress={() => router.push('/edit-profile')}
           />
-        ) : null}
+        ) : (
+          <FollowButton
+            nickname={profile.nickname}
+            isFollowing={profile.isFollowing}
+          />
+        )}
       </View>
 
       <View className="gap-1">
         <Text variant="title">{profile.displayName}</Text>
 
         <Text variant="muted">@{profile.nickname}</Text>
+
+        <View className="mt-1 flex-row gap-4">
+          <FollowCount
+            nickname={profile.nickname}
+            list="followers"
+            label={t('follows.followersCount', {
+              count: profile.followersCount,
+            })}
+          />
+
+          <FollowCount
+            nickname={profile.nickname}
+            list="following"
+            label={t('follows.followingCount', {
+              count: profile.followingCount,
+            })}
+          />
+        </View>
 
         {profile.bio ? <Text className="mt-2">{profile.bio}</Text> : null}
 
@@ -191,6 +215,31 @@ export function PublicProfileView({ profile }: { profile: PublicProfile }) {
         </View>
       ) : null}
     </View>
+  );
+}
+
+function FollowCount({
+  nickname,
+  list,
+  label,
+}: {
+  nickname: string;
+  list: FollowList;
+  label: string;
+}) {
+  return (
+    <Pressable
+      onPress={() =>
+        router.push({
+          pathname: '/follows/[nickname]',
+          params: { nickname, list },
+        })
+      }
+      accessibilityRole="link"
+      className="active:opacity-60"
+    >
+      <Text className="text-sm text-fg-muted">{label}</Text>
+    </Pressable>
   );
 }
 

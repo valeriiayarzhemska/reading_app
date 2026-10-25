@@ -246,6 +246,20 @@ const en = {
   settings: {
     title: 'Settings',
   },
+  follows: {
+    follow: 'Follow',
+    following: 'Following',
+    followers: 'Followers',
+    followingTab: 'Following',
+    followersCount_one: '{{count}} follower',
+    followersCount_other: '{{count}} followers',
+    followingCount_one: '{{count}} following',
+    followingCount_other: '{{count}} following',
+    empty: {
+      followers: 'No followers yet.',
+      following: 'Not following anyone yet.',
+    },
+  },
   stats: {
     previousMonth: 'Previous month',
     nextMonth: 'Next month',

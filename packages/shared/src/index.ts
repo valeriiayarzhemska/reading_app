@@ -3,6 +3,7 @@ export * from './book-matching.js';
 export * from './books.js';
 export * from './dev-users.js';
 export * from './enums.js';
+export * from './follows.js';
 export * from './isbn.js';
 export * from './manual-book.js';
 export * from './profile.js';

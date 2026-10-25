@@ -37,9 +37,9 @@ enum DatePrecision {
 }
 
 model User {
-  id          String   @id @default(uuid())
-  email       String?  @unique
-  nickname    String   @unique
+  id          String    @id @default(uuid())
+  email       String?   @unique
+  nickname    String    @unique
   displayName String
   avatarUrl   String?
   bio         String?
@@ -56,6 +56,9 @@ model User {
   createdBooks    Book[]
   readingGoals    ReadingGoal[]
   favoriteBooks   FavoriteBook[]
+  // Two relations to Follow: the names pair each list with its foreign key
+  following       Follow[]         @relation("following")
+  followers       Follow[]         @relation("followers")
 }
 
 // One row per signed-in device. Only the refresh token's hash is stored.
@@ -98,27 +101,27 @@ model Book {
   createdById      String?
   createdAt        DateTime @default(now())
 
-  createdBy User?     @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdBy User?      @relation(fields: [createdById], references: [id], onDelete: SetNull)
   userBooks UserBook[]
 
   @@index([createdById])
 }
 
 model UserBook {
-  id              String       @id @default(uuid())
-  userId          String
-  bookId          String
-  status          ShelfStatus
-  format          BookFormat
-  progressUnit    ProgressUnit
-  currentProgress Int          @default(0)
-  rating          Int? // 1–10
-  startedAt       DateTime?
-  finishedAt      DateTime?
+  id                String        @id @default(uuid())
+  userId            String
+  bookId            String
+  status            ShelfStatus
+  format            BookFormat
+  progressUnit      ProgressUnit
+  currentProgress   Int           @default(0)
+  rating            Int? // 1–10
+  startedAt         DateTime?
+  finishedAt        DateTime?
   // MONTH: finishedAt is the 15th; YEAR: 1 July. The app shows "≈ 2021".
   finishedPrecision DatePrecision @default(DAY)
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 
   user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   book     Book             @relation(fields: [bookId], references: [id], onDelete: Cascade)
@@ -178,4 +181,19 @@ model FavoriteBook {
 
   // No two books in one slot
   @@unique([userId, position])
+}
+
+// "follower follows following". Public: no requests to approve.
+model Follow {
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("following", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  // The pair is the key: following someone twice is impossible
+  @@id([followerId, followingId])
+  // The key's index starts with followerId; "who follows X" needs this one
+  @@index([followingId, createdAt])
 }

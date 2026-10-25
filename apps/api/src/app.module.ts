@@ -5,6 +5,7 @@ import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module.js';
 import { BooksModule } from './books/books.module.js';
 import { PrismaExceptionFilter } from './common/prisma-exception.filter.js';
+import { FollowsModule } from './follows/follows.module.js';
 import { HealthController } from './health/health.controller.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { ReadingSessionsModule } from './reading-sessions/reading-sessions.module.js';
@@ -19,6 +20,7 @@ import { UsersModule } from './users/users.module.js';
     PrismaModule,
     AuthModule,
     BooksModule,
+    FollowsModule,
     ReadingSessionsModule,
     StatsModule,
     UploadsModule,

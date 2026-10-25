@@ -260,6 +260,24 @@ const uk: Translation = {
   settings: {
     title: 'Налаштування',
   },
+  follows: {
+    follow: 'Стежити',
+    following: 'Стежу',
+    followers: 'Читачі',
+    followingTab: 'Стежить',
+    followersCount_one: '{{count}} читач',
+    followersCount_few: '{{count}} читачі',
+    followersCount_many: '{{count}} читачів',
+    followersCount_other: '{{count}} читача',
+    followingCount_one: 'стежить за {{count}}',
+    followingCount_few: 'стежить за {{count}}',
+    followingCount_many: 'стежить за {{count}}',
+    followingCount_other: 'стежить за {{count}}',
+    empty: {
+      followers: 'Поки що немає читачів.',
+      following: 'Поки ні за ким не стежить.',
+    },
+  },
   stats: {
     previousMonth: 'Попередній місяць',
     nextMonth: 'Наступний місяць',

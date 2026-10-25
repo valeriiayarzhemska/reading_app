@@ -44,6 +44,8 @@ export class UsersService {
         avatarUrl: true,
         bio: true,
         links: true,
+        // Counted by the database in the same query, no rows are loaded
+        _count: { select: { followers: true, following: true } },
       },
     });
 
@@ -52,7 +54,9 @@ export class UsersService {
       throw new NotFoundException('No reader with this nickname');
     }
 
-    const [summary, reading, recent, favorites] = await Promise.all([
+    const { _count: counts, ...profile } = user;
+
+    const [summary, reading, recent, favorites, follow] = await Promise.all([
       this.stats.summary(user.id),
       this.prisma.userBook.findFirst({
         where: { userId: user.id, status: ShelfStatus.READING },
@@ -76,11 +80,23 @@ export class UsersService {
         },
       }),
       this.favorites(user.id),
+      this.prisma.follow.findUnique({
+        where: {
+          followerId_followingId: {
+            followerId: viewerId,
+            followingId: user.id,
+          },
+        },
+        select: { createdAt: true },
+      }),
     ]);
 
     return {
-      ...user,
+      ...profile,
       isMe: user.id === viewerId,
+      isFollowing: follow !== null,
+      followersCount: counts.followers,
+      followingCount: counts.following,
       currentlyReading: reading && {
         userBookId: reading.id,
         title: reading.book.title,
