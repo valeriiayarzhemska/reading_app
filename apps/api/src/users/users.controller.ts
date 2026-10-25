@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  Param,
   Patch,
   Post,
   Query,
@@ -29,6 +30,19 @@ export class UsersController {
     @Query() query: NicknameAvailabilityQuery,
   ) {
     return this.users.nicknameAvailability(userId, query.nickname);
+  }
+
+  /**
+   * A reader's public profile: name, bio, links, reading now, totals, recently read.
+   * Declared after 'users/nickname-available': routes match in order, and
+   * ':nickname' would otherwise swallow that path.
+   */
+  @Get('users/:nickname')
+  publicProfile(
+    @CurrentUserId() userId: string,
+    @Param('nickname') nickname: string,
+  ) {
+    return this.users.publicProfile(userId, nickname);
   }
 
   /**

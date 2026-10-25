@@ -1,19 +1,108 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import {
   nicknameError,
+  normalizeNickname,
+  progressFraction,
+  ShelfStatus,
   type Me,
   type NicknameAvailability,
+  type PublicProfile,
 } from '@reading/shared';
 
 import { PrismaService } from '../prisma/prisma.service.js';
+import { StatsService } from '../stats/stats.service.js';
 import type { CompleteOnboardingDto } from './dto/complete-onboarding.dto.js';
 import type { UpdateProfileDto } from './dto/update-profile.dto.js';
 import { ME_SELECT, toMe } from './me.js';
 
+const RECENTLY_READ_LIMIT = 10;
+
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly stats: StatsService,
+  ) {}
+
+  async publicProfile(
+    viewerId: string,
+    nickname: string,
+  ): Promise<PublicProfile> {
+    const user = await this.prisma.user.findUnique({
+      where: { nickname: normalizeNickname(nickname) },
+      select: {
+        id: true,
+        nickname: true,
+        displayName: true,
+        avatarUrl: true,
+        bio: true,
+        links: true,
+      },
+    });
+
+    // Also for an onboarding user without a real nickname yet: same 404
+    if (!user) {
+      throw new NotFoundException('No reader with this nickname');
+    }
+
+    const [summary, reading, recent] = await Promise.all([
+      this.stats.summary(user.id),
+      this.prisma.userBook.findFirst({
+        where: { userId: user.id, status: ShelfStatus.READING },
+        orderBy: { updatedAt: 'desc' },
+        include: { book: true },
+      }),
+      this.prisma.userBook.findMany({
+        where: {
+          userId: user.id,
+          status: ShelfStatus.READ,
+          finishedAt: { not: null },
+        },
+        orderBy: { finishedAt: 'desc' },
+        take: RECENTLY_READ_LIMIT,
+        select: {
+          id: true,
+          rating: true,
+          finishedAt: true,
+          finishedPrecision: true,
+          book: { select: { title: true, coverUrl: true } },
+        },
+      }),
+    ]);
+
+    return {
+      ...user,
+      isMe: user.id === viewerId,
+      currentlyReading: reading && {
+        userBookId: reading.id,
+        title: reading.book.title,
+        author: reading.book.authors.join(', '),
+        coverUrl: reading.book.coverUrl,
+        fraction: progressFraction(reading),
+        startedAt: reading.startedAt?.toISOString() ?? null,
+      },
+      stats: {
+        year: summary.year.year,
+        booksThisYear: summary.year.booksRead,
+        booksRead: summary.total.booksRead,
+        averageRating: summary.total.averageRating,
+      },
+      recentlyRead: recent.map((entry) => ({
+        userBookId: entry.id,
+        title: entry.book.title,
+        coverUrl: entry.book.coverUrl,
+        rating: entry.rating,
+        // Filtered on not null above; Prisma's type can't know that
+        finishedAt: (entry.finishedAt ?? new Date(0)).toISOString(),
+        finishedPrecision: entry.finishedPrecision,
+      })),
+    };
+  }
 
   async nicknameAvailability(
     userId: string,
