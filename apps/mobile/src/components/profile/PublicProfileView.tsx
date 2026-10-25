@@ -10,6 +10,7 @@ import {
   type PublicProfile,
 } from '@reading/shared';
 
+import { FavoritesRow } from '@/components/profile/FavoritesRow';
 import { Avatar } from '@/components/ui/Avatar';
 import { BookCover } from '@/components/ui/BookCover';
 import { Button } from '@/components/ui/Button';
@@ -143,6 +144,8 @@ export function PublicProfileView({ profile }: { profile: PublicProfile }) {
           label={t('profile.public.averageRating')}
         />
       </View>
+
+      <FavoritesRow favorites={profile.favorites} isMe={profile.isMe} />
 
       {profile.recentlyRead.length > 0 ? (
         <View className="gap-3">

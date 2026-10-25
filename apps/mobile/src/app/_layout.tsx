@@ -117,6 +117,11 @@ function RootNavigator() {
         <Stack.Screen name="user/[nickname]" options={{ title: '' }} />
 
         <Stack.Screen
+          name="favorites"
+          options={{ title: t('profile.favorites.title') }}
+        />
+
+        <Stack.Screen
           name="settings"
           options={{ title: t('settings.title') }}
         />

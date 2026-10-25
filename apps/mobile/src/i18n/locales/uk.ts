@@ -249,6 +249,13 @@ const uk: Translation = {
       averageRating: 'середня оцінка',
       recentlyRead: 'Останні прочитані',
     },
+    favorites: {
+      title: 'Чотири улюблені',
+      change: 'Змінити',
+      picked: 'Обрано {{count}} / {{max}}',
+      hint: 'Тапай по обкладинках у тому порядку, в якому вони стоятимуть у профілі. Їх бачать усі.',
+      save: 'Зберегти',
+    },
   },
   settings: {
     title: 'Налаштування',

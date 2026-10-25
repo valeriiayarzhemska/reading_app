@@ -1,7 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
   nicknameError,
+  type FavoriteBook,
   type Me,
   type NicknameAvailability,
   type PublicProfile,
@@ -70,5 +71,18 @@ export function usePublicProfile(nickname: string) {
     queryKey: profileKey(nickname),
     queryFn: () =>
       apiFetch<PublicProfile>(`/users/${encodeURIComponent(nickname)}`),
+  });
+}
+
+export function useSetFavorites() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (userBookIds: string[]) =>
+      apiFetch<FavoriteBook[]>('/me/favorites', {
+        method: 'PUT',
+        body: JSON.stringify({ userBookIds }),
+      }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['profile'] }),
   });
 }

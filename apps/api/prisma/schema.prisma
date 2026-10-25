@@ -55,6 +55,7 @@ model User {
   readingSessions ReadingSession[]
   createdBooks    Book[]
   readingGoals    ReadingGoal[]
+  favoriteBooks   FavoriteBook[]
 }
 
 // One row per signed-in device. Only the refresh token's hash is stored.
@@ -122,6 +123,7 @@ model UserBook {
   user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   book     Book             @relation(fields: [bookId], references: [id], onDelete: Cascade)
   sessions ReadingSession[]
+  favorite FavoriteBook?
 
   @@unique([userId, bookId, format])
   @@index([userId, status])
@@ -160,4 +162,20 @@ model ReadingGoal {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, year])
+}
+
+// "Four favorites" on the profile. Rows have no built-in order, so the order
+// is data: position 1–4. The whole list is replaced on every save.
+model FavoriteBook {
+  id         String @id @default(uuid())
+  userId     String
+  userBookId String @unique
+  position   Int
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Removing the book from the shelf removes it from the favorites too
+  userBook UserBook @relation(fields: [userBookId], references: [id], onDelete: Cascade)
+
+  // No two books in one slot
+  @@unique([userId, position])
 }

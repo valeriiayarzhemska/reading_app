@@ -235,6 +235,13 @@ const en = {
       averageRating: 'avg rating',
       recentlyRead: 'Recently read',
     },
+    favorites: {
+      title: 'Four favorites',
+      change: 'Change',
+      picked: 'Selected {{count}} / {{max}}',
+      hint: 'Tap the covers in the order they should appear on your profile. Everyone can see them.',
+      save: 'Save',
+    },
   },
   settings: {
     title: 'Settings',

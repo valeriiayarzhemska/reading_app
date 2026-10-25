@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -9,6 +10,7 @@ import {
   normalizeNickname,
   progressFraction,
   ShelfStatus,
+  type FavoriteBook,
   type Me,
   type NicknameAvailability,
   type PublicProfile,
@@ -50,7 +52,7 @@ export class UsersService {
       throw new NotFoundException('No reader with this nickname');
     }
 
-    const [summary, reading, recent] = await Promise.all([
+    const [summary, reading, recent, favorites] = await Promise.all([
       this.stats.summary(user.id),
       this.prisma.userBook.findFirst({
         where: { userId: user.id, status: ShelfStatus.READING },
@@ -73,6 +75,7 @@ export class UsersService {
           book: { select: { title: true, coverUrl: true } },
         },
       }),
+      this.favorites(user.id),
     ]);
 
     return {
@@ -92,6 +95,7 @@ export class UsersService {
         booksRead: summary.total.booksRead,
         averageRating: summary.total.averageRating,
       },
+      favorites,
       recentlyRead: recent.map((entry) => ({
         userBookId: entry.id,
         title: entry.book.title,
@@ -102,6 +106,56 @@ export class UsersService {
         finishedPrecision: entry.finishedPrecision,
       })),
     };
+  }
+
+  private async favorites(userId: string): Promise<FavoriteBook[]> {
+    const rows = await this.prisma.favoriteBook.findMany({
+      where: { userId },
+      // Rows have no order of their own: the stored position is the order
+      orderBy: { position: 'asc' },
+      select: {
+        userBookId: true,
+        userBook: {
+          select: { book: { select: { title: true, coverUrl: true } } },
+        },
+      },
+    });
+
+    return rows.map(({ userBookId, userBook }) => ({
+      userBookId,
+      title: userBook.book.title,
+      coverUrl: userBook.book.coverUrl,
+    }));
+  }
+
+  // Replaces the whole list: delete + create in one transaction, so nobody
+  // ever sees half of the new order (and the unique slots never collide)
+  async setFavorites(
+    userId: string,
+    userBookIds: string[],
+  ): Promise<FavoriteBook[]> {
+    const owned = await this.prisma.userBook.count({
+      where: { id: { in: userBookIds }, userId },
+    });
+
+    // Someone else's shelf entry (or a made-up id) can't be a favorite
+    if (owned !== userBookIds.length) {
+      throw new BadRequestException('Favorites must be books on your shelf');
+    }
+
+    // The array form: independent queries run in one transaction, in order
+    await this.prisma.$transaction([
+      this.prisma.favoriteBook.deleteMany({ where: { userId } }),
+      this.prisma.favoriteBook.createMany({
+        data: userBookIds.map((userBookId, index) => ({
+          userId,
+          userBookId,
+          position: index + 1,
+        })),
+      }),
+    ]);
+
+    return this.favorites(userId);
   }
 
   async nicknameAvailability(

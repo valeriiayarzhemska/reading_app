@@ -1,5 +1,13 @@
 import type { DatePrecision } from './enums.js';
 
+export const FAVORITES_MAX = 4;
+
+export interface FavoriteBook {
+  userBookId: string;
+  title: string;
+  coverUrl: string | null;
+}
+
 // GET /users/:nickname: what anyone signed in can see about a reader. No
 // sessions, minutes or goals: those stay in the owner's "My reading".
 export interface PublicProfile {
@@ -27,6 +35,8 @@ export interface PublicProfile {
     booksRead: number;
     averageRating: number | null;
   };
+  // In the order the reader chose, at most FAVORITES_MAX
+  favorites: FavoriteBook[];
   // Newest first
   recentlyRead: {
     userBookId: string;

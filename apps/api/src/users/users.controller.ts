@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -13,6 +14,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { CurrentUserId } from '../auth/current-user-id.decorator.js';
 import { CompleteOnboardingDto } from './dto/complete-onboarding.dto.js';
 import { NicknameAvailabilityQuery } from './dto/nickname-availability.query.js';
+import { SetFavoritesDto } from './dto/set-favorites.dto.js';
 import { UpdateProfileDto } from './dto/update-profile.dto.js';
 import { UsersService } from './users.service.js';
 
@@ -54,6 +56,14 @@ export class UsersController {
     @Body() dto: UpdateProfileDto,
   ) {
     return this.users.updateProfile(userId, dto);
+  }
+
+  /**
+   * Replace my four favorites with these shelf entries, in this order ([] clears them).
+   */
+  @Put('me/favorites')
+  setFavorites(@CurrentUserId() userId: string, @Body() dto: SetFavoritesDto) {
+    return this.users.setFavorites(userId, dto.userBookIds);
   }
 
   /**
