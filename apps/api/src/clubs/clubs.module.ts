@@ -15,5 +15,7 @@ import { MessagesService } from './messages.service.js';
   controllers: [ClubsController, MessagesController],
   // A gateway is a provider: Nest creates it and opens the socket endpoint
   providers: [ClubsService, MessagesService, ChatGateway],
+  // NotificationsModule pushes through the same socket connection
+  exports: [ChatGateway],
 })
 export class ClubsModule {}

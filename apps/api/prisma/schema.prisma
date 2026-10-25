@@ -30,6 +30,14 @@ enum ProgressUnit {
 }
 
 // How exactly a date is known: a book read years ago may only have a year
+// Keep in sync with packages/shared/src/notifications.ts
+enum NotificationType {
+  FOLLOW
+  POST_LIKE
+  POST_COMMENT
+  COMMENT_LIKE
+}
+
 enum DatePrecision {
   DAY
   MONTH
@@ -69,6 +77,9 @@ model User {
   postLikes       PostLike[]
   comments        Comment[]
   commentLikes    CommentLike[]
+  // Two relations to Notification: what I receive, and what I caused
+  notifications   Notification[]    @relation("recipient")
+  sentNotices     Notification[]    @relation("actor")
 }
 
 // One row per signed-in device. Only the refresh token's hash is stored.
@@ -370,13 +381,14 @@ model Post {
   photoUrl  String?
   createdAt DateTime @default(now())
 
-  author   User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author        User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
   // SetNull: deleting the book keeps the post, without its card
-  book     Book?      @relation(fields: [bookId], references: [id], onDelete: SetNull)
-  likes    PostLike[]
-  comments Comment[]
+  book          Book?          @relation(fields: [bookId], references: [id], onDelete: SetNull)
+  likes         PostLike[]
+  comments      Comment[]
+  notifications Notification[]
 
-  // "All": everyone's posts by time; "Subscriptions": by author, then time
+  // "All": everyone's posts by time; "Following": by author, then time
   @@index([createdAt])
   @@index([authorId, createdAt])
 }
@@ -399,9 +411,10 @@ model Comment {
   text      String
   createdAt DateTime @default(now())
 
-  post   Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
-  author User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  likes  CommentLike[]
+  post          Post           @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author        User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  likes         CommentLike[]
+  notifications Notification[]
 
   // A post's comments in order
   @@index([postId, createdAt])
@@ -416,4 +429,29 @@ model CommentLike {
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([commentId, userId])
+}
+
+// "bob liked your post": one row per event, for the list and the 🔔 badge
+model Notification {
+  id        String           @id @default(uuid())
+  // Who receives it
+  userId    String
+  // Who caused it
+  actorId   String
+  type      NotificationType
+  // What it's about (FOLLOW has neither)
+  postId    String?
+  commentId String?
+  // null: unread
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user    User     @relation("recipient", fields: [userId], references: [id], onDelete: Cascade)
+  actor   User     @relation("actor", fields: [actorId], references: [id], onDelete: Cascade)
+  // Cascade: a deleted post takes its notifications along
+  post    Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  comment Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  // My notifications, newest first
+  @@index([userId, createdAt])
 }

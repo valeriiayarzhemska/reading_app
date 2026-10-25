@@ -6,6 +6,7 @@ import {
 
 import {
   COMMENTS_PAGE_SIZE,
+  NotificationType,
   POSTS_PAGE_SIZE,
   type FeedKind,
   type Page,
@@ -14,6 +15,7 @@ import {
 } from '@reading/shared';
 
 import type { Prisma } from '../generated/prisma/client.js';
+import { NotificationsService } from '../notifications/notifications.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CoverStorage } from '../uploads/cover-storage.service.js';
 import type { CreateCommentDto, CreatePostDto } from './dto/posts.dto.js';
@@ -117,6 +119,7 @@ export class PostsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly storage: CoverStorage,
+    private readonly notifications: NotificationsService,
   ) {}
 
   // Newest first. Subscriptions: my own posts and those of people I follow.
@@ -214,15 +217,37 @@ export class PostsService {
   }
 
   async like(userId: string, postId: string): Promise<void> {
-    await this.findPost(postId);
-    await this.prisma.postLike.createMany({
+    const post = await this.findPost(postId);
+    const { count } = await this.prisma.postLike.createMany({
       data: [{ postId, userId }],
       skipDuplicates: true,
     });
+
+    // count is 0 for a repeated like: no second notification
+    if (count > 0) {
+      await this.notifications.notify({
+        userId: post.authorId,
+        actorId: userId,
+        type: NotificationType.POST_LIKE,
+        postId,
+      });
+    }
   }
 
   async unlike(userId: string, postId: string): Promise<void> {
-    await this.prisma.postLike.deleteMany({ where: { postId, userId } });
+    const post = await this.findPost(postId);
+    const { count } = await this.prisma.postLike.deleteMany({
+      where: { postId, userId },
+    });
+
+    if (count > 0) {
+      await this.notifications.withdraw({
+        userId: post.authorId,
+        actorId: userId,
+        type: NotificationType.POST_LIKE,
+        postId,
+      });
+    }
   }
 
   // Oldest first, like a conversation
@@ -255,44 +280,85 @@ export class PostsService {
     postId: string,
     dto: CreateCommentDto,
   ): Promise<PostComment> {
-    await this.findPost(postId);
+    const post = await this.findPost(postId);
 
     const row = await this.prisma.comment.create({
       data: { postId, authorId: userId, text: dto.text },
       select: commentSelect(userId),
     });
 
+    await this.notifications.notify({
+      userId: post.authorId,
+      actorId: userId,
+      type: NotificationType.POST_COMMENT,
+      postId,
+      commentId: row.id,
+    });
+
     return toPostComment(row);
   }
 
   async likeComment(userId: string, commentId: string): Promise<void> {
+    const comment = await this.findComment(commentId);
+    const { count } = await this.prisma.commentLike.createMany({
+      data: [{ commentId, userId }],
+      skipDuplicates: true,
+    });
+
+    if (count > 0) {
+      await this.notifications.notify(this.commentLikeEvent(userId, comment));
+    }
+  }
+
+  async unlikeComment(userId: string, commentId: string): Promise<void> {
+    const comment = await this.findComment(commentId);
+    const { count } = await this.prisma.commentLike.deleteMany({
+      where: { commentId, userId },
+    });
+
+    if (count > 0) {
+      await this.notifications.withdraw(this.commentLikeEvent(userId, comment));
+    }
+  }
+
+  private commentLikeEvent(
+    actorId: string,
+    comment: { id: string; authorId: string; postId: string },
+  ) {
+    return {
+      userId: comment.authorId,
+      actorId,
+      type: NotificationType.COMMENT_LIKE,
+      // The post too: tapping the notification opens it
+      postId: comment.postId,
+      commentId: comment.id,
+    };
+  }
+
+  // With its author: who gets notified about likes and comments
+  private async findPost(id: string) {
+    const post = await this.prisma.post.findUnique({
+      where: { id },
+      select: { id: true, authorId: true },
+    });
+
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    return post;
+  }
+
+  private async findComment(id: string) {
     const comment = await this.prisma.comment.findUnique({
-      where: { id: commentId },
-      select: { id: true },
+      where: { id },
+      select: { id: true, authorId: true, postId: true },
     });
 
     if (!comment) {
       throw new NotFoundException('Comment not found');
     }
 
-    await this.prisma.commentLike.createMany({
-      data: [{ commentId, userId }],
-      skipDuplicates: true,
-    });
-  }
-
-  async unlikeComment(userId: string, commentId: string): Promise<void> {
-    await this.prisma.commentLike.deleteMany({ where: { commentId, userId } });
-  }
-
-  private async findPost(id: string) {
-    const post = await this.prisma.post.findUnique({
-      where: { id },
-      select: { id: true },
-    });
-
-    if (!post) {
-      throw new NotFoundException('Post not found');
-    }
+    return comment;
   }
 }

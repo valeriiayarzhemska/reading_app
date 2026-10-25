@@ -22,6 +22,7 @@ import { useClubActivity } from '@/chat/useClubActivity';
 import { useTimezoneSync } from '@/hooks/useTimezoneSync';
 import { loadSavedLanguage } from '@/i18n';
 import { STACK_OPTIONS } from '@/navigation/stackOptions';
+import { useNotificationEvents } from '@/notifications/useNotificationEvents';
 import { useLiveActivitySync } from '@/timer/useLiveActivitySync';
 import { useSessionSync } from '@/timer/useSessionSync';
 import { useTimerNotificationSync } from '@/timer/useTimerNotificationSync';
@@ -77,6 +78,7 @@ function RootNavigator() {
 
   useSessionSync(isSignedIn ? state.user.id : null);
   useClubActivity(isSignedIn);
+  useNotificationEvents(isSignedIn);
   useTimezoneSync();
   useLiveActivitySync();
   useTimerNotificationSync();
@@ -115,6 +117,11 @@ function RootNavigator() {
         <Stack.Screen name="collections/[id]" options={{ title: '' }} />
 
         <Stack.Screen name="posts/[id]" options={{ headerShown: false }} />
+
+        <Stack.Screen
+          name="notifications"
+          options={{ title: t('notifications.title') }}
+        />
 
         <Stack.Screen
           name="post-new"

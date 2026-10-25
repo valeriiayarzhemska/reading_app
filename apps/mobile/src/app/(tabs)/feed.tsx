@@ -9,6 +9,7 @@ import { FlashList } from '@shopify/flash-list';
 
 import type { FeedKind } from '@reading/shared';
 
+import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { PostCard } from '@/components/posts/PostCard';
 import { useTabBarInset } from '@/components/TabBar';
 import { Chips } from '@/components/ui/Chips';
@@ -30,6 +31,8 @@ export default function ShelvesScreen() {
         <Text variant="title" className="flex-1">
           {t('tabs.feed')}
         </Text>
+
+        <NotificationBell />
 
         <IconButton
           icon="search"

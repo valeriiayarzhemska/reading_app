@@ -230,8 +230,16 @@ const en = {
     days_other: '{{count}} d',
     ago: '{{time}} ago',
   },
+  notifications: {
+    title: 'Notifications',
+    follow: 'started following you',
+    postLike: 'liked your post',
+    postComment: 'commented on your post',
+    commentLike: 'liked your comment',
+    empty: 'Nothing here yet. Likes, comments and new followers show up here.',
+  },
   posts: {
-    following: 'Subscriptions',
+    following: 'Following',
     all: 'All',
     new: 'New post',
     title: 'Post',

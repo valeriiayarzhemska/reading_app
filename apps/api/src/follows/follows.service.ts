@@ -7,11 +7,13 @@ import {
 import {
   FOLLOWS_PAGE_SIZE,
   normalizeNickname,
+  NotificationType,
   type FollowList,
   type Page,
   type ReaderSummary,
 } from '@reading/shared';
 
+import { NotificationsService } from '../notifications/notifications.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 
 export const READER_SELECT = {
@@ -28,7 +30,10 @@ type Reader = Pick<
 
 @Injectable()
 export class FollowsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notifications: NotificationsService,
+  ) {}
 
   async follow(viewerId: string, nickname: string): Promise<void> {
     const targetId = await this.userId(nickname);
@@ -38,19 +43,36 @@ export class FollowsService {
     }
 
     // skipDuplicates: following again is a no-op, not a unique-key error
-    await this.prisma.follow.createMany({
+    const { count } = await this.prisma.follow.createMany({
       data: [{ followerId: viewerId, followingId: targetId }],
       skipDuplicates: true,
     });
+
+    // Only a new follow is news: count is 0 when it already existed
+    if (count > 0) {
+      await this.notifications.notify(this.followEvent(viewerId, targetId));
+    }
   }
 
   async unfollow(viewerId: string, nickname: string): Promise<void> {
     const targetId = await this.userId(nickname);
 
     // deleteMany doesn't throw when there's nothing to delete
-    await this.prisma.follow.deleteMany({
+    const { count } = await this.prisma.follow.deleteMany({
       where: { followerId: viewerId, followingId: targetId },
     });
+
+    if (count > 0) {
+      await this.notifications.withdraw(this.followEvent(viewerId, targetId));
+    }
+  }
+
+  private followEvent(followerId: string, targetId: string) {
+    return {
+      userId: targetId,
+      actorId: followerId,
+      type: NotificationType.FOLLOW,
+    };
   }
 
   // Newest follows first, FOLLOWS_PAGE_SIZE at a time

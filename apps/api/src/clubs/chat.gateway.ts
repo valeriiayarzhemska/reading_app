@@ -88,6 +88,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     });
   }
 
+  // For other modules (notifications): an event to all of one user's
+  // devices, wherever they are in the app
+  emitToUser(userId: string, event: string, payload: unknown = {}) {
+    this.server.to(userRoom(userId)).emit(event, payload);
+  }
+
   // After the middleware accepted the socket. Also after every reconnect,
   // so the personal room is never lost.
   async handleConnection(socket: ChatSocket) {

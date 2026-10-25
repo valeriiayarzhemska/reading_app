@@ -250,6 +250,15 @@ const uk: Translation = {
     days_other: '{{count}} д',
     ago: '{{time}} тому',
   },
+  notifications: {
+    title: 'Сповіщення',
+    follow: 'підписується на вас',
+    postLike: 'вподобує ваш допис',
+    postComment: 'коментує ваш допис',
+    commentLike: 'вподобує ваш коментар',
+    empty:
+      'Поки порожньо. Тут зʼявляться вподобання, коментарі й нові підписники.',
+  },
   posts: {
     following: 'Підписки',
     all: 'Усі',
