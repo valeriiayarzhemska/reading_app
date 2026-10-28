@@ -2,6 +2,19 @@
 
 Based on an analysis of the Readroom app screens. The design follows its visual style.
 
+> **Design credit:** the screens and visual style are inspired by the Readroom app and used for inspiration and personal, educational use only. This project is not affiliated with Readroom, is non-commercial and isn't published anywhere. All code is my own, and all rights to the original design belong to its owners.
+
+## Status
+
+The project is finished as a local pet project: **no deployment**, no App Store / Play Store release.
+
+| Status | Stories |
+|---|---|
+| ✅ Done | DS-1–4, I18N, AUTH-1 (Google), AUTH-2, PRF-1–3, LIB-1–8, TMR-1–7, STAT-1–7, NAT-1–4, SOC-1–3, COL-1–2, CLB-1–3, FEED-1–2, SET-1–2 |
+| ✅ Extra | Report any user content; delete your own comments and chat messages; search for people to follow; unread dots in clubs |
+| 🔀 Changed | TMR-7 / SET-1: no auto-stop. FEED-1: the tab is "Following", not "Subscriptions". FEED-2: in-app notifications only. Shelves tab → Feed tab |
+| ✂️ Not done | Sign in with Apple and iOS push (they need a paid Apple Developer account); account deletion (AUTH-3); club quiet hours; barcode scanner; SET-3 CSV import; deployment |
+
 **Priorities**
 
 | Tag | Meaning |
@@ -19,7 +32,7 @@ Based on an analysis of the Readroom app screens. The design follows its visual 
 
 | Tab | Screens |
 |---|---|
-| **Shelves** (Полиці) | Social feed of posts, "who to read" suggestions, notifications |
+| **Feed** (Стрічка; "Shelves" in the original plan) | Social feed of posts, notifications |
 | **Library** (Бібліотека) | Currently reading card, in-progress list, "want / read" tiles, search, add book, book details, reading timer |
 | **Clubs** (Клуби) | My/all clubs, club chat, club info |
 | **Profile** (Профіль) | Public profile ("Profile") + private stats ("Mine"): calendar, goals, achievements, collections, settings |
@@ -68,6 +81,7 @@ As a developer, I want all colors, fonts, spacing and radii in one place so that
 **AUTH-1 — Sign in with Apple / Google** (P0)
 As a reader, I want to sign in with one tap so that my library is saved to my account.
 - AC: Apple (iOS) and Google sign-in; the backend verifies the provider token and issues our own JWT.
+- Built: Google only. Sign in with Apple needs a paid Apple Developer account.
 - AC: First sign-in creates `User` + `AuthAccount`; later sign-ins find the existing user.
 - 📚 Learn: OAuth/OIDC, JWT access + refresh tokens, `expo-secure-store`.
 
@@ -158,7 +172,7 @@ As a reader, I want to start a timer for a book so that my reading time is track
 - AC: "Jot a thought" field on the timer screen, saved as a private note on the book.
 
 **TMR-7 — "Still reading?" check** (P2)
-- AC: After 1 hour, a local notification asks "Still reading?". Optional auto-stop setting.
+- AC: After 1 hour, a local notification asks "Still reading?". ~~Optional auto-stop setting~~ (dropped).
 
 ---
 
@@ -252,10 +266,11 @@ As a reader, I want a calendar with the covers of the books I read each day.
 ## E9 — Feed
 
 **FEED-1 — Posts** (P2)
-- AC: Write a text post; feed of posts from people I follow ("Subscriptions") or everyone ("All"); like + comment.
+- AC: Write a text post; feed of posts from people I follow ("Following") or everyone ("All"); like + comment.
+- Done extra: comment likes, replying to a comment, deleting your own comments.
 
 **FEED-2 — Notifications** (P2)
-- AC: In-app notifications (new follower, like, reply) + push notifications.
+- AC: In-app notifications (new follower, like, comment). ~~Push notifications~~: skipped, iOS push needs a paid Apple Developer account.
 - 📚 Learn: Expo push notifications, background jobs.
 
 ---
@@ -272,10 +287,9 @@ As a reader, I want a calendar with the covers of the books I read each day.
 
 ## E11 — Settings
 
-**SET-1 — Reading settings** (P2): no-timer mode, "Still reading?" check, auto-stop, daily reading reminder.
-**SET-2 — Appearance** (P2): theme (dark/light), language (UK/EN).
-**SET-3 — Import from Goodreads / StoryGraph CSV** (P2)
-- 📚 Learn: CSV parsing, bulk insert, matching books by ISBN.
+**SET-1 — Reading settings** (P2): no-timer mode, "Still reading?" check, daily reading reminder (no auto-stop).
+**SET-2 — Appearance** (P2): theme (system / light / dark), language (UK/EN).
+**SET-3 — Import from Goodreads / StoryGraph CSV** (P2) ✂️ not planned anymore.
 
 ---
 
@@ -290,21 +304,30 @@ As a reader, I want a calendar with the covers of the books I read each day.
 | Alternative app icons, tab reordering, gendered forms of address, haptics setting | Polish; low learning value |
 | Creator (BookTok) applications | Business feature |
 | Bookmarking collections | Like is enough |
+| Sign in with Apple, iOS push notifications | Need a paid Apple Developer account |
+| Auto-stop for the timer | Not needed; the "Still reading?" check is enough |
+| CSV import (SET-3) | Not needed |
+| Deployment, TestFlight, store release | A local pet project |
 
 ---
 
-## Data model additions (beyond the Week 1 schema)
+## Data model (final)
 
-| Model | Purpose | Epic |
+The full schema is in `apps/api/prisma/schema.prisma`.
+
+| Models | Purpose | Epic |
 |---|---|---|
-| `User` + `bio`, `links[]`, `monogramColor` | profile | E6 |
-| `Book` + `publisher`, `description`, `seriesName`, `seriesIndex`, `isbn`, `createdById` (manual books) | book details | E3 |
-| `UserBook.rating` → 1–10 (not 1–5) | the screens use /10 | E6 |
-| `Review` (userBookId, text, hasSpoilers) | reviews | E6 |
-| `Note` / `Quote` | private notes, quotes | E3/E6 |
-| `Goal` (userId, year, targetBooks) | yearly goal | E5 |
-| `Favorite` (userId, bookId, position 1–4) | four favorites | E6 |
-| `Follow` (followerId, followingId) | social graph | E6 |
-| `Collection`, `CollectionBook` | collections | E7 |
-| `Club`, `ClubMember`, `Message`, `Reaction` | clubs | E8 |
-| `Post`, `Comment`, `Like`, `Notification` | feed | E9 |
+| `User`, `AuthAccount`, `AuthSession` | accounts, Google sign-in, refresh tokens | E2 |
+| `Book` (with `createdById` for hand-added books) | book data from Google Books / Open Library or added by hand | E3 |
+| `UserBook` (status, progress, rating 1–10) | shelves | E3/E6 |
+| `ReadingSession` (`clientId` for idempotent sync) | timer and logged sessions | E4 |
+| `Note`, `Quote` | private notes, quotes | E3/E6 |
+| `ReadingGoal` | yearly goal | E5 |
+| `UserAchievement`, `AchievementStat` | badges and the % of readers who have each | E5 |
+| `Review` | reviews with a spoiler flag | E6 |
+| `FavoriteBook` (position 1–4) | four favorites | E6 |
+| `Follow` | social graph | E6 |
+| `Collection`, `CollectionBook`, `CollectionLike` | collections | E7 |
+| `Club`, `ClubMember`, `Message`, `MessageReaction` | clubs and chat | E8 |
+| `Post`, `PostLike`, `Comment`, `CommentLike`, `Notification` | feed | E9 |
+| `Report` (target type + id) | reports on any user content | — |

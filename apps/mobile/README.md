@@ -1,56 +1,50 @@
-# Welcome to your Expo app 👋
+# @reading/mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+The Expo (React Native) app. It uses native modules and widgets, so it runs as a **development build**, not in Expo Go.
 
-## Get started
+Setup for the whole project (database, API) is in the [root README](../../README.md).
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Run
 
 ```bash
-npm run reset-project
+cp .env.example .env    # API URL + Google client IDs (public values, no secrets)
+pnpm ios                # build and open in the iOS Simulator
+pnpm android            # build and open in the Android emulator
+pnpm android:api        # Android: forward the emulator's localhost:3001 to your machine
+pnpm dev                # Metro only, once the build is installed
+pnpm lint
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Rebuild with `pnpm ios` / `pnpm android` after adding a package with native code or changing `app.json`. Otherwise `pnpm dev` is enough.
 
-### Other setup steps
+`EXPO_PUBLIC_API_URL`:
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+- iOS Simulator: `http://localhost:3001`
+- Android emulator: `http://localhost:3001` after `pnpm android:api`, or `http://10.0.2.2:3001`
+- A real phone: your computer's Wi-Fi IP
 
-## Learn more
+## Structure
 
-To learn more about developing your project with Expo, look at the following resources:
+```
+src/
+  app/            screens (expo-router): (tabs)/ = Feed, Library, Clubs, Profile
+  api/            React Query hooks per resource + the fetch client (JWT refresh)
+  auth/           Google sign-in, tokens in the secure store
+  chat/           Socket.IO client, chat history, unread dots
+  timer/          the timer state (MMKV), offline session queue, Live Activity / notification sync
+  widgets/        iOS widget and Live Activity (expo-widgets)
+  components/     UI kit (components/ui) and feature components
+  i18n/           English + Ukrainian translations (typed keys)
+  theme/          color tokens for light / dark, ThemeProvider
+  settings/       reading settings (no-timer mode, reminders), saved in MMKV
+  stats/, library/, clubs/, notifications/, navigation/, hooks/, lib/
+modules/
+  home-widget/          Android home screen widget (Kotlin)
+  timer-notification/   Android ongoing timer notification (Kotlin)
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Notes
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- **Lists** use FlashList, and **images** use `expo-image` with disk caching (`RemoteImage`).
+- **Styling:** NativeWind with CSS variables, so one set of classes works for both themes.
+- **No paid Apple account:** no Sign in with Apple and no push notifications. The iOS widget and Live Activity work in the Simulator only.
