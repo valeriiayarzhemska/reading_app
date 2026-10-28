@@ -250,6 +250,17 @@ const uk: Translation = {
     days_other: '{{count}} д',
     ago: '{{time}} тому',
   },
+  notes: {
+    title: 'Нотатки',
+    private: 'Бачите лише ви',
+    empty: 'Думки, питання, те, до чого хочеться повернутися.',
+    newTitle: 'Нова нотатка',
+    editTitle: 'Редагувати нотатку',
+    placeholder: 'Про що думаєте?',
+    save: 'Зберегти нотатку',
+    deleteTitle: 'Видалити нотатку?',
+    quickThought: 'Швидка думка',
+  },
   quotes: {
     title: 'Цитати',
     add: '+ Додати',

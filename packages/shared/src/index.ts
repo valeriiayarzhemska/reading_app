@@ -9,6 +9,7 @@ export * from './follows.js';
 export * from './isbn.js';
 export * from './manual-book.js';
 export * from './messages.js';
+export * from './notes.js';
 export * from './notifications.js';
 export * from './posts.js';
 export * from './profile.js';

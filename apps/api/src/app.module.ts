@@ -9,6 +9,7 @@ import { CollectionsModule } from './collections/collections.module.js';
 import { PrismaExceptionFilter } from './common/prisma-exception.filter.js';
 import { FollowsModule } from './follows/follows.module.js';
 import { HealthController } from './health/health.controller.js';
+import { NotesModule } from './notes/notes.module.js';
 import { NotificationsModule } from './notifications/notifications.module.js';
 import { PostsModule } from './posts/posts.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
@@ -29,6 +30,7 @@ import { UsersModule } from './users/users.module.js';
     ClubsModule,
     CollectionsModule,
     FollowsModule,
+    NotesModule,
     NotificationsModule,
     PostsModule,
     QuotesModule,

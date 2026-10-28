@@ -7,8 +7,14 @@ import { router, useLocalSearchParams } from 'expo-router';
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
-import { dayWithBook, progressFraction, ShelfStatus } from '@reading/shared';
+import {
+  dayWithBook,
+  progressFraction,
+  ProgressUnit,
+  ShelfStatus,
+} from '@reading/shared';
 
+import { NoteSheet } from '@/components/notes/NoteSheet';
 import { FinishSessionSheet } from '@/components/timer/FinishSessionSheet';
 import { BookCover } from '@/components/ui/BookCover';
 import { ProgressBar } from '@/components/ui/ProgressBar';
@@ -40,6 +46,7 @@ function TimerContent() {
   const { session, pause, resume, clear } = useActiveSession();
   const now = useNow(session !== undefined);
   const [isFinishOpen, setIsFinishOpen] = useState(finish === '1');
+  const [isNoteOpen, setIsNoteOpen] = useState(false);
   const wasRunning = useRef(false);
   const isSaved = useRef(false);
   const updateStatus = useUpdateStatus(session?.userBookId ?? '');
@@ -233,7 +240,30 @@ function TimerContent() {
             <Feather name="square" size={20} color={COLORS.fg} />
           </Pressable>
         </View>
+
+        {/* The clock keeps running: a thought is part of reading */}
+        <Pressable
+          onPress={() => setIsNoteOpen(true)}
+          accessibilityRole="button"
+          className="flex-row items-center gap-2 py-2 active:opacity-60"
+        >
+          <Feather name="edit-3" size={16} color={COLORS.fgMuted} />
+
+          <Text variant="muted">{t('notes.quickThought')}</Text>
+        </Pressable>
       </View>
+
+      <NoteSheet
+        entryId={session.userBookId}
+        bookTitle={session.book.title}
+        note={null}
+        // Where this session started: the closest page we know
+        defaultPage={
+          session.unit === ProgressUnit.PAGES ? session.progressFrom : null
+        }
+        open={isNoteOpen}
+        onClose={() => setIsNoteOpen(false)}
+      />
 
       <FinishSessionSheet
         session={session}

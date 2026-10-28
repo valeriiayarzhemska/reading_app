@@ -230,6 +230,17 @@ const en = {
     days_other: '{{count}} d',
     ago: '{{time}} ago',
   },
+  notes: {
+    title: 'Notes',
+    private: 'Only you can see them',
+    empty: 'Thoughts, questions, things to come back to.',
+    newTitle: 'New note',
+    editTitle: 'Edit note',
+    placeholder: 'What are you thinking?',
+    save: 'Save note',
+    deleteTitle: 'Delete this note?',
+    quickThought: 'Quick thought',
+  },
   quotes: {
     title: 'Quotes',
     add: '+ Add',
