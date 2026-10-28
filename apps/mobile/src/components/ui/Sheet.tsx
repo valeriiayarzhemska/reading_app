@@ -11,7 +11,7 @@ import {
 
 import { Text } from '@/components/ui/Text';
 
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 interface SheetProps {
   open: boolean;
@@ -30,6 +30,8 @@ export function Sheet({
   subtitle,
   children,
 }: SheetProps) {
+  const colors = useColors();
+
   const ref = useRef<BottomSheetModal>(null);
   const wasOpen = useRef(false);
   const { bottom } = useSafeAreaInsets();
@@ -61,11 +63,12 @@ export function Sheet({
         appearsOnIndex={0}
         disappearsOnIndex={-1}
         pressBehavior="close"
-        style={[props.style, { backgroundColor: COLORS.backdrop }]}
+        style={[props.style, { backgroundColor: colors.backdrop }]}
         opacity={1}
       />
     ),
-    [],
+    // A new backdrop when the theme changes
+    [colors.backdrop],
   );
 
   return (
@@ -74,8 +77,8 @@ export function Sheet({
       // Fires for swipe-down and backdrop taps too, keeping `open` in sync
       onDismiss={handleDismiss}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: COLORS.sheet, borderRadius: 28 }}
-      handleIndicatorStyle={{ backgroundColor: COLORS.fgFaint, width: 40 }}
+      backgroundStyle={{ backgroundColor: colors.sheet, borderRadius: 28 }}
+      handleIndicatorStyle={{ backgroundColor: colors.fgFaint, width: 40 }}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"

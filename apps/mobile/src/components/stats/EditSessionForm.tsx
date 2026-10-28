@@ -11,7 +11,7 @@ import { Text } from '@/components/ui/Text';
 import { TextField } from '@/components/ui/TextField';
 
 import { useDeleteSession, useUpdateSession } from '@/api/sessions';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 import { MAX_LOG_MINUTES } from '@/timer/manualLog';
 
 interface EditSessionFormProps {
@@ -33,6 +33,8 @@ export function EditSessionForm({
   dateLabel,
   onDone,
 }: EditSessionFormProps) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const update = useUpdateSession();
   const remove = useDeleteSession();
@@ -96,7 +98,7 @@ export function EditSessionForm({
         accessibilityRole="button"
         className="flex-row items-center gap-1 self-start active:opacity-60"
       >
-        <Feather name="chevron-left" size={18} color={COLORS.fgMuted} />
+        <Feather name="chevron-left" size={18} color={colors.fgMuted} />
 
         <Text variant="muted">{t('stats.day.sessions')}</Text>
       </Pressable>

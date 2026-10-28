@@ -11,17 +11,19 @@ import { TotalsCard } from '@/components/stats/TotalsCard';
 import { Text } from '@/components/ui/Text';
 
 import { useStats } from '@/api/stats';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 // Profile → "My reading": only the reader sees this
 export function MyReading() {
+  const colors = useColors();
+
   const [openDay, setOpenDay] = useState<CalendarDay | null>(null);
   const stats = useStats();
 
   return (
     <View className="gap-6">
       {stats.isPending ? (
-        <ActivityIndicator className="py-8" color={COLORS.fg} />
+        <ActivityIndicator className="py-8" color={colors.fg} />
       ) : stats.error ? (
         <Text variant="muted" className="text-center">
           {stats.error.message}

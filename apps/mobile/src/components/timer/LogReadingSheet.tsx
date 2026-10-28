@@ -19,7 +19,7 @@ import { TextField } from '@/components/ui/TextField';
 import { useSaveSession } from '@/api/sessions';
 import { currentLanguage } from '@/i18n';
 import { formatDate } from '@/lib/format';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 import {
   buildLoggedSession,
   MAX_DAYS_AGO,
@@ -43,6 +43,8 @@ export function LogReadingSheet({
   open,
   onClose,
 }: LogReadingSheetProps) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const save = useSaveSession();
   const [wasOpen, setWasOpen] = useState(open);
@@ -142,7 +144,7 @@ export function LogReadingSheet({
           accessibilityLabel={t('timer.log.earlier')}
           className="h-11 w-11 items-center justify-center active:opacity-60 disabled:opacity-30"
         >
-          <Feather name="chevron-left" size={22} color={COLORS.fg} />
+          <Feather name="chevron-left" size={22} color={colors.fg} />
         </Pressable>
 
         <Text className="font-sans-semibold">{dayLabel}</Text>
@@ -154,7 +156,7 @@ export function LogReadingSheet({
           accessibilityLabel={t('timer.log.later')}
           className="h-11 w-11 items-center justify-center active:opacity-60 disabled:opacity-30"
         >
-          <Feather name="chevron-right" size={22} color={COLORS.fg} />
+          <Feather name="chevron-right" size={22} color={colors.fg} />
         </Pressable>
       </View>
 

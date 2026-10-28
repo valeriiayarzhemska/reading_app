@@ -15,10 +15,12 @@ import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 
 import { useCollection, useToggleLike } from '@/api/collections';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 // readingapp://collections/<id>
 export default function CollectionScreen() {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data, error } = useCollection(id);
@@ -29,7 +31,7 @@ export default function CollectionScreen() {
         {error ? (
           <Text className="text-center">{error.message}</Text>
         ) : (
-          <ActivityIndicator color={COLORS.fg} />
+          <ActivityIndicator color={colors.fg} />
         )}
       </Screen>
     );
@@ -92,6 +94,8 @@ export default function CollectionScreen() {
 }
 
 function CollectionHeader({ collection }: { collection: CollectionDetail }) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const toggleLike = useToggleLike(collection.id);
 
@@ -147,7 +151,7 @@ function CollectionHeader({ collection }: { collection: CollectionDetail }) {
           <Ionicons
             name={collection.isLiked ? 'heart' : 'heart-outline'}
             size={17}
-            color={collection.isLiked ? COLORS.accent : COLORS.fgFaint}
+            color={collection.isLiked ? colors.accent : colors.fgFaint}
           />
 
           <Text

@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Text } from '@/components/ui/Text';
 
 import { cn } from '@/lib/cn';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 type ButtonVariant = 'primary' | 'secondary';
 
@@ -26,6 +26,8 @@ export function Button({
   loading = false,
   className,
 }: ButtonProps) {
+  const colors = useColors();
+
   const isPrimary = variant === 'primary';
   const isDisabled = disabled || loading;
 
@@ -44,7 +46,7 @@ export function Button({
     >
       {isPrimary ? (
         <LinearGradient
-          colors={[COLORS.accentLight, COLORS.accentDark]}
+          colors={[colors.accentLight, colors.accentDark]}
           start={{ x: 0, y: 0.5 }}
           end={{ x: 1, y: 0.5 }}
           style={StyleSheet.absoluteFill}
@@ -65,7 +67,9 @@ function ButtonLabel({
   loading: boolean;
   isPrimary: boolean;
 }) {
-  const color = isPrimary ? COLORS.accentFg : COLORS.fg;
+  const colors = useColors();
+
+  const color = isPrimary ? colors.accentFg : colors.fg;
 
   return (
     <View className="flex-1 flex-row items-center justify-center gap-2 px-6">

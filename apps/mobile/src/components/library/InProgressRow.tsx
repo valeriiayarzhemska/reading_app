@@ -14,9 +14,11 @@ import { BookCover } from '@/components/ui/BookCover';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Text } from '@/components/ui/Text';
 
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 export function InProgressRow({ entries }: { entries: UserBookWithBook[] }) {
+  const colors = useColors();
+
   const { t } = useTranslation();
 
   return (
@@ -67,7 +69,7 @@ export function InProgressRow({ entries }: { entries: UserBookWithBook[] }) {
                       <Feather
                         name="headphones"
                         size={11}
-                        color={COLORS.fgMuted}
+                        color={colors.fgMuted}
                       />
                     ) : null}
 

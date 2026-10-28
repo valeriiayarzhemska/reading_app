@@ -27,7 +27,7 @@ import { TextField } from '@/components/ui/TextField';
 
 import { useDeleteCollection, useSaveCollection } from '@/api/collections';
 import { cn } from '@/lib/cn';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 export default function CollectionFormScreen() {
   const { t } = useTranslation();
@@ -140,6 +140,8 @@ function DraggableBookRow({
   book: CollectionBookItem;
   onRemove: () => void;
 }) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   // Starts the drag; only works inside a ReorderableList row
   const drag = useReorderableDrag();
@@ -155,7 +157,7 @@ function DraggableBookRow({
         isActive && 'bg-card-strong',
       )}
     >
-      <Feather name="menu" size={18} color={COLORS.fgFaint} />
+      <Feather name="menu" size={18} color={colors.fgFaint} />
 
       <View className="flex-1">
         <BookRow
@@ -169,7 +171,7 @@ function DraggableBookRow({
               hitSlop={8}
               className="p-1 active:opacity-60"
             >
-              <Feather name="x" size={18} color={COLORS.fgFaint} />
+              <Feather name="x" size={18} color={colors.fgFaint} />
             </Pressable>
           }
         />

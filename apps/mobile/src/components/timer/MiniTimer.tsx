@@ -8,13 +8,15 @@ import { BookCover } from '@/components/ui/BookCover';
 import { Text } from '@/components/ui/Text';
 
 import { useNow } from '@/hooks/useNow';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 import { elapsedMs, formatElapsed } from '@/timer/activeSession';
 import { useActiveSession } from '@/timer/useActiveSession';
 
 export const MINI_TIMER_HEIGHT = 60;
 
 export function MiniTimer() {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const { session, pause, resume } = useActiveSession();
   const now = useNow(session !== undefined);
@@ -63,7 +65,7 @@ export function MiniTimer() {
         <Feather
           name={isPaused ? 'play' : 'pause'}
           size={18}
-          color={COLORS.accent}
+          color={colors.accent}
         />
       </Pressable>
     </Pressable>

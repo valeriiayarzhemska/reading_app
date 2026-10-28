@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
 import { clamp01 } from '@/lib/clamp';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 interface ProgressRingProps {
   // 0..1
@@ -21,6 +21,8 @@ export function ProgressRing({
   strokeWidth = 4,
   children,
 }: ProgressRingProps) {
+  const colors = useColors();
+
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference * (1 - clamp01(value));
@@ -47,7 +49,7 @@ export function ProgressRing({
           cx={center}
           cy={center}
           r={radius}
-          stroke={COLORS.cardStrong}
+          stroke={colors.cardStrong}
           strokeWidth={strokeWidth}
           fill="none"
         />
@@ -56,7 +58,7 @@ export function ProgressRing({
           cx={center}
           cy={center}
           r={radius}
-          stroke={COLORS.accent}
+          stroke={colors.accent}
           strokeWidth={strokeWidth}
           strokeDasharray={circumference}
           strokeDashoffset={offset}

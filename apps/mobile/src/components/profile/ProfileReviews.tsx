@@ -9,7 +9,7 @@ import type { ProfileReview } from '@reading/shared';
 import { BookCover } from '@/components/ui/BookCover';
 import { Text } from '@/components/ui/Text';
 
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 interface ProfileReviewsProps {
   reviews: ProfileReview[];
@@ -17,6 +17,8 @@ interface ProfileReviewsProps {
 }
 
 export function ProfileReviews({ reviews, count }: ProfileReviewsProps) {
+  const colors = useColors();
+
   const { t } = useTranslation();
 
   if (reviews.length === 0) {
@@ -51,7 +53,7 @@ export function ProfileReviews({ reviews, count }: ProfileReviewsProps) {
                   <MaterialCommunityIcons
                     name="fire"
                     size={13}
-                    color={COLORS.accent}
+                    color={colors.accent}
                   />
 
                   <Text className="font-sans-semibold text-xs">
@@ -63,7 +65,7 @@ export function ProfileReviews({ reviews, count }: ProfileReviewsProps) {
 
             {review.text === null ? (
               <View className="flex-row items-center gap-1.5">
-                <Feather name="eye-off" size={13} color={COLORS.fgFaint} />
+                <Feather name="eye-off" size={13} color={colors.fgFaint} />
 
                 <Text variant="muted" className="flex-1 text-sm">
                   {t('reviews.spoilerOnProfile')}

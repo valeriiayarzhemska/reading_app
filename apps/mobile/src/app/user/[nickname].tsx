@@ -7,10 +7,12 @@ import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 
 import { usePublicProfile } from '@/api/users';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 // Anyone's profile: readingapp://user/alice
 export default function UserProfileScreen() {
+  const colors = useColors();
+
   const { nickname } = useLocalSearchParams<{ nickname: string }>();
   const { data, error } = usePublicProfile(nickname);
 
@@ -20,7 +22,7 @@ export default function UserProfileScreen() {
         {error ? (
           <Text className="text-center">{error.message}</Text>
         ) : (
-          <ActivityIndicator color={COLORS.fg} />
+          <ActivityIndicator color={colors.fg} />
         )}
       </Screen>
     );

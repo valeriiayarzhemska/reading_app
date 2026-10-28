@@ -15,6 +15,7 @@ import { Text } from '@/components/ui/Text';
 
 import { useAuth } from '@/auth/AuthContext';
 import { currentLanguage, setLanguage, type Language } from '@/i18n';
+import { useTheme } from '@/theme/ThemeProvider';
 
 // Each language is shown in its own language, so it's findable whatever is active
 const LANGUAGE_OPTIONS: SegmentOption<Language>[] = [
@@ -26,6 +27,7 @@ export default function SettingsScreen() {
   // Re-renders when the language changes
   const { t } = useTranslation();
   const { signOut } = useAuth();
+  const { preference, setPreference } = useTheme();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   async function handleSignOut() {
@@ -43,6 +45,20 @@ export default function SettingsScreen() {
             options={LANGUAGE_OPTIONS}
             value={currentLanguage()}
             onChange={setLanguage}
+          />
+        </View>
+
+        <View className="gap-2">
+          <Text variant="label">{t('settings.appearance')}</Text>
+
+          <SegmentedControl
+            options={[
+              { value: 'system', label: t('settings.themes.system') },
+              { value: 'light', label: t('settings.themes.light') },
+              { value: 'dark', label: t('settings.themes.dark') },
+            ]}
+            value={preference}
+            onChange={setPreference}
           />
         </View>
 

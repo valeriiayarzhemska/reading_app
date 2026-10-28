@@ -9,7 +9,7 @@ import { MINI_TIMER_HEIGHT, MiniTimer } from '@/components/timer/MiniTimer';
 import { Text } from '@/components/ui/Text';
 
 import { cn } from '@/lib/cn';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 import { useActiveSession } from '@/timer/useActiveSession';
 
 type IconName = ComponentProps<typeof Feather>['name'];
@@ -34,6 +34,8 @@ export function useTabBarInset(): number {
 }
 
 export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+  const colors = useColors();
+
   const { bottom } = useSafeAreaInsets();
 
   return (
@@ -87,7 +89,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
                 <Feather
                   name={ICONS[route.name] ?? 'circle'}
                   size={20}
-                  color={isFocused ? COLORS.accent : COLORS.fgFaint}
+                  color={isFocused ? colors.accent : colors.fgFaint}
                 />
               </View>
 

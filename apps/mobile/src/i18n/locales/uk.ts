@@ -388,6 +388,12 @@ const uk: Translation = {
   },
   settings: {
     title: 'Налаштування',
+    appearance: 'Тема',
+    themes: {
+      system: 'Як у системі',
+      light: 'Світла',
+      dark: 'Темна',
+    },
   },
   reviews: {
     write: 'Написати рецензію',

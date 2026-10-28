@@ -24,7 +24,7 @@ import { Text } from '@/components/ui/Text';
 import type { SaveOutcome } from '@/api/sessions';
 import { useUpdateStatus } from '@/api/shelf';
 import { useNow } from '@/hooks/useNow';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 import { elapsedMs, formatElapsed } from '@/timer/activeSession';
 import { useActiveSession } from '@/timer/useActiveSession';
 
@@ -40,6 +40,8 @@ export default function TimerScreen() {
 }
 
 function TimerContent() {
+  const colors = useColors();
+
   const { t } = useTranslation();
   // ?finish=1: opened by the ■ button of the Live Activity
   const { finish } = useLocalSearchParams<{ finish?: string }>();
@@ -164,7 +166,7 @@ function TimerContent() {
           accessibilityLabel={t('timer.minimize')}
           className="h-11 w-11 items-center justify-center active:opacity-60"
         >
-          <Feather name="chevron-down" size={28} color={COLORS.fg} />
+          <Feather name="chevron-down" size={28} color={colors.fg} />
         </Pressable>
 
         <Pressable
@@ -173,7 +175,7 @@ function TimerContent() {
           accessibilityLabel={t('timer.discard')}
           className="h-11 w-11 items-center justify-center active:opacity-60"
         >
-          <Feather name="trash-2" size={20} color={COLORS.fgMuted} />
+          <Feather name="trash-2" size={20} color={colors.fgMuted} />
         </Pressable>
       </View>
 
@@ -227,7 +229,7 @@ function TimerContent() {
             <Feather
               name={isPaused ? 'play' : 'pause'}
               size={32}
-              color={COLORS.backgroundBottom}
+              color={colors.backgroundBottom}
             />
           </Pressable>
 
@@ -237,7 +239,7 @@ function TimerContent() {
             accessibilityLabel={t('timer.stop')}
             className="h-14 w-14 items-center justify-center rounded-full border border-border bg-card active:opacity-70"
           >
-            <Feather name="square" size={20} color={COLORS.fg} />
+            <Feather name="square" size={20} color={colors.fg} />
           </Pressable>
         </View>
 
@@ -247,7 +249,7 @@ function TimerContent() {
           accessibilityRole="button"
           className="flex-row items-center gap-2 py-2 active:opacity-60"
         >
-          <Feather name="edit-3" size={16} color={COLORS.fgMuted} />
+          <Feather name="edit-3" size={16} color={colors.fgMuted} />
 
           <Text variant="muted">{t('notes.quickThought')}</Text>
         </Pressable>

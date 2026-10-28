@@ -180,7 +180,7 @@ export function FinishedSheet({
           accessibilityRole="button"
           className="self-start active:opacity-60"
         >
-          <Text className="font-sans-semibold text-accent-light">
+          <Text className="font-sans-semibold text-accent-text">
             {t('book.finished.addStart')}
           </Text>
         </Pressable>

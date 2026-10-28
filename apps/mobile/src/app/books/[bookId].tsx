@@ -15,11 +15,13 @@ import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 
 import { useAddBookToShelf, useBookPage, useBookReviews } from '@/api/reviews';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 // The book itself, for anyone: readingapp://books/<bookId>. Your own shelf
 // entry for it is book/[id].
 export default function BookPageScreen() {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const { bookId } = useLocalSearchParams<{ bookId: string }>();
   const page = useBookPage(bookId);
@@ -31,7 +33,7 @@ export default function BookPageScreen() {
         {page.error ? (
           <Text className="text-center">{page.error.message}</Text>
         ) : (
-          <ActivityIndicator color={COLORS.fg} />
+          <ActivityIndicator color={colors.fg} />
         )}
       </Screen>
     );
@@ -57,7 +59,7 @@ export default function BookPageScreen() {
         ListHeaderComponent={<BookHeader book={page.data} />}
         ListEmptyComponent={
           reviews.isPending ? (
-            <ActivityIndicator color={COLORS.fg} />
+            <ActivityIndicator color={colors.fg} />
           ) : (
             <Text variant="muted" className="text-center">
               {t('reviews.empty')}
@@ -66,7 +68,7 @@ export default function BookPageScreen() {
         }
         ListFooterComponent={
           reviews.isFetchingNextPage ? (
-            <ActivityIndicator className="py-4" color={COLORS.fg} />
+            <ActivityIndicator className="py-4" color={colors.fg} />
           ) : null
         }
       />

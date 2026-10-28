@@ -18,9 +18,11 @@ import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 
 import { useFeed } from '@/api/posts';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 export default function ShelvesScreen() {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const tabBarInset = useTabBarInset();
   const [kind, setKind] = useState<FeedKind>('following');
@@ -64,13 +66,15 @@ export default function ShelvesScreen() {
         // Above the floating tab bar
         style={{ bottom: tabBarInset + 8 }}
       >
-        <Feather name="plus" size={28} color={COLORS.accentFg} />
+        <Feather name="plus" size={28} color={colors.accentFg} />
       </Pressable>
     </Screen>
   );
 }
 
 function Feed({ kind, bottomInset }: { kind: FeedKind; bottomInset: number }) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const feed = useFeed(kind);
   // Read once (and on refresh): "4 min" labels without reading the clock
@@ -78,7 +82,7 @@ function Feed({ kind, bottomInset }: { kind: FeedKind; bottomInset: number }) {
   const [now, setNow] = useState(Date.now);
 
   if (feed.isPending) {
-    return <ActivityIndicator className="mt-8" color={COLORS.fg} />;
+    return <ActivityIndicator className="mt-8" color={colors.fg} />;
   }
 
   if (feed.error) {
@@ -112,7 +116,7 @@ function Feed({ kind, bottomInset }: { kind: FeedKind; bottomInset: number }) {
       }
       ListFooterComponent={
         feed.isFetchingNextPage ? (
-          <ActivityIndicator className="py-4" color={COLORS.fg} />
+          <ActivityIndicator className="py-4" color={colors.fg} />
         ) : null
       }
     />

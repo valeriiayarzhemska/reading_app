@@ -10,7 +10,7 @@ import { Text } from '@/components/ui/Text';
 import { TextField } from '@/components/ui/TextField';
 
 import { useDeleteReview, useSaveReview } from '@/api/reviews';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 interface ReviewSheetProps {
   entry: UserBookWithBook;
@@ -19,6 +19,8 @@ interface ReviewSheetProps {
 }
 
 export function ReviewSheet({ entry, open, onClose }: ReviewSheetProps) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const [text, setText] = useState(entry.review?.text ?? '');
   const [hasSpoilers, setHasSpoilers] = useState(
@@ -87,8 +89,8 @@ export function ReviewSheet({ entry, open, onClose }: ReviewSheetProps) {
         <Switch
           value={hasSpoilers}
           onValueChange={setHasSpoilers}
-          trackColor={{ true: COLORS.accent, false: COLORS.cardStrong }}
-          thumbColor={COLORS.fg}
+          trackColor={{ true: colors.accent, false: colors.cardStrong }}
+          thumbColor={colors.fg}
         />
       </View>
 

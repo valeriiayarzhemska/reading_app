@@ -24,7 +24,7 @@ import { Text } from '@/components/ui/Text';
 
 import { currentLanguage } from '@/i18n';
 import { formatFinishDate } from '@/library/finishDate';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 function displayLink(link: string): string {
   return link.replace(/^https:\/\/(www\.)?/, '');
@@ -46,6 +46,8 @@ function finishedLabel(iso: string, precision: DatePrecision): string {
 
 // Anyone's profile; your own has Edit instead of Follow
 export function PublicProfileView({ profile }: { profile: PublicProfile }) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const { currentlyReading: reading, stats } = profile;
 
@@ -206,7 +208,7 @@ export function PublicProfileView({ profile }: { profile: PublicProfile }) {
                     <MaterialCommunityIcons
                       name="fire"
                       size={13}
-                      color={COLORS.accent}
+                      color={colors.accent}
                     />
 
                     <Text className="font-sans-semibold text-xs">

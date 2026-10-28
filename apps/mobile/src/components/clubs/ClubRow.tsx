@@ -10,7 +10,7 @@ import { BookCover } from '@/components/ui/BookCover';
 import { Text } from '@/components/ui/Text';
 
 import { cn } from '@/lib/cn';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 interface ClubRowProps {
   club: ClubSummary;
@@ -21,6 +21,8 @@ interface ClubRowProps {
 }
 
 export function ClubRow({ club, onPress, variant, isLast }: ClubRowProps) {
+  const colors = useColors();
+
   const { t } = useTranslation();
 
   return (
@@ -50,7 +52,7 @@ export function ClubRow({ club, onPress, variant, isLast }: ClubRowProps) {
         </Text>
 
         <View className="flex-row items-center gap-1">
-          <Feather name="users" size={13} color={COLORS.fgFaint} />
+          <Feather name="users" size={13} color={colors.fgFaint} />
 
           <Text variant="muted" className="text-sm">
             {club.membersCount} ·
@@ -79,7 +81,7 @@ export function ClubRow({ club, onPress, variant, isLast }: ClubRowProps) {
       ) : null}
 
       {variant === 'card' ? (
-        <Feather name="chevron-right" size={18} color={COLORS.fgFaint} />
+        <Feather name="chevron-right" size={18} color={colors.fgFaint} />
       ) : null}
     </Pressable>
   );

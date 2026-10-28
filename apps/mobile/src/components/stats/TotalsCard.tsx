@@ -10,9 +10,11 @@ import { Text } from '@/components/ui/Text';
 
 import { currentLanguage } from '@/i18n';
 import { formatCount } from '@/lib/format';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 export function TotalsCard({ stats }: { stats: StatsSummary }) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const language = currentLanguage();
   const { total, year } = stats;
@@ -20,7 +22,7 @@ export function TotalsCard({ stats }: { stats: StatsSummary }) {
   return (
     <Card className="gap-4">
       <View className="h-11 w-11 items-center justify-center rounded-full border border-accent/40 bg-accent/15">
-        <MaterialCommunityIcons name="fire" size={22} color={COLORS.accent} />
+        <MaterialCommunityIcons name="fire" size={22} color={colors.accent} />
       </View>
 
       <View className="gap-1">

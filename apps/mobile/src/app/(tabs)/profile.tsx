@@ -17,11 +17,13 @@ import { Text } from '@/components/ui/Text';
 
 import { usePublicProfile } from '@/api/users';
 import { useAuth } from '@/auth/AuthContext';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 type ProfileView = 'profile' | 'reading';
 
 export default function ProfileScreen() {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const tabBarInset = useTabBarInset();
   const [view, setView] = useState<ProfileView>('profile');
@@ -54,7 +56,7 @@ export default function ProfileScreen() {
             accessibilityLabel={t('settings.title')}
             className="h-11 w-11 items-center justify-center rounded-full border border-border bg-card active:opacity-70"
           >
-            <Feather name="settings" size={20} color={COLORS.fg} />
+            <Feather name="settings" size={20} color={colors.fg} />
           </Pressable>
         </View>
 
@@ -70,6 +72,8 @@ export default function ProfileScreen() {
 
 // Your profile as others see it (with Edit)
 function OwnProfile({ nickname }: { nickname: string }) {
+  const colors = useColors();
+
   const { data, error } = usePublicProfile(nickname);
 
   if (error) {
@@ -81,7 +85,7 @@ function OwnProfile({ nickname }: { nickname: string }) {
   }
 
   if (!data) {
-    return <ActivityIndicator className="py-8" color={COLORS.fg} />;
+    return <ActivityIndicator className="py-8" color={colors.fg} />;
   }
 
   return <PublicProfileView profile={data} />;

@@ -21,8 +21,9 @@ import { AuthProvider, useAuth } from '@/auth/AuthContext';
 import { useClubActivity } from '@/chat/useClubActivity';
 import { useTimezoneSync } from '@/hooks/useTimezoneSync';
 import { loadSavedLanguage } from '@/i18n';
-import { STACK_OPTIONS } from '@/navigation/stackOptions';
+import { stackOptions } from '@/navigation/stackOptions';
 import { useNotificationEvents } from '@/notifications/useNotificationEvents';
+import { ThemeProvider, useColors, useTheme } from '@/theme/ThemeProvider';
 import { useLiveActivitySync } from '@/timer/useLiveActivitySync';
 import { useReadingChecks } from '@/timer/useReadingChecks';
 import { useSessionSync } from '@/timer/useSessionSync';
@@ -60,19 +61,30 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <BottomSheetModalProvider>
-            <StatusBar style="light" />
+          {/* Above the sheet provider: sheets get the theme's variables too */}
+          <ThemeProvider>
+            <BottomSheetModalProvider>
+              <ThemedStatusBar />
 
-            <RootNavigator />
-          </BottomSheetModalProvider>
+              <RootNavigator />
+            </BottomSheetModalProvider>
+          </ThemeProvider>
         </AuthProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
   );
 }
 
+// Light text on the dark theme, dark text on the light one
+function ThemedStatusBar() {
+  const { scheme } = useTheme();
+
+  return <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />;
+}
+
 function RootNavigator() {
   const { t } = useTranslation();
+  const colors = useColors();
   const { state } = useAuth();
   const isSignedIn = state.status === 'signedIn';
   const isOnboarded = isSignedIn && state.user.onboardedAt !== null;
@@ -96,7 +108,7 @@ function RootNavigator() {
   }
 
   return (
-    <Stack screenOptions={STACK_OPTIONS}>
+    <Stack screenOptions={stackOptions(colors)}>
       {/* When a guard flips, the router redirects to the first allowed screen */}
       <Stack.Protected guard={isOnboarded}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

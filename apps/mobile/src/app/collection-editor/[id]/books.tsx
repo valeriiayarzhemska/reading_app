@@ -14,10 +14,12 @@ import { Text } from '@/components/ui/Text';
 
 import { useShelf } from '@/api/shelf';
 import { sortForPicking } from '@/library/sortForPicking';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 // Changes go straight into the draft; Done just returns to the form
 export default function CollectionBooksScreen() {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const draft = useCollectionDraft();
   const shelf = useShelf();
@@ -76,7 +78,7 @@ export default function CollectionBooksScreen() {
           )}
         />
       ) : (
-        <ActivityIndicator className="mt-8" color={COLORS.fg} />
+        <ActivityIndicator className="mt-8" color={colors.fg} />
       )}
     </Screen>
   );

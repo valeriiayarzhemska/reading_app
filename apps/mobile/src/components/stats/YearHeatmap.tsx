@@ -14,7 +14,7 @@ import { currentLanguage } from '@/i18n';
 import { cn } from '@/lib/cn';
 import { shortMonthNames } from '@/library/finishDate';
 import { monthGrid } from '@/stats/month';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 // Background per heat level: empty → full accent
 const LEVEL_CLASSES = [
@@ -39,6 +39,8 @@ export function YearHeatmap({
   onOpenMonth,
   onBack,
 }: YearHeatmapProps) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const [year, setYear] = useState(initialYear);
   const { data, isPending, error } = useCalendarYear(year);
@@ -63,7 +65,7 @@ export function YearHeatmap({
             accessibilityRole="button"
             className="rounded-full border border-accent/50 bg-accent/15 px-3 py-1 active:opacity-70"
           >
-            <Text className="font-sans-semibold text-xs text-accent-light">
+            <Text className="font-sans-semibold text-xs text-accent-text">
               {t('stats.toMonth')}
             </Text>
           </Pressable>
@@ -90,7 +92,7 @@ export function YearHeatmap({
       ) : null}
 
       {isPending ? (
-        <ActivityIndicator className="py-16" color={COLORS.fg} />
+        <ActivityIndicator className="py-16" color={colors.fg} />
       ) : error ? (
         <Text variant="muted" className="py-8 text-center">
           {error.message}
@@ -147,6 +149,8 @@ interface YearArrowProps {
 }
 
 function YearArrow({ icon, label, disabled = false, onPress }: YearArrowProps) {
+  const colors = useColors();
+
   return (
     <Pressable
       onPress={onPress}
@@ -155,7 +159,7 @@ function YearArrow({ icon, label, disabled = false, onPress }: YearArrowProps) {
       accessibilityLabel={label}
       className="h-9 w-9 items-center justify-center rounded-full active:opacity-60 disabled:opacity-30"
     >
-      <Feather name={icon} size={20} color={COLORS.fg} />
+      <Feather name={icon} size={20} color={colors.fg} />
     </Pressable>
   );
 }

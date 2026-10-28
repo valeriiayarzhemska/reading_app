@@ -20,7 +20,7 @@ import { ApiError } from '@/api/client';
 import { useReaderSearch } from '@/api/follows';
 import { useAddToShelf, useShelf } from '@/api/shelf';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 type SearchMode = 'books' | 'readers';
 
@@ -69,13 +69,15 @@ export default function SearchScreen() {
 }
 
 function ReaderResults({ query }: { query: string }) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const search = useReaderSearch(query);
 
   return (
     <>
       {search.isFetching ? (
-        <ActivityIndicator className="mt-3" color={COLORS.fg} />
+        <ActivityIndicator className="mt-3" color={colors.fg} />
       ) : null}
 
       {search.error ? (
@@ -103,6 +105,8 @@ function ReaderResults({ query }: { query: string }) {
 }
 
 function BookResults({ query }: { query: string }) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const search = useBookSearch(query);
   const shelf = useShelf();
@@ -162,7 +166,7 @@ function BookResults({ query }: { query: string }) {
       ) : null}
 
       {search.isFetching ? (
-        <ActivityIndicator className="mt-3" color={COLORS.fg} />
+        <ActivityIndicator className="mt-3" color={colors.fg} />
       ) : null}
 
       {search.error ? (

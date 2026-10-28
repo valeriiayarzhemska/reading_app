@@ -12,7 +12,7 @@ import { Card } from '@/components/ui/Card';
 import { Text } from '@/components/ui/Text';
 
 import { currentLanguage } from '@/i18n';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 function reviewDate(iso: string): string {
   return new Intl.DateTimeFormat(currentLanguage(), {
@@ -23,6 +23,8 @@ function reviewDate(iso: string): string {
 }
 
 export function ReviewCard({ review }: { review: BookReview }) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   // Your own spoilers are no surprise to you
   const [isRevealed, setIsRevealed] = useState(review.isMine);
@@ -60,7 +62,7 @@ export function ReviewCard({ review }: { review: BookReview }) {
             <MaterialCommunityIcons
               name="fire"
               size={15}
-              color={COLORS.accent}
+              color={colors.accent}
             />
 
             <Text className="font-sans-semibold text-sm">
@@ -76,7 +78,7 @@ export function ReviewCard({ review }: { review: BookReview }) {
           accessibilityRole="button"
           className="flex-row items-center gap-2 rounded-xl bg-card-strong px-3 py-3 active:opacity-70"
         >
-          <Feather name="eye-off" size={16} color={COLORS.fgFaint} />
+          <Feather name="eye-off" size={16} color={colors.fgFaint} />
 
           <Text variant="muted" className="flex-1">
             {t('reviews.spoilerHidden')}

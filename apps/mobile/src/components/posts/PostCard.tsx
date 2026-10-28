@@ -18,7 +18,7 @@ import { markBookOnShelf, useDeletePost, useTogglePostLike } from '@/api/posts';
 import { useAddBookToShelf } from '@/api/reviews';
 import { cn } from '@/lib/cn';
 import { timeAgo } from '@/lib/timeAgo';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 interface PostCardProps {
   post: PostItem;
@@ -29,6 +29,8 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, now, variant }: PostCardProps) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const toggleLike = useTogglePostLike(post);
   const remove = useDeletePost(post.id);
@@ -92,7 +94,7 @@ export function PostCard({ post, now, variant }: PostCardProps) {
               <Feather
                 name="more-horizontal"
                 size={18}
-                color={COLORS.fgFaint}
+                color={colors.fgFaint}
               />
             </Pressable>
           ) : null}
@@ -147,7 +149,7 @@ export function PostCard({ post, now, variant }: PostCardProps) {
             <Feather
               name="heart"
               size={20}
-              color={post.likedByMe ? COLORS.accent : COLORS.fgMuted}
+              color={post.likedByMe ? colors.accent : colors.fgMuted}
             />
 
             {post.likesCount > 0 ? (
@@ -162,7 +164,7 @@ export function PostCard({ post, now, variant }: PostCardProps) {
             hitSlop={6}
             className="flex-row items-center gap-1.5 active:opacity-60"
           >
-            <Feather name="message-circle" size={20} color={COLORS.fgMuted} />
+            <Feather name="message-circle" size={20} color={colors.fgMuted} />
 
             {post.commentsCount > 0 ? (
               <Text variant="muted">{post.commentsCount}</Text>

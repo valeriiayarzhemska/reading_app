@@ -8,7 +8,7 @@ import DateTimePicker, {
 import { Text } from '@/components/ui/Text';
 
 import { currentLanguage } from '@/i18n';
-import { COLORS } from '@/theme/colors';
+import { useColors, useTheme } from '@/theme/ThemeProvider';
 
 interface DateFieldProps {
   label: string;
@@ -30,6 +30,9 @@ export function DateField({
   maximumDate,
   minimumDate,
 }: DateFieldProps) {
+  const colors = useColors();
+  const { scheme } = useTheme();
+
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   function open() {
@@ -79,7 +82,7 @@ export function DateField({
             onPress={() => setIsCalendarOpen(false)}
             accessibilityLabel={label}
             className="flex-1 items-center justify-center px-4"
-            style={{ backgroundColor: COLORS.backdrop }}
+            style={{ backgroundColor: colors.backdrop }}
           >
             {/* Taps on the calendar itself must not reach the backdrop.
                 No w-full: the native calendar has a fixed width and won't
@@ -87,7 +90,7 @@ export function DateField({
             <Pressable
               onPress={() => {}}
               className="items-center gap-1 rounded-card px-2 pb-2 pt-4"
-              style={{ backgroundColor: COLORS.sheet }}
+              style={{ backgroundColor: colors.sheet }}
             >
               <Text variant="label">{label}</Text>
 
@@ -97,8 +100,8 @@ export function DateField({
                 display="inline"
                 // Otherwise iOS uses the phone's language, not the app's
                 locale={currentLanguage()}
-                themeVariant="dark"
-                accentColor={COLORS.accent}
+                themeVariant={scheme}
+                accentColor={colors.accent}
                 maximumDate={maximumDate}
                 minimumDate={minimumDate}
                 onValueChange={(_event, date) => {

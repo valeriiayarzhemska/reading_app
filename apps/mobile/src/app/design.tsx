@@ -19,7 +19,7 @@ import { TextField } from '@/components/ui/TextField';
 
 import { i18n } from '@/i18n';
 import { formatDate } from '@/lib/format';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 const FORMAT_OPTIONS: SegmentOption<BookFormat>[] = [
   { value: BookFormat.PAPER, label: 'Paper' },
@@ -146,6 +146,8 @@ function StartSessionSheetDemo() {
 }
 
 export default function DesignScreen() {
+  const colors = useColors();
+
   const [format, setFormat] = useState<BookFormat>(BookFormat.PAPER);
   const [unit, setUnit] = useState<ProgressUnit>(ProgressUnit.PAGES);
   const [title, setTitle] = useState('');
@@ -171,7 +173,7 @@ export default function DesignScreen() {
 
         <Section title="Colors">
           <View className="flex-row flex-wrap gap-2">
-            {Object.entries(COLORS).map(([name, value]) => (
+            {Object.entries(colors).map(([name, value]) => (
               <View key={name} className="w-[30%] items-center gap-1">
                 <View
                   className="h-10 w-full rounded-lg border border-border"

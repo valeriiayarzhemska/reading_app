@@ -14,7 +14,7 @@ import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Text } from '@/components/ui/Text';
 
 import { useFollowList } from '@/api/follows';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 // readingapp://follows/alice?list=following
 export default function FollowsScreen() {
@@ -51,6 +51,8 @@ function ReaderList({
   nickname: string;
   list: FollowList;
 }) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const {
     data,
@@ -64,7 +66,7 @@ function ReaderList({
   } = useFollowList(nickname, list);
 
   if (isPending) {
-    return <ActivityIndicator className="mt-8" color={COLORS.fg} />;
+    return <ActivityIndicator className="mt-8" color={colors.fg} />;
   }
 
   if (error) {
@@ -94,7 +96,7 @@ function ReaderList({
       ListFooterComponent={
         isFetchingNextPage ? (
           <View className="py-4">
-            <ActivityIndicator color={COLORS.fg} />
+            <ActivityIndicator color={colors.fg} />
           </View>
         ) : null
       }

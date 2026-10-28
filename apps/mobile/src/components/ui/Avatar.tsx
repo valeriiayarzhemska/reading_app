@@ -29,7 +29,7 @@ export function Avatar({ name, url, size = 72 }: AvatarProps) {
       {/* An explicit line height: Lora's default one is shorter than the
           letter, and iOS cuts off its top */}
       <Text
-        className="font-serif text-accent-light"
+        className="font-serif text-accent-text"
         style={{ fontSize: size * 0.42, lineHeight: size * 0.42 * 1.3 }}
       >
         {name.charAt(0).toUpperCase()}

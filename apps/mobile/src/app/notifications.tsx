@@ -18,7 +18,7 @@ import {
 } from '@/api/notifications';
 import { cn } from '@/lib/cn';
 import { timeAgo } from '@/lib/timeAgo';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 const ACTION_KEYS = {
   [NotificationType.FOLLOW]: 'notifications.follow',
@@ -41,6 +41,8 @@ function open(item: NotificationItem) {
 }
 
 export default function NotificationsScreen() {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const list = useNotifications();
   const markRead = useMarkNotificationsRead();
@@ -59,7 +61,7 @@ export default function NotificationsScreen() {
   if (list.isPending) {
     return (
       <Screen className="items-center justify-center">
-        <ActivityIndicator color={COLORS.fg} />
+        <ActivityIndicator color={colors.fg} />
       </Screen>
     );
   }

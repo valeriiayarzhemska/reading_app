@@ -15,7 +15,7 @@ import { useRemoveFinish } from '@/api/shelf';
 import { useDaySessions } from '@/api/stats';
 import { currentLanguage } from '@/i18n';
 import { formatDate, formatDuration } from '@/lib/format';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 interface DaySheetProps {
   // The tapped day; null = closed
@@ -24,6 +24,8 @@ interface DaySheetProps {
 }
 
 export function DaySheet({ day: openDay, onClose }: DaySheetProps) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const isOpen = openDay !== null;
   // Keeps the last day while the sheet slides down; otherwise it would go
@@ -116,7 +118,7 @@ export function DaySheet({ day: openDay, onClose }: DaySheetProps) {
                     hitSlop={8}
                     className="h-8 w-8 items-center justify-center active:opacity-60"
                   >
-                    <Feather name="x" size={18} color={COLORS.fgFaint} />
+                    <Feather name="x" size={18} color={colors.fgFaint} />
                   </Pressable>
                 </View>
               ))}
@@ -127,7 +129,7 @@ export function DaySheet({ day: openDay, onClose }: DaySheetProps) {
             <Text variant="label">{t('stats.day.sessions')}</Text>
 
             {sessions.isPending ? (
-              <ActivityIndicator className="py-4" color={COLORS.fg} />
+              <ActivityIndicator className="py-4" color={colors.fg} />
             ) : sessions.error ? (
               <Text variant="muted">{sessions.error.message}</Text>
             ) : sessions.data.length === 0 ? (
@@ -157,7 +159,7 @@ export function DaySheet({ day: openDay, onClose }: DaySheetProps) {
                   <Feather
                     name="chevron-right"
                     size={16}
-                    color={COLORS.fgFaint}
+                    color={colors.fgFaint}
                   />
                 </Pressable>
               ))

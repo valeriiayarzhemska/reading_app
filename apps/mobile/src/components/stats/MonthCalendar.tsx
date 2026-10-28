@@ -15,13 +15,15 @@ import { useCalendar } from '@/api/stats';
 import { currentLanguage } from '@/i18n';
 import { formatMonth, weekdayNames } from '@/lib/format';
 import { currentMonth, monthGrid, shiftMonth, today } from '@/stats/month';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 interface MonthCalendarProps {
   onPressDay?: (day: CalendarDay) => void;
 }
 
 export function MonthCalendar({ onPressDay }: MonthCalendarProps) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const language = currentLanguage();
   // Read once on mount: the clock isn't read during render
@@ -101,7 +103,7 @@ export function MonthCalendar({ onPressDay }: MonthCalendarProps) {
       </View>
 
       {isPending ? (
-        <ActivityIndicator className="py-16" color={COLORS.fg} />
+        <ActivityIndicator className="py-16" color={colors.fg} />
       ) : error ? (
         <Text variant="muted" className="py-8 text-center">
           {error.message}
@@ -151,6 +153,8 @@ function MonthArrow({
   disabled = false,
   onPress,
 }: MonthArrowProps) {
+  const colors = useColors();
+
   return (
     <Pressable
       onPress={onPress}
@@ -159,7 +163,7 @@ function MonthArrow({
       accessibilityLabel={label}
       className="h-9 w-9 items-center justify-center rounded-full active:opacity-60 disabled:opacity-30"
     >
-      <Feather name={icon} size={20} color={COLORS.fg} />
+      <Feather name={icon} size={20} color={colors.fg} />
     </Pressable>
   );
 }

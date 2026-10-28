@@ -14,7 +14,7 @@ import {
   prepareCover,
   type CoverSource,
 } from '@/library/coverImage';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 const WIDTH = 112;
 const HEIGHT = 160;
@@ -26,6 +26,8 @@ interface CoverPickerProps {
 }
 
 export function CoverPicker({ uri, onChange }: CoverPickerProps) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPreparing, setIsPreparing] = useState(false);
@@ -73,7 +75,7 @@ export function CoverPicker({ uri, onChange }: CoverPickerProps) {
         className="items-center justify-center overflow-hidden rounded-xl border border-dashed border-border bg-card active:opacity-70"
       >
         {isPreparing ? (
-          <ActivityIndicator color={COLORS.fg} />
+          <ActivityIndicator color={colors.fg} />
         ) : uri ? (
           <Image
             source={uri}
@@ -82,7 +84,7 @@ export function CoverPicker({ uri, onChange }: CoverPickerProps) {
           />
         ) : (
           <View className="items-center gap-1.5">
-            <Feather name="camera" size={22} color={COLORS.fgMuted} />
+            <Feather name="camera" size={22} color={colors.fgMuted} />
 
             <Text variant="muted" className="text-xs">
               {t('addBook.cover.add')}

@@ -10,7 +10,7 @@ import { Avatar } from '@/components/ui/Avatar';
 import { Text } from '@/components/ui/Text';
 
 import { timeAgo } from '@/lib/timeAgo';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 interface CommentRowProps {
   comment: PostComment;
@@ -20,6 +20,8 @@ interface CommentRowProps {
 }
 
 export function CommentRow({ comment, now, onLike, onReply }: CommentRowProps) {
+  const colors = useColors();
+
   const { t } = useTranslation();
 
   return (
@@ -62,7 +64,7 @@ export function CommentRow({ comment, now, onLike, onReply }: CommentRowProps) {
           <Feather
             name="heart"
             size={16}
-            color={comment.likedByMe ? COLORS.accent : COLORS.fgFaint}
+            color={comment.likedByMe ? colors.accent : colors.fgFaint}
           />
 
           {comment.likesCount > 0 ? (
@@ -79,7 +81,7 @@ export function CommentRow({ comment, now, onLike, onReply }: CommentRowProps) {
           hitSlop={6}
           className="active:opacity-60"
         >
-          <Feather name="corner-up-left" size={16} color={COLORS.fgFaint} />
+          <Feather name="corner-up-left" size={16} color={colors.fgFaint} />
         </Pressable>
       </View>
     </View>

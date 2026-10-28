@@ -5,7 +5,7 @@ import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { cn } from '@/lib/cn';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 interface ScreenProps {
   children: ReactNode;
@@ -19,9 +19,11 @@ export function Screen({
   className,
   edges = ['bottom'],
 }: ScreenProps) {
+  const colors = useColors();
+
   return (
     <LinearGradient
-      colors={[COLORS.backgroundTop, COLORS.backgroundBottom]}
+      colors={[colors.backgroundTop, colors.backgroundBottom]}
       style={styles.fill}
     >
       {/* SafeAreaView and LinearGradient are not core components, so they take

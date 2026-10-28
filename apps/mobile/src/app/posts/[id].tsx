@@ -29,10 +29,12 @@ import {
   useToggleCommentLike,
 } from '@/api/posts';
 import { cn } from '@/lib/cn';
-import { COLORS } from '@/theme/colors';
+import { useColors, useTheme } from '@/theme/ThemeProvider';
 
 // readingapp://posts/<id>
 export default function PostScreen() {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const post = usePost(id);
@@ -56,7 +58,7 @@ export default function PostScreen() {
           {post.error ? (
             <Text className="text-center">{post.error.message}</Text>
           ) : (
-            <ActivityIndicator color={COLORS.fg} />
+            <ActivityIndicator color={colors.fg} />
           )}
         </View>
       )}
@@ -65,6 +67,9 @@ export default function PostScreen() {
 }
 
 function Comments({ post }: { post: PostItem }) {
+  const colors = useColors();
+  const { scheme } = useTheme();
+
   const { t } = useTranslation();
   const comments = useComments(post.id);
   const addComment = useAddComment(post.id);
@@ -112,7 +117,7 @@ function Comments({ post }: { post: PostItem }) {
         }
         ListEmptyComponent={
           comments.isPending ? (
-            <ActivityIndicator className="mt-6" color={COLORS.fg} />
+            <ActivityIndicator className="mt-6" color={colors.fg} />
           ) : (
             <Text variant="muted" className="mt-6 text-center">
               {t('posts.noComments')}
@@ -130,9 +135,9 @@ function Comments({ post }: { post: PostItem }) {
           value={text}
           onChangeText={setText}
           placeholder={t('posts.replyPlaceholder')}
-          placeholderTextColor={COLORS.fgFaint}
-          selectionColor={COLORS.accent}
-          keyboardAppearance="dark"
+          placeholderTextColor={colors.fgFaint}
+          selectionColor={colors.accent}
+          keyboardAppearance={scheme}
           multiline
           maxLength={COMMENT_MAX_LENGTH}
           className="max-h-32 flex-1 rounded-3xl border border-border bg-card px-4 py-3 font-sans text-base text-fg"
@@ -151,7 +156,7 @@ function Comments({ post }: { post: PostItem }) {
           <Feather
             name="arrow-up"
             size={22}
-            color={canSend ? COLORS.accentFg : COLORS.fgFaint}
+            color={canSend ? colors.accentFg : colors.fgFaint}
           />
         </Pressable>
       </View>

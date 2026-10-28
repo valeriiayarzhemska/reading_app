@@ -23,11 +23,14 @@ import { useCreatePost } from '@/api/posts';
 import { useShelf } from '@/api/shelf';
 import { pickPhoto } from '@/lib/pickPhoto';
 import { sortForPicking } from '@/library/sortForPicking';
-import { COLORS } from '@/theme/colors';
+import { useColors, useTheme } from '@/theme/ThemeProvider';
 
 type Book = UserBookWithBook['book'];
 
 export default function NewPostScreen() {
+  const colors = useColors();
+  const { scheme } = useTheme();
+
   const { t } = useTranslation();
   const create = useCreatePost();
   const shelf = useShelf();
@@ -97,9 +100,9 @@ export default function NewPostScreen() {
             value={text}
             onChangeText={setText}
             placeholder={t('posts.placeholder')}
-            placeholderTextColor={COLORS.fgFaint}
-            selectionColor={COLORS.accent}
-            keyboardAppearance="dark"
+            placeholderTextColor={colors.fgFaint}
+            selectionColor={colors.accent}
+            keyboardAppearance={scheme}
             multiline
             autoFocus
             maxLength={POST_MAX_LENGTH}
@@ -211,6 +214,8 @@ function ToolButton({
   label: string;
   onPress: () => void;
 }) {
+  const colors = useColors();
+
   return (
     <Pressable
       onPress={onPress}
@@ -219,7 +224,7 @@ function ToolButton({
       hitSlop={8}
       className="active:opacity-60"
     >
-      <Feather name={icon} size={24} color={COLORS.fgMuted} />
+      <Feather name={icon} size={24} color={colors.fgMuted} />
     </Pressable>
   );
 }
@@ -231,13 +236,15 @@ function RemoveButton({
   label: string;
   onPress: () => void;
 }) {
+  const colors = useColors();
+
   return (
     <Pressable
       onPress={onPress}
       accessibilityLabel={label}
       className="h-7 w-7 items-center justify-center rounded-full bg-card-strong active:opacity-70"
     >
-      <Feather name="x" size={16} color={COLORS.fg} />
+      <Feather name="x" size={16} color={colors.fg} />
     </Pressable>
   );
 }

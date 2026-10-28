@@ -50,9 +50,11 @@ import { currentLanguage } from '@/i18n';
 import { formatDuration } from '@/lib/format';
 import { formatFinishDate } from '@/library/finishDate';
 import { useReadingSettings } from '@/settings/readingSettings';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 export default function BookScreen() {
+  const colors = useColors();
+
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data: entry, error } = useShelfEntry(id);
 
@@ -62,7 +64,7 @@ export default function BookScreen() {
         {error ? (
           <Text className="text-center">{error.message}</Text>
         ) : (
-          <ActivityIndicator color={COLORS.fg} />
+          <ActivityIndicator color={colors.fg} />
         )}
       </Screen>
     );
@@ -72,6 +74,8 @@ export default function BookScreen() {
 }
 
 function BookDetails({ entry }: { entry: UserBookWithBook }) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   // ?rate=1: opened from the timer's "Mark as read", show the sheet at once
   const { rate } = useLocalSearchParams<{ rate?: string }>();
@@ -240,13 +244,13 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
               accessibilityRole="button"
               className="flex-row items-center justify-between py-2 active:opacity-60"
             >
-              <Text className="font-sans-semibold text-accent-light">
+              <Text className="font-sans-semibold text-accent-text">
                 {entry.rating === null
                   ? t('book.finished.rate')
                   : t('book.finished.yourRating', { rating: entry.rating })}
               </Text>
 
-              <Feather name="chevron-right" size={18} color={COLORS.fgFaint} />
+              <Feather name="chevron-right" size={18} color={colors.fgFaint} />
             </Pressable>
 
             <Pressable
@@ -264,7 +268,7 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
                 <Text>{t('reviews.write')}</Text>
               )}
 
-              <Feather name="chevron-right" size={18} color={COLORS.fgFaint} />
+              <Feather name="chevron-right" size={18} color={colors.fgFaint} />
             </Pressable>
 
             {entry.finishedAt ? (
@@ -286,7 +290,7 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
                 <Feather
                   name="chevron-right"
                   size={18}
-                  color={COLORS.fgFaint}
+                  color={colors.fgFaint}
                 />
               </Pressable>
             ) : null}

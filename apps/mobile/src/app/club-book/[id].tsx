@@ -14,10 +14,12 @@ import { Text } from '@/components/ui/Text';
 import { useClub, useSetClubBook } from '@/api/clubs';
 import { useShelf } from '@/api/shelf';
 import { sortForPicking } from '@/library/sortForPicking';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 // Host only: pick the club's "Reading together" book from your shelf
 export default function ClubBookScreen() {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const club = useClub(id);
@@ -32,7 +34,7 @@ export default function ClubBookScreen() {
   if (!shelf.data || !club.data) {
     return (
       <Screen className="items-center justify-center">
-        <ActivityIndicator color={COLORS.fg} />
+        <ActivityIndicator color={colors.fg} />
       </Screen>
     );
   }
@@ -74,7 +76,7 @@ export default function ClubBookScreen() {
               coverUrl={item.book.coverUrl}
               action={
                 item.bookId === currentId ? (
-                  <Feather name="check" size={20} color={COLORS.accent} />
+                  <Feather name="check" size={20} color={colors.accent} />
                 ) : undefined
               }
             />

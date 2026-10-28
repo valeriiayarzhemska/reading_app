@@ -24,10 +24,12 @@ import { Text } from '@/components/ui/Text';
 import { useClub, useLeaveClub } from '@/api/clubs';
 import { shareClub } from '@/clubs/shareClub';
 import { currentLanguage } from '@/i18n';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 // "About the room": readingapp://club-info/<id>
 export default function ClubInfoScreen() {
+  const colors = useColors();
+
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data, error } = useClub(id);
 
@@ -40,7 +42,7 @@ export default function ClubInfoScreen() {
           {error ? (
             <Text className="text-center">{error.message}</Text>
           ) : (
-            <ActivityIndicator color={COLORS.fg} />
+            <ActivityIndicator color={colors.fg} />
           )}
         </View>
       )}
@@ -49,6 +51,8 @@ export default function ClubInfoScreen() {
 }
 
 function ClubInfo({ club }: { club: ClubDetail }) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const leave = useLeaveClub(club.id);
 
@@ -138,7 +142,7 @@ function ClubInfo({ club }: { club: ClubDetail }) {
               </Text>
             </View>
 
-            <Feather name="chevron-right" size={18} color={COLORS.fgFaint} />
+            <Feather name="chevron-right" size={18} color={colors.fgFaint} />
           </Card>
         </Pressable>
       </View>

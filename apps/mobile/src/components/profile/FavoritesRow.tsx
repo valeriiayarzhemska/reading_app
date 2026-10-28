@@ -9,7 +9,7 @@ import { FAVORITES_MAX, type FavoriteBook } from '@reading/shared';
 import { RemoteImage } from '@/components/ui/RemoteImage';
 import { Text } from '@/components/ui/Text';
 
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 // Book covers are 7:10
 const COVER_RATIO = 0.7;
@@ -22,6 +22,8 @@ interface FavoritesRowProps {
 // "Four favorites": always 4 slots in one row. Empty slots are shown only on
 // your own profile, as an invitation to pick.
 export function FavoritesRow({ favorites, isMe }: FavoritesRowProps) {
+  const colors = useColors();
+
   const { t } = useTranslation();
 
   if (!isMe && favorites.length === 0) {
@@ -64,7 +66,7 @@ export function FavoritesRow({ favorites, isMe }: FavoritesRowProps) {
               className="flex-1 items-center justify-center rounded-lg border border-dashed border-border active:opacity-60"
               style={{ aspectRatio: COVER_RATIO }}
             >
-              <Feather name="plus" size={18} color={COLORS.fgFaint} />
+              <Feather name="plus" size={18} color={colors.fgFaint} />
             </Pressable>
           ),
         )}

@@ -17,9 +17,11 @@ import { useShelf } from '@/api/shelf';
 import { usePublicProfile, useSetFavorites } from '@/api/users';
 import { useAuth } from '@/auth/AuthContext';
 import { sortForPicking } from '@/library/sortForPicking';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 export default function FavoritesScreen() {
+  const colors = useColors();
+
   const { state } = useAuth();
   const nickname = state.status === 'signedIn' ? state.user.nickname : '';
   const shelf = useShelf();
@@ -28,7 +30,7 @@ export default function FavoritesScreen() {
   if (!shelf.data || !profile.data) {
     return (
       <Screen className="items-center justify-center">
-        <ActivityIndicator color={COLORS.fg} />
+        <ActivityIndicator color={colors.fg} />
       </Screen>
     );
   }

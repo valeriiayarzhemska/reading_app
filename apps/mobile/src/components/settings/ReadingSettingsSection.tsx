@@ -15,7 +15,7 @@ import {
   CHECK_AFTER_OPTIONS,
   useReadingSettings,
 } from '@/settings/readingSettings';
-import { COLORS } from '@/theme/colors';
+import { useColors, useTheme } from '@/theme/ThemeProvider';
 
 export function ReadingSettingsSection() {
   const { t } = useTranslation();
@@ -87,6 +87,8 @@ function SettingRow({
   onChange,
   children,
 }: SettingRowProps) {
+  const colors = useColors();
+
   return (
     <View className="gap-3">
       <View className="flex-row items-center justify-between gap-4">
@@ -101,8 +103,8 @@ function SettingRow({
         <Switch
           value={value}
           onValueChange={onChange}
-          trackColor={{ true: COLORS.accent, false: COLORS.cardStrong }}
-          thumbColor={COLORS.fg}
+          trackColor={{ true: colors.accent, false: colors.cardStrong }}
+          thumbColor={colors.fg}
         />
       </View>
 
@@ -122,6 +124,8 @@ function TimeField({
   minute: number;
   onChange: (hour: number, minute: number) => void;
 }) {
+  const { scheme } = useTheme();
+
   const value = new Date();
 
   value.setHours(hour, minute, 0, 0);
@@ -140,7 +144,7 @@ function TimeField({
           mode="time"
           display="compact"
           locale={currentLanguage()}
-          themeVariant="dark"
+          themeVariant={scheme}
           onChange={(_event, date) => pick(date)}
         />
       </View>

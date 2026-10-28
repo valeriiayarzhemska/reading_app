@@ -12,7 +12,7 @@ import { Text } from '@/components/ui/Text';
 import type { ChatItem } from '@/chat/useClubChat';
 import { currentLanguage } from '@/i18n';
 import { cn } from '@/lib/cn';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 // Photos have no stored size yet: one shape keeps the list stable
 const PHOTO_WIDTH = 240;
@@ -43,6 +43,8 @@ export function MessageBubble({
   onLongPress,
   onReact,
 }: MessageBubbleProps) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const isMine = message.author.id === myId;
   const isFailed = message.status === 'failed';
@@ -113,7 +115,7 @@ export function MessageBubble({
 
           <View className="flex-row items-center justify-end gap-1 px-3.5 pb-2">
             {message.status === 'sending' ? (
-              <Feather name="clock" size={11} color={COLORS.accentFg} />
+              <Feather name="clock" size={11} color={colors.accentFg} />
             ) : null}
 
             {/* Only your own messages can fail, and they sit on the orange

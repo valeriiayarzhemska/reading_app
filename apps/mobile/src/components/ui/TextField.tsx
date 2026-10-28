@@ -6,7 +6,7 @@ import { cssInterop } from 'nativewind';
 import { Text } from '@/components/ui/Text';
 
 import { cn } from '@/lib/cn';
-import { COLORS } from '@/theme/colors';
+import { useColors, useTheme } from '@/theme/ThemeProvider';
 
 // Not a core component, so NativeWind must be told to map className → style
 cssInterop(BottomSheetTextInput, { className: 'style' });
@@ -26,6 +26,9 @@ export function TextField({
   className,
   ...inputProps
 }: TextFieldProps) {
+  const colors = useColors();
+  const { scheme } = useTheme();
+
   const Input = inSheet ? BottomSheetTextInput : TextInput;
 
   return (
@@ -37,9 +40,9 @@ export function TextField({
           'rounded-2xl border bg-card px-4 py-3.5 font-sans text-base text-fg',
           error ? 'border-danger' : 'border-border',
         )}
-        placeholderTextColor={COLORS.fgFaint}
-        selectionColor={COLORS.accent}
-        keyboardAppearance="dark"
+        placeholderTextColor={colors.fgFaint}
+        selectionColor={colors.accent}
+        keyboardAppearance={scheme}
         {...inputProps}
       />
 

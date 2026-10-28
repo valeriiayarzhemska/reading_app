@@ -6,7 +6,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Text } from '@/components/ui/Text';
 
 import { currentLanguage } from '@/i18n';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 interface RatingSummaryProps {
   ratingAvg: number | null;
@@ -15,6 +15,8 @@ interface RatingSummaryProps {
 
 // "🔥 8.4 · 12 ratings" over all readers, or "No ratings yet"
 export function RatingSummary({ ratingAvg, ratingCount }: RatingSummaryProps) {
+  const colors = useColors();
+
   const { t } = useTranslation();
 
   if (ratingAvg === null) {
@@ -27,7 +29,7 @@ export function RatingSummary({ ratingAvg, ratingCount }: RatingSummaryProps) {
 
   return (
     <View className="flex-row items-center gap-1">
-      <MaterialCommunityIcons name="fire" size={16} color={COLORS.accent} />
+      <MaterialCommunityIcons name="fire" size={16} color={colors.accent} />
 
       <Text className="font-sans-semibold">
         {ratingAvg.toLocaleString(currentLanguage(), {

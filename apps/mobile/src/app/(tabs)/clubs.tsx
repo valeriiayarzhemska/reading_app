@@ -19,7 +19,7 @@ import { TextField } from '@/components/ui/TextField';
 
 import { useAllClubs, useMyClubs } from '@/api/clubs';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 type ClubsView = 'mine' | 'all';
 
@@ -28,6 +28,8 @@ function openClub(id: string) {
 }
 
 export default function ClubsScreen() {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const tabBarInset = useTabBarInset();
   const [view, setView] = useState<ClubsView>('mine');
@@ -61,7 +63,7 @@ export default function ClubsScreen() {
               accessibilityLabel={t('clubs.create.title')}
               className="h-10 w-10 items-center justify-center rounded-full border border-border bg-card active:opacity-70"
             >
-              <Feather name="plus" size={20} color={COLORS.fg} />
+              <Feather name="plus" size={20} color={colors.fg} />
             </Pressable>
           ) : null}
         </View>
@@ -82,6 +84,8 @@ export default function ClubsScreen() {
 }
 
 function MyClubs() {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const { data, error } = useMyClubs();
 
@@ -89,7 +93,7 @@ function MyClubs() {
     return error ? (
       <Text className="text-center">{error.message}</Text>
     ) : (
-      <ActivityIndicator color={COLORS.fg} />
+      <ActivityIndicator color={colors.fg} />
     );
   }
 
@@ -121,6 +125,8 @@ function MyClubs() {
 }
 
 function AllClubs() {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const [text, setText] = useState('');
   const query = useDebouncedValue(text.trim(), 400);
@@ -168,7 +174,7 @@ function AllClubs() {
 
         {error ? <Text className="text-danger">{error.message}</Text> : null}
 
-        {!data && !error ? <ActivityIndicator color={COLORS.fg} /> : null}
+        {!data && !error ? <ActivityIndicator color={colors.fg} /> : null}
 
         {data && clubs.length === 0 ? (
           <Text variant="muted" className="text-center">

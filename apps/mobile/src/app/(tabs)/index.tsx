@@ -24,10 +24,12 @@ import { Text } from '@/components/ui/Text';
 import { useShelf } from '@/api/shelf';
 import { useAuth } from '@/auth/AuthContext';
 import { toLibrarySections } from '@/library/shelves';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 import { usePendingCount } from '@/timer/pendingSessions';
 
 export default function LibraryScreen() {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const { data, isPending, error, refetch, isRefetching } = useShelf();
   const tabBarInset = useTabBarInset();
@@ -39,7 +41,7 @@ export default function LibraryScreen() {
   if (isPending) {
     return (
       <Screen edges={['top']} className="items-center justify-center">
-        <ActivityIndicator color={COLORS.fg} />
+        <ActivityIndicator color={colors.fg} />
       </Screen>
     );
   }
@@ -75,7 +77,7 @@ export default function LibraryScreen() {
           <RefreshControl
             refreshing={isRefetching}
             onRefresh={refetch}
-            tintColor={COLORS.fg}
+            tintColor={colors.fg}
           />
         }
       >
@@ -94,13 +96,13 @@ export default function LibraryScreen() {
             accessibilityLabel={t('search.title')}
             className="h-11 w-11 items-center justify-center rounded-full border border-border bg-card active:opacity-70"
           >
-            <Feather name="search" size={20} color={COLORS.fg} />
+            <Feather name="search" size={20} color={colors.fg} />
           </Pressable>
         </View>
 
         {pendingCount > 0 ? (
           <View className="flex-row items-center gap-2">
-            <Feather name="cloud-off" size={14} color={COLORS.fgMuted} />
+            <Feather name="cloud-off" size={14} color={colors.fgMuted} />
 
             <Text variant="muted" className="text-xs">
               {t('timer.pending', { count: pendingCount })}

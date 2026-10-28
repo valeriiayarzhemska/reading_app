@@ -10,7 +10,7 @@ import { Text } from '@/components/ui/Text';
 
 import type { ChatItem } from '@/chat/useClubChat';
 import { cn } from '@/lib/cn';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 interface MessageActionsSheetProps {
   // The last long-pressed message, kept while the sheet slides away
@@ -31,6 +31,8 @@ export function MessageActionsSheet({
   onReact,
   onReply,
 }: MessageActionsSheetProps) {
+  const colors = useColors();
+
   const { t } = useTranslation();
 
   return (
@@ -72,7 +74,7 @@ export function MessageActionsSheet({
             accessibilityRole="button"
             className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-3.5 active:opacity-70"
           >
-            <Feather name="corner-up-left" size={18} color={COLORS.fg} />
+            <Feather name="corner-up-left" size={18} color={colors.fg} />
 
             <Text className="font-sans-semibold">{t('chat.reply')}</Text>
           </Pressable>

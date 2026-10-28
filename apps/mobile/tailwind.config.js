@@ -1,4 +1,4 @@
-const { tailwindColors } = require('./src/theme/colors');
+const { tailwindColors } = require('./src/theme/colorTokens');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -6,6 +6,7 @@ module.exports = {
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
+      // CSS variables, filled per theme by ThemeProvider
       colors: tailwindColors,
       // Each weight is a separate font file in RN: `font-sans-bold`, not `font-bold`
       fontFamily: {

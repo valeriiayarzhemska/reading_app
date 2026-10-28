@@ -11,13 +11,15 @@ import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 
 import { useCollection } from '@/api/collections';
-import { STACK_OPTIONS } from '@/navigation/stackOptions';
-import { COLORS } from '@/theme/colors';
+import { stackOptions } from '@/navigation/stackOptions';
+import { useColors } from '@/theme/ThemeProvider';
 
 // /collection-editor/new creates, /collection-editor/<id> edits. The id is
 // a path segment, so it belongs to this layout and stays in the URL when
 // the picker (/collection-editor/<id>/books) opens.
 export default function CollectionEditorLayout() {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const params = useLocalSearchParams<{ id: string }>();
   const id = params.id === NEW_COLLECTION ? undefined : params.id;
@@ -29,7 +31,7 @@ export default function CollectionEditorLayout() {
         {error ? (
           <Text className="text-center">{error.message}</Text>
         ) : (
-          <ActivityIndicator color={COLORS.fg} />
+          <ActivityIndicator color={colors.fg} />
         )}
       </Screen>
     );
@@ -37,7 +39,7 @@ export default function CollectionEditorLayout() {
 
   return (
     <CollectionDraftProvider initial={data}>
-      <Stack screenOptions={STACK_OPTIONS}>
+      <Stack screenOptions={stackOptions(colors)}>
         <Stack.Screen
           name="index"
           options={{

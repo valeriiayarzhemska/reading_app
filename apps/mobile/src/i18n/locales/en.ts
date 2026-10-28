@@ -359,6 +359,12 @@ const en = {
   },
   settings: {
     title: 'Settings',
+    appearance: 'Appearance',
+    themes: {
+      system: 'System',
+      light: 'Light',
+      dark: 'Dark',
+    },
   },
   reviews: {
     write: 'Write a review',

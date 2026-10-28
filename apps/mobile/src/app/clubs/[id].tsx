@@ -27,7 +27,7 @@ import { useClub, useJoinClub } from '@/api/clubs';
 import { useAuth } from '@/auth/AuthContext';
 import { useClubChat, type ChatItem } from '@/chat/useClubChat';
 import { shareClub } from '@/clubs/shareClub';
-import { COLORS } from '@/theme/colors';
+import { useColors } from '@/theme/ThemeProvider';
 
 // A new run (name + avatar again) after another author or a 5 min pause
 const RUN_GAP_MS = 5 * 60 * 1000;
@@ -44,6 +44,8 @@ function startsRun(message: ChatItem, previous: ChatItem | undefined) {
 
 // The club's chat: readingapp://clubs/<id>
 export default function ClubChatScreen() {
+  const colors = useColors();
+
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data, error } = useClub(id);
 
@@ -65,7 +67,7 @@ export default function ClubChatScreen() {
           {error ? (
             <Text className="text-center">{error.message}</Text>
           ) : (
-            <ActivityIndicator color={COLORS.fg} />
+            <ActivityIndicator color={colors.fg} />
           )}
         </View>
       )}
@@ -116,6 +118,8 @@ function ChatHeader({ club }: { club: ClubDetail }) {
 }
 
 function Chat({ clubId }: { clubId: string }) {
+  const colors = useColors();
+
   const { t } = useTranslation();
   const { state } = useAuth();
   const myId = state.status === 'signedIn' ? state.user.id : '';
@@ -133,7 +137,7 @@ function Chat({ clubId }: { clubId: string }) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       {history.isPending ? (
-        <ActivityIndicator className="flex-1" color={COLORS.fg} />
+        <ActivityIndicator className="flex-1" color={colors.fg} />
       ) : (
         <FlashList
           data={messages}
@@ -169,7 +173,7 @@ function Chat({ clubId }: { clubId: string }) {
           contentContainerStyle={{ paddingVertical: 8 }}
           ListHeaderComponent={
             history.isFetchingNextPage ? (
-              <ActivityIndicator className="py-3" color={COLORS.fg} />
+              <ActivityIndicator className="py-3" color={colors.fg} />
             ) : null
           }
           ListEmptyComponent={

@@ -1,6 +1,6 @@
 import { extendTailwindMerge } from 'tailwind-merge';
 
-import { tailwindColors } from '@/theme/colors';
+import { tailwindColors } from '@/theme/colorTokens';
 
 // { fg: { DEFAULT, muted } } → ['fg', 'fg-muted']
 function colorNames(colors: Record<string, string | Record<string, string>>) {
