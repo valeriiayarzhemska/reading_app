@@ -2,9 +2,9 @@
 
 A mobile app for tracking your reading: book shelves, a reading timer that works offline, and a calendar of what you read each day.
 
-> 🚧 Work in progress — learning project.
+> 🚧 Actively developed personal project.
 
-## Planned stack
+## Stack
 
 | Part | Tech |
 |---|---|
