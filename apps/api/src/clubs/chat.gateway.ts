@@ -21,7 +21,12 @@ import {
 } from '@reading/shared';
 
 import { TokenService } from '../auth/token.service.js';
-import { JoinClubDto, ReactDto, SendMessageDto } from './dto/chat.dto.js';
+import {
+  DeleteMessageDto,
+  JoinClubDto,
+  ReactDto,
+  SendMessageDto,
+} from './dto/chat.dto.js';
 import { MessagesService } from './messages.service.js';
 
 interface ChatSocketData {
@@ -149,6 +154,24 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       }
 
       return message;
+    });
+  }
+
+  // Gone for everyone with the chat open, the author's other devices too
+  @SubscribeMessage(CHAT_EVENTS.delete)
+  async delete(
+    @ConnectedSocket() socket: ChatSocket,
+    @MessageBody() body: unknown,
+  ): Promise<ChatAck> {
+    return this.answer(DeleteMessageDto, body, async ({ messageId }) => {
+      const { clubId } = await this.messages.remove(
+        socket.data.userId,
+        messageId,
+      );
+
+      this.server
+        .to(room(clubId))
+        .emit(CHAT_EVENTS.deleted, { clubId, messageId });
     });
   }
 

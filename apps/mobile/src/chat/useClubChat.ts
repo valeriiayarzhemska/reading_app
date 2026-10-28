@@ -14,6 +14,7 @@ import {
   type ChatAck,
   type ChatMessage,
   type ChatReaction,
+  type MessageDeletedEvent,
   type MessageReactions,
   type Page,
   type ReactionsEvent,
@@ -86,6 +87,25 @@ function updateMessage(
             items: page.items.map((item) =>
               matches(item) ? update(item) : item,
             ),
+          })),
+        }
+      : data,
+  );
+}
+
+// Gone from whichever loaded page holds it
+function removeMessage(
+  queryClient: QueryClient,
+  clubId: string,
+  messageId: string,
+) {
+  queryClient.setQueryData<ChatPages>(messagesKey(clubId), (data) =>
+    data
+      ? {
+          ...data,
+          pages: data.pages.map((page) => ({
+            ...page,
+            items: page.items.filter((item) => item.id !== messageId),
           })),
         }
       : data,
@@ -191,6 +211,16 @@ export function useClubChat(clubId: string) {
       }
     }
 
+    function onDeleted(event: MessageDeletedEvent) {
+      if (event.clubId !== clubId) {
+        return;
+      }
+
+      removeMessage(queryClient, clubId, event.messageId);
+      // Replies to it lose their quote: the server has already cleared it
+      void queryClient.invalidateQueries({ queryKey: messagesKey(clubId) });
+    }
+
     join();
     markRead(clubId);
     clearUnread(queryClient, clubId);
@@ -198,6 +228,7 @@ export function useClubChat(clubId: string) {
     socket.io.on('reconnect', onReconnect);
     socket.on(CHAT_EVENTS.new, onNew);
     socket.on(CHAT_EVENTS.reactions, onReactions);
+    socket.on(CHAT_EVENTS.deleted, onDeleted);
 
     return () => {
       setOpenChat(null);
@@ -205,6 +236,7 @@ export function useClubChat(clubId: string) {
       socket.io.off('reconnect', onReconnect);
       socket.off(CHAT_EVENTS.new, onNew);
       socket.off(CHAT_EVENTS.reactions, onReactions);
+      socket.off(CHAT_EVENTS.deleted, onDeleted);
       // Unread dots and "N a day" in the club list
       void queryClient.invalidateQueries({ queryKey: ['clubs'] });
     };
@@ -320,10 +352,28 @@ export function useClubChat(clubId: string) {
     }
   }
 
+  // Gone at once on this phone; the others hear it from the server. A
+  // refusal (or no answer) brings it back by reloading the history.
+  async function deleteMessage(message: ChatItem) {
+    removeMessage(queryClient, clubId, message.id);
+
+    try {
+      const ack: ChatAck = await getChatSocket()
+        .timeout(SEND_TIMEOUT_MS)
+        .emitWithAck(CHAT_EVENTS.delete, { messageId: message.id });
+
+      if (!ack.ok) {
+        void queryClient.invalidateQueries({ queryKey: messagesKey(clubId) });
+      }
+    } catch {
+      void queryClient.invalidateQueries({ queryKey: messagesKey(clubId) });
+    }
+  }
+
   // Oldest first, the order the screen shows them in
   const messages = (history.data?.pages ?? [])
     .flatMap((page) => page.items)
     .reverse();
 
-  return { history, messages, send, retry, react };
+  return { history, messages, send, retry, react, deleteMessage };
 }

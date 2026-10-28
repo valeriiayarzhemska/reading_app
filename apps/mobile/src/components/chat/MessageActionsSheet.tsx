@@ -1,4 +1,4 @@
-import { Pressable, View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Feather } from '@expo/vector-icons';
@@ -25,9 +25,11 @@ interface MessageActionsSheetProps {
   onClose: () => void;
   onReact: (message: ChatItem, emoji: ChatReaction) => void;
   onReply: (message: ChatItem) => void;
+  // Your own messages only
+  onDelete: (message: ChatItem) => void;
 }
 
-// Long-press on a message: react with one of the emojis, or reply
+// Long-press on a message: react, reply, and delete (yours) or report
 export function MessageActionsSheet({
   message,
   myId,
@@ -35,11 +37,12 @@ export function MessageActionsSheet({
   onClose,
   onReact,
   onReply,
+  onDelete,
 }: MessageActionsSheetProps) {
   const colors = useColors();
   const report = useReport();
-
   const { t } = useTranslation();
+  const isOwn = message?.author.id === myId;
 
   return (
     <Sheet open={open} onClose={onClose}>
@@ -85,22 +88,37 @@ export function MessageActionsSheet({
             <Text className="font-sans-semibold">{t('chat.reply')}</Text>
           </Pressable>
 
-          {message.author.id === myId ? null : (
-            <Pressable
-              onPress={() => {
-                onClose();
-                report(ReportTarget.MESSAGE, message.id);
-              }}
-              accessibilityRole="button"
-              className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-3.5 active:opacity-70"
-            >
-              <Feather name="flag" size={18} color={colors.danger} />
+          {/* Yours: delete. Someone else's: report. */}
+          <Pressable
+            onPress={() => {
+              onClose();
 
-              <Text className="font-sans-semibold text-danger">
-                {t('report.title')}
-              </Text>
-            </Pressable>
-          )}
+              if (isOwn) {
+                Alert.alert(t('chat.deleteTitle'), t('chat.deleteMessage'), [
+                  { text: t('book.cancel'), style: 'cancel' },
+                  {
+                    text: t('chat.delete'),
+                    style: 'destructive',
+                    onPress: () => onDelete(message),
+                  },
+                ]);
+              } else {
+                report(ReportTarget.MESSAGE, message.id);
+              }
+            }}
+            accessibilityRole="button"
+            className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-3.5 active:opacity-70"
+          >
+            <Feather
+              name={isOwn ? 'trash-2' : 'flag'}
+              size={18}
+              color={colors.danger}
+            />
+
+            <Text className="font-sans-semibold text-danger">
+              {t(isOwn ? 'chat.delete' : 'report.title')}
+            </Text>
+          </Pressable>
         </>
       ) : null}
     </Sheet>

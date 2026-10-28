@@ -196,6 +196,20 @@ export function useAddComment(postId: string) {
   });
 }
 
+export function useDeleteComment(postId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (commentId: string) =>
+      apiFetch<void>(`/comments/${commentId}`, { method: 'DELETE' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: commentsKey(postId) });
+      // Comment count and "latest comment" on the post card
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+    },
+  });
+}
+
 export function useToggleCommentLike(postId: string) {
   const queryClient = useQueryClient();
 

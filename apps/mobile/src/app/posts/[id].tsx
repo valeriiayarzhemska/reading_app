@@ -25,6 +25,7 @@ import { Text } from '@/components/ui/Text';
 import {
   useAddComment,
   useComments,
+  useDeleteComment,
   usePost,
   useToggleCommentLike,
 } from '@/api/posts';
@@ -74,6 +75,7 @@ function Comments({ post }: { post: PostItem }) {
   const comments = useComments(post.id);
   const addComment = useAddComment(post.id);
   const toggleLike = useToggleCommentLike(post.id);
+  const deleteComment = useDeleteComment(post.id);
   const [text, setText] = useState('');
   // Read once: render must not read the clock
   const [now] = useState(Date.now);
@@ -103,6 +105,7 @@ function Comments({ post }: { post: PostItem }) {
             }
             // No nested threads: a reply is a comment that names its person
             onReply={(comment) => setText(`@${comment.author.nickname} `)}
+            onDelete={(comment) => deleteComment.mutate(comment.id)}
           />
         )}
         onEndReached={() => {

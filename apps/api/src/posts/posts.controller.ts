@@ -124,4 +124,16 @@ export class PostsController {
   ) {
     return this.posts.unlikeComment(userId, id);
   }
+
+  /**
+   * Delete my comment.
+   */
+  @Delete('comments/:id')
+  @HttpCode(204)
+  removeComment(
+    @CurrentUserId() userId: string,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.posts.removeComment(userId, id);
+  }
 }

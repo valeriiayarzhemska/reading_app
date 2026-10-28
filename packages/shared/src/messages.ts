@@ -55,6 +55,10 @@ export const CHAT_EVENTS = {
   send: 'message:send',
   // app → server: add the emoji, or remove it if it's already yours
   react: 'message:react',
+  // app → server: delete my own message
+  delete: 'message:delete',
+  // server → app: a message is gone (to everyone in the room)
+  deleted: 'message:deleted',
   // server → app: someone else's new message in a joined club
   new: 'message:new',
   // server → app: a message's reactions changed (to everyone in the room)
@@ -85,6 +89,15 @@ export interface SendMessagePayload {
 export interface ReactPayload {
   messageId: string;
   emoji: ChatReaction;
+}
+
+export interface DeleteMessagePayload {
+  messageId: string;
+}
+
+export interface MessageDeletedEvent {
+  clubId: string;
+  messageId: string;
 }
 
 export interface ReactionsEvent {

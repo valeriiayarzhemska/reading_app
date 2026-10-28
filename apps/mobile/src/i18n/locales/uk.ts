@@ -380,6 +380,8 @@ const uk: Translation = {
     delete: 'Видалити допис',
     deleteTitle: 'Видалити цей допис?',
     deleteMessage: 'Його вподобання й коментарі теж зникнуть.',
+    deleteComment: 'Видалити коментар',
+    deleteCommentTitle: 'Видалити цей коментар?',
     emptyFollowing:
       'Тут зʼявляться дописи читачів, на яких ви підписані. Шукайте людей у 🔍 або гляньте «Усі».',
     emptyAll: 'Дописів ще немає. Напишіть перший через +.',
@@ -448,6 +450,9 @@ const uk: Translation = {
     openOnShelf: 'На вашій полиці →',
   },
   chat: {
+    delete: 'Видалити',
+    deleteTitle: 'Видалити повідомлення?',
+    deleteMessage: 'Воно зникне для всіх у кімнаті.',
     reply: 'Відповісти',
     replyingTo: 'Відповідь для {{nickname}}',
     cancelReply: 'Скасувати відповідь',

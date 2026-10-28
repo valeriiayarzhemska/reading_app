@@ -351,6 +351,8 @@ const en = {
     delete: 'Delete post',
     deleteTitle: 'Delete this post?',
     deleteMessage: 'Its likes and comments go too.',
+    deleteComment: 'Delete comment',
+    deleteCommentTitle: 'Delete this comment?',
     emptyFollowing:
       'Posts from readers you follow show up here. Find people in 🔍 or look at All.',
     emptyAll: 'No posts yet. Write the first one with +.',
@@ -414,6 +416,9 @@ const en = {
     openOnShelf: 'On your shelf →',
   },
   chat: {
+    delete: 'Delete',
+    deleteTitle: 'Delete this message?',
+    deleteMessage: 'It disappears for everyone in the room.',
     reply: 'Reply',
     replyingTo: 'Replying to {{nickname}}',
     cancelReply: 'Cancel reply',

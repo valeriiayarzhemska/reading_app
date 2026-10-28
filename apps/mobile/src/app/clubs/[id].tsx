@@ -123,7 +123,8 @@ function Chat({ clubId }: { clubId: string }) {
   const { t } = useTranslation();
   const { state } = useAuth();
   const myId = state.status === 'signedIn' ? state.user.id : '';
-  const { history, messages, send, retry, react } = useClubChat(clubId);
+  const { history, messages, send, retry, react, deleteMessage } =
+    useClubChat(clubId);
   const [replyTo, setReplyTo] = useState<ChatItem | null>(null);
   // The long-pressed message; kept after closing so the sheet doesn't empty
   // while it slides away
@@ -197,6 +198,7 @@ function Chat({ clubId }: { clubId: string }) {
         onClose={() => setIsActionsOpen(false)}
         onReact={react}
         onReply={setReplyTo}
+        onDelete={deleteMessage}
       />
     </KeyboardAvoidingView>
   );

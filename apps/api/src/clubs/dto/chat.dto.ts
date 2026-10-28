@@ -5,6 +5,7 @@ import {
   CHAT_REACTIONS,
   MESSAGE_MAX_LENGTH,
   type ChatReaction,
+  type DeleteMessagePayload,
   type JoinClubPayload,
   type ReactPayload,
   type SendMessagePayload,
@@ -47,4 +48,9 @@ export class ReactDto implements ReactPayload {
 
   @IsIn(CHAT_REACTIONS)
   emoji: ChatReaction;
+}
+
+export class DeleteMessageDto implements DeleteMessagePayload {
+  @IsUUID()
+  messageId: string;
 }

@@ -336,6 +336,18 @@ export class PostsService {
     }
   }
 
+  // Your own comments only. Its likes and its notification go with it
+  // (onDelete: Cascade).
+  async removeComment(userId: string, commentId: string): Promise<void> {
+    const { count } = await this.prisma.comment.deleteMany({
+      where: { id: commentId, authorId: userId },
+    });
+
+    if (count === 0) {
+      throw new NotFoundException('Comment not found');
+    }
+  }
+
   async unlikeComment(userId: string, commentId: string): Promise<void> {
     const comment = await this.findComment(commentId);
     const { count } = await this.prisma.commentLike.deleteMany({

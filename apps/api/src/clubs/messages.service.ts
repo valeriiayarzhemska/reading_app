@@ -191,6 +191,24 @@ export class MessagesService {
 
   // A toggle: tapping your own 💜 again takes it back. Returns the message's
   // reactions after the change, for everyone in the room.
+  // Your own messages only. Reactions go with it (cascade); replies to it
+  // stay, without their quote (replyTo: SetNull). Returns the club, so the
+  // gateway knows which room to tell.
+  async remove(userId: string, messageId: string): Promise<{ clubId: string }> {
+    const message = await this.prisma.message.findFirst({
+      where: { id: messageId, authorId: userId },
+      select: { clubId: true },
+    });
+
+    if (!message) {
+      throw new NotFoundException('Message not found');
+    }
+
+    await this.prisma.message.delete({ where: { id: messageId } });
+
+    return message;
+  }
+
   async toggleReaction(
     userId: string,
     messageId: string,

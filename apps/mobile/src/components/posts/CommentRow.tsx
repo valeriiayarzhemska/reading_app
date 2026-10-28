@@ -1,4 +1,4 @@
-import { Pressable, View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Feather } from '@expo/vector-icons';
@@ -19,15 +19,34 @@ interface CommentRowProps {
   now: number;
   onLike: (comment: PostComment) => void;
   onReply: (comment: PostComment) => void;
+  // Your own comments only
+  onDelete: (comment: PostComment) => void;
 }
 
-export function CommentRow({ comment, now, onLike, onReply }: CommentRowProps) {
+export function CommentRow({
+  comment,
+  now,
+  onLike,
+  onReply,
+  onDelete,
+}: CommentRowProps) {
   const colors = useColors();
   const { t } = useTranslation();
   const { state } = useAuth();
   const report = useReport();
   const isMine =
     state.status === 'signedIn' && state.user.id === comment.author.id;
+
+  function confirmDelete() {
+    Alert.alert(t('posts.deleteCommentTitle'), undefined, [
+      { text: t('book.cancel'), style: 'cancel' },
+      {
+        text: t('posts.deleteComment'),
+        style: 'destructive',
+        onPress: () => onDelete(comment),
+      },
+    ]);
+  }
 
   return (
     <View className="gap-2 border-b border-border px-4 py-3">
@@ -89,17 +108,26 @@ export function CommentRow({ comment, now, onLike, onReply }: CommentRowProps) {
           <Feather name="corner-up-left" size={16} color={colors.fgFaint} />
         </Pressable>
 
-        {isMine ? null : (
-          <Pressable
-            onPress={() => report(ReportTarget.COMMENT, comment.id)}
-            accessibilityRole="button"
-            accessibilityLabel={t('report.title')}
-            hitSlop={6}
-            className="ml-auto active:opacity-60"
-          >
-            <Feather name="flag" size={14} color={colors.fgFaint} />
-          </Pressable>
-        )}
+        {/* Yours: delete. Someone else's: report. */}
+        <Pressable
+          onPress={
+            isMine
+              ? confirmDelete
+              : () => report(ReportTarget.COMMENT, comment.id)
+          }
+          accessibilityRole="button"
+          accessibilityLabel={t(
+            isMine ? 'posts.deleteComment' : 'report.title',
+          )}
+          hitSlop={6}
+          className="ml-auto active:opacity-60"
+        >
+          <Feather
+            name={isMine ? 'trash-2' : 'flag'}
+            size={14}
+            color={colors.fgFaint}
+          />
+        </Pressable>
       </View>
     </View>
   );
