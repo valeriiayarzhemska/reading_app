@@ -38,6 +38,7 @@
       ],
       "expo-localization",
       "expo-secure-store",
+      "expo-notifications",
       [
         "expo-image-picker",
         {
@@ -55,7 +56,10 @@
               "displayName": "Continue reading",
               "description": "The book you're reading now, with your progress.",
               "ios": {
-                "supportedFamilies": ["systemSmall", "systemMedium"]
+                "supportedFamilies": [
+                  "systemSmall",
+                  "systemMedium"
+                ]
               }
             }
           ]

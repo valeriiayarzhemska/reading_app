@@ -24,6 +24,7 @@ import { loadSavedLanguage } from '@/i18n';
 import { STACK_OPTIONS } from '@/navigation/stackOptions';
 import { useNotificationEvents } from '@/notifications/useNotificationEvents';
 import { useLiveActivitySync } from '@/timer/useLiveActivitySync';
+import { useReadingChecks } from '@/timer/useReadingChecks';
 import { useSessionSync } from '@/timer/useSessionSync';
 import { useTimerNotificationSync } from '@/timer/useTimerNotificationSync';
 
@@ -79,6 +80,7 @@ function RootNavigator() {
   useSessionSync(isSignedIn ? state.user.id : null);
   useClubActivity(isSignedIn);
   useNotificationEvents(isSignedIn);
+  useReadingChecks(isSignedIn);
   useTimezoneSync();
   useLiveActivitySync();
   useTimerNotificationSync();

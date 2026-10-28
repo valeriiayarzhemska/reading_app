@@ -230,6 +230,25 @@ const en = {
     days_other: '{{count}} d',
     ago: '{{time}} ago',
   },
+  readingSettings: {
+    title: 'Reading',
+    noTimer: 'No-timer mode',
+    noTimerHint: 'Log pages by hand instead of running a timer.',
+    stillReading: '"Still reading?"',
+    stillReadingHint:
+      'A notification while the timer runs, in case you forgot it.',
+    dailyReminder: 'Daily reminder',
+    dailyReminderHint: 'A nudge to read, every day at this time.',
+    minutes_one: '{{count}} min',
+    minutes_other: '{{count}} min',
+  },
+  reminders: {
+    channel: 'Reading reminders',
+    stillReadingTitle: 'Still reading?',
+    stillReadingBody: 'The timer for «{{title}}» is still running.',
+    dailyTitle: 'Time to read 📖',
+    dailyBody: 'A few pages make a good day.',
+  },
   notes: {
     title: 'Notes',
     private: 'Only you can see them',

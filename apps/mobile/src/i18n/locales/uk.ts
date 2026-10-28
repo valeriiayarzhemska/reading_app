@@ -250,6 +250,27 @@ const uk: Translation = {
     days_other: '{{count}} д',
     ago: '{{time}} тому',
   },
+  readingSettings: {
+    title: 'Читання',
+    noTimer: 'Без таймера',
+    noTimerHint: 'Записуйте сторінки вручну замість таймера.',
+    stillReading: '«Ще читаєте?»',
+    stillReadingHint:
+      'Сповіщення, поки таймер працює, — раптом ви про нього забули.',
+    dailyReminder: 'Щоденне нагадування',
+    dailyReminderHint: 'Нагадування почитати щодня в цей час.',
+    minutes_one: '{{count}} хв',
+    minutes_few: '{{count}} хв',
+    minutes_many: '{{count}} хв',
+    minutes_other: '{{count}} хв',
+  },
+  reminders: {
+    channel: 'Нагадування про читання',
+    stillReadingTitle: 'Ще читаєте?',
+    stillReadingBody: 'Таймер для «{{title}}» досі працює.',
+    dailyTitle: 'Час почитати 📖',
+    dailyBody: 'Кілька сторінок — і день вдався.',
+  },
   notes: {
     title: 'Нотатки',
     private: 'Бачите лише ви',

@@ -49,6 +49,7 @@ import {
 import { currentLanguage } from '@/i18n';
 import { formatDuration } from '@/lib/format';
 import { formatFinishDate } from '@/library/finishDate';
+import { useReadingSettings } from '@/settings/readingSettings';
 import { COLORS } from '@/theme/colors';
 
 export default function BookScreen() {
@@ -85,6 +86,7 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
   const remove = useRemoveFromShelf(entry.id);
   const fraction = progressFraction(entry);
   const { data: speed } = useReadingSpeed();
+  const { settings: readingSettings } = useReadingSettings();
   const timeLeft = minutesLeft(entry, speed);
 
   const statusOptions: SegmentOption<ShelfStatus>[] = [
@@ -176,15 +178,18 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
         <View className="gap-1">
           <StartSessionButton entry={entry} />
 
-          <Pressable
-            onPress={() => setIsLogOpen(true)}
-            accessibilityRole="button"
-            className="items-center py-2 active:opacity-60"
-          >
-            <Text variant="muted" className="text-sm">
-              {t('timer.log.link')}
-            </Text>
-          </Pressable>
+          {/* In no-timer mode the main button already logs */}
+          {readingSettings.noTimer ? null : (
+            <Pressable
+              onPress={() => setIsLogOpen(true)}
+              accessibilityRole="button"
+              className="items-center py-2 active:opacity-60"
+            >
+              <Text variant="muted" className="text-sm">
+                {t('timer.log.link')}
+              </Text>
+            </Pressable>
+          )}
         </View>
 
         <Card className="flex-row justify-around">

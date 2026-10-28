@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { router } from 'expo-router';
 
+import { ReadingSettingsSection } from '@/components/settings/ReadingSettingsSection';
 import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
 import {
@@ -44,6 +45,8 @@ export default function SettingsScreen() {
             onChange={setLanguage}
           />
         </View>
+
+        <ReadingSettingsSection />
 
         <View className="gap-3">
           {__DEV__ ? (

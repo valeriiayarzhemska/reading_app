@@ -6,9 +6,11 @@ import { router } from 'expo-router';
 
 import type { UserBookWithBook } from '@reading/shared';
 
+import { LogReadingSheet } from '@/components/timer/LogReadingSheet';
 import { StartSessionSheet } from '@/components/timer/StartSessionSheet';
 import { Button } from '@/components/ui/Button';
 
+import { useReadingSettings } from '@/settings/readingSettings';
 import { useActiveSession } from '@/timer/useActiveSession';
 
 interface StartSessionButtonProps {
@@ -22,8 +24,30 @@ export function StartSessionButton({
 }: StartSessionButtonProps) {
   const { t } = useTranslation();
   const { session } = useActiveSession();
+  const { settings } = useReadingSettings();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isLogOpen, setIsLogOpen] = useState(false);
   const isThisBook = session?.userBookId === entry.id;
+
+  // No-timer mode: log pages by hand. A timer started before switching it
+  // on stays reachable below.
+  if (settings.noTimer && !session) {
+    return (
+      <>
+        <Button
+          title={t('timer.log.title')}
+          onPress={() => setIsLogOpen(true)}
+          className={className}
+        />
+
+        <LogReadingSheet
+          entry={entry}
+          open={isLogOpen}
+          onClose={() => setIsLogOpen(false)}
+        />
+      </>
+    );
+  }
 
   // One session at a time: a second timer would double-count the time
   function onPress() {
