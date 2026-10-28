@@ -80,6 +80,7 @@ model User {
   // Two relations to Notification: what I receive, and what I caused
   notifications   Notification[]    @relation("recipient")
   sentNotices     Notification[]    @relation("actor")
+  achievements    UserAchievement[]
 }
 
 // One row per signed-in device. Only the refresh token's hash is stored.
@@ -491,4 +492,29 @@ model Note {
   userBook UserBook @relation(fields: [userBookId], references: [id], onDelete: Cascade)
 
   @@index([userBookId, createdAt])
+}
+
+// A badge a reader has earned. The rules live in code (achievements.rules.ts),
+// so `code` is a plain string: a new badge needs no migration. Once earned,
+// it stays.
+model UserAchievement {
+  userId   String
+  code     String
+  earnedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, code])
+  // "How many readers have this badge": counted by code
+  @@index([code])
+}
+
+// Written by the nightly job: how many readers hold each badge. Reading a
+// stored number beats counting on every request.
+model AchievementStat {
+  code      String   @id
+  holders   Int
+  // Readers counted (with at least one book on their shelf)
+  readers   Int
+  updatedAt DateTime @updatedAt
 }

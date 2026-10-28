@@ -1,7 +1,9 @@
 import { Module, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
 
+import { AchievementsModule } from './achievements/achievements.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { BooksModule } from './books/books.module.js';
 import { ClubsModule } from './clubs/clubs.module.js';
@@ -24,7 +26,10 @@ import { UsersModule } from './users/users.module.js';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    // Runs the @Cron methods (the nightly achievements job)
+    ScheduleModule.forRoot(),
     PrismaModule,
+    AchievementsModule,
     AuthModule,
     BooksModule,
     ClubsModule,

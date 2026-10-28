@@ -101,6 +101,8 @@ function invalidateBookStats(queryClient: QueryClient) {
   queryClient.invalidateQueries({ queryKey: ['profile'] });
   queryClient.invalidateQueries({ queryKey: ['bookPage'] });
   queryClient.invalidateQueries({ queryKey: ['reviews'] });
+  // A finished book can earn a badge
+  queryClient.invalidateQueries({ queryKey: ['achievements'] });
 }
 
 export function useUpdateProgress(id: string) {

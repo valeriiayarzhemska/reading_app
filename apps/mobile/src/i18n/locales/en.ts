@@ -230,6 +230,31 @@ const en = {
     days_other: '{{count}} d',
     ago: '{{time}} ago',
   },
+  achievements: {
+    title: 'Achievements',
+    count: '{{earned}} of {{total}}',
+    holders: '{{percent}}% of readers',
+    earnedOn: 'Earned {{date}}',
+    notYet: 'Not earned yet.',
+    FIRST_BOOK: { name: 'First book', description: 'Finish your first book.' },
+    TEN_BOOKS: { name: 'Ten books', description: 'Finish ten books.' },
+    IN_ONE_SITTING: {
+      name: 'In one sitting',
+      description: 'Read a whole book in a single day.',
+    },
+    MARATHON: {
+      name: 'Marathon',
+      description: 'Read for 3 hours or more in one day.',
+    },
+    FOUR_A_DAY: {
+      name: 'Four a day',
+      description: 'Finish four books on the same day.',
+    },
+    WEEK_STREAK: {
+      name: 'Week streak',
+      description: 'Read on seven days in a row.',
+    },
+  },
   readingSettings: {
     title: 'Reading',
     noTimer: 'No-timer mode',

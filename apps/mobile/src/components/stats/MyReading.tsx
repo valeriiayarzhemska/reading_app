@@ -3,6 +3,7 @@ import { ActivityIndicator, View } from 'react-native';
 
 import type { CalendarDay } from '@reading/shared';
 
+import { AchievementsCard } from '@/components/stats/AchievementsCard';
 import { DaySheet } from '@/components/stats/DaySheet';
 import { GoalCard } from '@/components/stats/GoalCard';
 import { MonthCalendar } from '@/components/stats/MonthCalendar';
@@ -34,6 +35,8 @@ export function MyReading() {
       )}
 
       <MonthCalendar onPressDay={setOpenDay} />
+
+      <AchievementsCard />
 
       <DaySheet day={openDay} onClose={() => setOpenDay(null)} />
     </View>

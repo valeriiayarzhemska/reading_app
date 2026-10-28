@@ -250,6 +250,37 @@ const uk: Translation = {
     days_other: '{{count}} д',
     ago: '{{time}} тому',
   },
+  achievements: {
+    title: 'Досягнення',
+    count: '{{earned}} з {{total}}',
+    holders: '{{percent}}% читачів',
+    earnedOn: 'Отримано {{date}}',
+    notYet: 'Ще не отримано.',
+    FIRST_BOOK: {
+      name: 'Перша книжка',
+      description: 'Дочитайте свою першу книжку.',
+    },
+    TEN_BOOKS: {
+      name: 'Десять книжок',
+      description: 'Дочитайте десять книжок.',
+    },
+    IN_ONE_SITTING: {
+      name: 'На одному подиху',
+      description: 'Прочитайте цілу книжку за один день.',
+    },
+    MARATHON: {
+      name: 'Марафон',
+      description: 'Читайте 3 години або більше за один день.',
+    },
+    FOUR_A_DAY: {
+      name: 'Чотири за день',
+      description: 'Дочитайте чотири книжки за один день.',
+    },
+    WEEK_STREAK: {
+      name: 'Тиждень поспіль',
+      description: 'Читайте сім днів поспіль.',
+    },
+  },
   readingSettings: {
     title: 'Читання',
     noTimer: 'Без таймера',
