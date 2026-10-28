@@ -12,7 +12,7 @@ The project is finished as a local pet project: **no deployment**, no App Store 
 |---|---|
 | ✅ Done | DS-1–4, I18N, AUTH-1 (Google), AUTH-2, PRF-1–3, LIB-1–8, TMR-1–7, STAT-1–7, NAT-1–4, SOC-1–3, COL-1–2, CLB-1–3, FEED-1–2, SET-1–2 |
 | ✅ Extra | Report any user content; delete your own comments and chat messages; search for people to follow; unread dots in clubs |
-| 🔀 Changed | TMR-7 / SET-1: no auto-stop. FEED-1: the tab is "Following", not "Subscriptions". FEED-2: in-app notifications only. Shelves tab → Feed tab |
+| 🔀 Changed | TMR-7 / SET-1: no auto-stop. FEED-1: the tab is "Following", not "Subscriptions". FEED-2: in-app notifications only |
 | ✂️ Not done | Sign in with Apple and iOS push (they need a paid Apple Developer account); account deletion (AUTH-3); club quiet hours; barcode scanner; SET-3 CSV import; deployment |
 
 **Priorities**
@@ -32,7 +32,7 @@ The project is finished as a local pet project: **no deployment**, no App Store 
 
 | Tab | Screens |
 |---|---|
-| **Feed** (Стрічка; "Shelves" in the original plan) | Social feed of posts, notifications |
+| **Shelves** (Полиці) | Social feed of posts, notifications |
 | **Library** (Бібліотека) | Currently reading card, in-progress list, "want / read" tiles, search, add book, book details, reading timer |
 | **Clubs** (Клуби) | My/all clubs, club chat, club info |
 | **Profile** (Профіль) | Public profile ("Profile") + private stats ("Mine"): calendar, goals, achievements, collections, settings |

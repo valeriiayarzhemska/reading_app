@@ -4,6 +4,18 @@ A mobile app for tracking your reading. It has book shelves, a reading timer tha
 
 > 📚 A personal pet project. It runs locally only: it isn't deployed or published to any app store.
 
+<p align="center">
+  <img src="docs/screenshots/library.jpg" width="200" alt="Library: the book you're reading now, with progress and time left" />
+  <img src="docs/screenshots/book.jpg" width="200" alt="Book details: stats, shelf status and progress" />
+  <img src="docs/screenshots/profile.jpg" width="200" alt="Profile: four favorites, yearly stats and collections" />
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/feed.jpg" width="200" alt="Shelves: a feed of posts and quotes from people you follow" />
+  <img src="docs/screenshots/clubs.jpg" width="200" alt="Clubs: the list of your book clubs" />
+  <img src="docs/screenshots/chat.jpg" width="200" alt="Club chat: replies and reactions in real time" />
+</p>
+
 ## Design credit and disclaimer
 
 The UI design is inspired by the **Readroom** app: its screens, layout and visual style. I used them as a reference while learning. This project is:

@@ -27,7 +27,7 @@ Rebuild with `pnpm ios` / `pnpm android` after adding a package with native code
 
 ```
 src/
-  app/            screens (expo-router): (tabs)/ = Feed, Library, Clubs, Profile
+  app/            screens (expo-router): (tabs)/ = Shelves (feed), Library, Clubs, Profile
   api/            React Query hooks per resource + the fetch client (JWT refresh)
   auth/           Google sign-in, tokens in the secure store
   chat/           Socket.IO client, chat history, unread dots
