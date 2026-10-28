@@ -8,6 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import type { PostItem } from '@reading/shared';
 
+import { QuoteCard } from '@/components/quotes/QuoteCard';
 import { Avatar } from '@/components/ui/Avatar';
 import { BookCover } from '@/components/ui/BookCover';
 import { RemoteImage } from '@/components/ui/RemoteImage';
@@ -104,7 +105,26 @@ export function PostCard({ post, now, variant }: PostCardProps) {
         >
           {post.text ? <Text className="text-base">{post.text}</Text> : null}
 
-          {post.book ? <PostBookCard book={post.book} /> : null}
+          {/* A shared quote names its book itself: no separate book card */}
+          {post.quote && post.book ? (
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: '/books/[bookId]',
+                  params: { bookId: post.book?.id ?? '' },
+                })
+              }
+              className="active:opacity-80"
+            >
+              <QuoteCard
+                text={post.quote.text}
+                page={post.quote.page}
+                bookTitle={post.book.title}
+              />
+            </Pressable>
+          ) : post.book ? (
+            <PostBookCard book={post.book} />
+          ) : null}
 
           {post.photoUrl ? (
             <RemoteImage

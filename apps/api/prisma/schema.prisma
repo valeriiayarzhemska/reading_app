@@ -156,6 +156,7 @@ model UserBook {
   sessions ReadingSession[]
   favorite FavoriteBook?
   review   Review?
+  quotes   Quote[]
 
   @@unique([userId, bookId, format])
   @@index([userId, status])
@@ -371,14 +372,19 @@ model MessageReaction {
   @@id([messageId, userId, emoji])
 }
 
-// A post on Shelves: text, optionally a book card and one photo
+// A post on Shelves: text, optionally a book card and one photo, or a
+// shared quote
 model Post {
   id        String   @id @default(uuid())
   authorId  String
-  // May be "" when there is a photo
+  // May be "" when there is a photo or a quote
   text      String
   bookId    String?
   photoUrl  String?
+  // A copy, not a link: editing or deleting the private quote later
+  // doesn't change a post others have already liked and commented on
+  quoteText String?
+  quotePage Int?
   createdAt DateTime @default(now())
 
   author        User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
@@ -454,4 +460,19 @@ model Notification {
 
   // My notifications, newest first
   @@index([userId, createdAt])
+}
+
+// A line worth keeping, saved on your shelf entry. Private until shared.
+model Quote {
+  id         String   @id @default(uuid())
+  userBookId String
+  text       String
+  // Unknown for e-books and audiobooks
+  page       Int?
+  createdAt  DateTime @default(now())
+
+  // Removing the book from the shelf removes its quotes
+  userBook UserBook @relation(fields: [userBookId], references: [id], onDelete: Cascade)
+
+  @@index([userBookId, createdAt])
 }

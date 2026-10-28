@@ -11,5 +11,7 @@ import { PostsService } from './posts.service.js';
   imports: [UploadsModule, NotificationsModule],
   controllers: [PostsController],
   providers: [PostsService],
+  // Sharing a quote creates a post
+  exports: [PostsService],
 })
 export class PostsModule {}

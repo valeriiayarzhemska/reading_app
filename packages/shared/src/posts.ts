@@ -30,6 +30,8 @@ export interface PostItem {
     // "+ Want to read" or "On shelf ✓"
     onMyShelf: boolean;
   } | null;
+  // A shared quote, shown as a quote card (its book is `book`)
+  quote: { text: string; page: number | null } | null;
   likesCount: number;
   likedByMe: boolean;
   commentsCount: number;

@@ -13,6 +13,7 @@ export * from './notifications.js';
 export * from './posts.js';
 export * from './profile.js';
 export * from './public-profile.js';
+export * from './quotes.js';
 export * from './reading-progress.js';
 export * from './reading-sessions.js';
 export * from './reading-speed.js';

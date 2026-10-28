@@ -34,6 +34,8 @@ function postSelect(viewerId: string) {
     id: true,
     text: true,
     photoUrl: true,
+    quoteText: true,
+    quotePage: true,
     createdAt: true,
     author: { select: AUTHOR_SELECT },
     book: {
@@ -71,6 +73,10 @@ function toPostItem(row: PostRow, viewerId: string): PostItem {
     id: row.id,
     text: row.text,
     photoUrl: row.photoUrl,
+    quote:
+      row.quoteText === null
+        ? null
+        : { text: row.quoteText, page: row.quotePage },
     createdAt: row.createdAt.toISOString(),
     author: row.author,
     book: row.book && {
@@ -165,6 +171,26 @@ export class PostsService {
     }
 
     return toPostItem(row, viewerId);
+  }
+
+  // A saved quote becomes a post with a quote card. Its text and page are
+  // copied: the private quote can change later, the post stays as shared.
+  async shareQuote(
+    userId: string,
+    quote: { bookId: string; text: string; page: number | null },
+  ): Promise<PostItem> {
+    const { id } = await this.prisma.post.create({
+      data: {
+        authorId: userId,
+        text: '',
+        bookId: quote.bookId,
+        quoteText: quote.text,
+        quotePage: quote.page,
+      },
+      select: { id: true },
+    });
+
+    return this.detail(userId, id);
   }
 
   async create(userId: string, dto: CreatePostDto): Promise<PostItem> {

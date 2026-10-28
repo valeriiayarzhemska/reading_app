@@ -23,6 +23,7 @@ import {
 import { FinishedSheet } from '@/components/library/FinishedSheet';
 import { ReviewSheet } from '@/components/library/ReviewSheet';
 import { UpdateProgressSheet } from '@/components/library/UpdateProgressSheet';
+import { BookQuotes } from '@/components/quotes/BookQuotes';
 import { RatingSummary } from '@/components/reviews/RatingSummary';
 import { ReviewsPreview } from '@/components/reviews/ReviewsPreview';
 import { LogReadingSheet } from '@/components/timer/LogReadingSheet';
@@ -314,6 +315,8 @@ function BookDetails({ entry }: { entry: UserBookWithBook }) {
                 })}
           </Text>
         </Card>
+
+        <BookQuotes entry={entry} />
 
         <ReviewsPreview bookId={entry.bookId} />
 
