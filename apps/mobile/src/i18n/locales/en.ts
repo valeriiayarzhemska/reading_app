@@ -303,6 +303,27 @@ const en = {
     delete: 'Delete',
     deleteTitle: 'Delete this quote?',
   },
+  report: {
+    title: 'Report',
+    book: 'Report this book',
+    targets: {
+      BOOK: 'A book added by a reader',
+      POST: 'A post',
+      COMMENT: 'A comment',
+      MESSAGE: 'A chat message',
+      REVIEW: 'A review',
+    },
+    reasons: {
+      SPAM: 'Spam or advertising',
+      OFFENSIVE: 'Offensive or abusive',
+      WRONG_INFO: 'Wrong information',
+      OTHER: 'Something else',
+    },
+    notePlaceholder: 'Anything we should know? (optional)',
+    send: 'Send report',
+    thanksTitle: 'Thanks for telling us',
+    thanksMessage: 'We will take a look.',
+  },
   notifications: {
     title: 'Notifications',
     follow: 'started following you',

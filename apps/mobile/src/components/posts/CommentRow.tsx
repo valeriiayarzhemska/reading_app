@@ -4,11 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
-import type { PostComment } from '@reading/shared';
+import { ReportTarget, type PostComment } from '@reading/shared';
 
+import { useReport } from '@/components/reports/ReportProvider';
 import { Avatar } from '@/components/ui/Avatar';
 import { Text } from '@/components/ui/Text';
 
+import { useAuth } from '@/auth/AuthContext';
 import { timeAgo } from '@/lib/timeAgo';
 import { useColors } from '@/theme/ThemeProvider';
 
@@ -21,8 +23,11 @@ interface CommentRowProps {
 
 export function CommentRow({ comment, now, onLike, onReply }: CommentRowProps) {
   const colors = useColors();
-
   const { t } = useTranslation();
+  const { state } = useAuth();
+  const report = useReport();
+  const isMine =
+    state.status === 'signedIn' && state.user.id === comment.author.id;
 
   return (
     <View className="gap-2 border-b border-border px-4 py-3">
@@ -83,6 +88,18 @@ export function CommentRow({ comment, now, onLike, onReply }: CommentRowProps) {
         >
           <Feather name="corner-up-left" size={16} color={colors.fgFaint} />
         </Pressable>
+
+        {isMine ? null : (
+          <Pressable
+            onPress={() => report(ReportTarget.COMMENT, comment.id)}
+            accessibilityRole="button"
+            accessibilityLabel={t('report.title')}
+            hitSlop={6}
+            className="ml-auto active:opacity-60"
+          >
+            <Feather name="flag" size={14} color={colors.fgFaint} />
+          </Pressable>
+        )}
       </View>
     </View>
   );

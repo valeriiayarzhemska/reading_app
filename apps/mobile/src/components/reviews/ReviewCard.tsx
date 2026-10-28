@@ -5,8 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
-import type { BookReview } from '@reading/shared';
+import { ReportTarget, type BookReview } from '@reading/shared';
 
+import { useReport } from '@/components/reports/ReportProvider';
 import { Avatar } from '@/components/ui/Avatar';
 import { Card } from '@/components/ui/Card';
 import { Text } from '@/components/ui/Text';
@@ -24,8 +25,8 @@ function reviewDate(iso: string): string {
 
 export function ReviewCard({ review }: { review: BookReview }) {
   const colors = useColors();
-
   const { t } = useTranslation();
+  const report = useReport();
   // Your own spoilers are no surprise to you
   const [isRevealed, setIsRevealed] = useState(review.isMine);
   const isHidden = review.hasSpoilers && !isRevealed;
@@ -70,6 +71,18 @@ export function ReviewCard({ review }: { review: BookReview }) {
             </Text>
           </View>
         ) : null}
+
+        {review.isMine ? null : (
+          <Pressable
+            onPress={() => report(ReportTarget.REVIEW, review.id)}
+            accessibilityRole="button"
+            accessibilityLabel={t('report.title')}
+            hitSlop={8}
+            className="active:opacity-60"
+          >
+            <Feather name="flag" size={14} color={colors.fgFaint} />
+          </Pressable>
+        )}
       </Pressable>
 
       {isHidden ? (

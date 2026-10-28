@@ -3,8 +3,13 @@ import { useTranslation } from 'react-i18next';
 
 import { Feather } from '@expo/vector-icons';
 
-import { CHAT_REACTIONS, type ChatReaction } from '@reading/shared';
+import {
+  CHAT_REACTIONS,
+  ReportTarget,
+  type ChatReaction,
+} from '@reading/shared';
 
+import { useReport } from '@/components/reports/ReportProvider';
 import { Sheet } from '@/components/ui/Sheet';
 import { Text } from '@/components/ui/Text';
 
@@ -32,6 +37,7 @@ export function MessageActionsSheet({
   onReply,
 }: MessageActionsSheetProps) {
   const colors = useColors();
+  const report = useReport();
 
   const { t } = useTranslation();
 
@@ -78,6 +84,23 @@ export function MessageActionsSheet({
 
             <Text className="font-sans-semibold">{t('chat.reply')}</Text>
           </Pressable>
+
+          {message.author.id === myId ? null : (
+            <Pressable
+              onPress={() => {
+                onClose();
+                report(ReportTarget.MESSAGE, message.id);
+              }}
+              accessibilityRole="button"
+              className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-3.5 active:opacity-70"
+            >
+              <Feather name="flag" size={18} color={colors.danger} />
+
+              <Text className="font-sans-semibold text-danger">
+                {t('report.title')}
+              </Text>
+            </Pressable>
+          )}
         </>
       ) : null}
     </Sheet>

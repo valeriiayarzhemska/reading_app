@@ -17,6 +17,7 @@ import { PostsModule } from './posts/posts.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { QuotesModule } from './quotes/quotes.module.js';
 import { ReadingSessionsModule } from './reading-sessions/reading-sessions.module.js';
+import { ReportsModule } from './reports/reports.module.js';
 import { ReviewsModule } from './reviews/reviews.module.js';
 import { StatsModule } from './stats/stats.module.js';
 import { UploadsModule } from './uploads/uploads.module.js';
@@ -40,6 +41,7 @@ import { UsersModule } from './users/users.module.js';
     PostsModule,
     QuotesModule,
     ReadingSessionsModule,
+    ReportsModule,
     ReviewsModule,
     StatsModule,
     UploadsModule,

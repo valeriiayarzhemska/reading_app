@@ -1,12 +1,13 @@
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Pressable, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { FlashList } from '@shopify/flash-list';
 
-import type { BookPage } from '@reading/shared';
+import { ReportTarget, type BookPage } from '@reading/shared';
 
+import { useReport } from '@/components/reports/ReportProvider';
 import { RatingSummary } from '@/components/reviews/RatingSummary';
 import { ReviewCard } from '@/components/reviews/ReviewCard';
 import { BookCover } from '@/components/ui/BookCover';
@@ -79,6 +80,7 @@ export default function BookPageScreen() {
 function BookHeader({ book }: { book: BookPage }) {
   const { t } = useTranslation();
   const add = useAddBookToShelf(book.id);
+  const report = useReport();
 
   return (
     <View className="gap-6 pb-4 pt-2">
@@ -124,6 +126,19 @@ function BookHeader({ book }: { book: BookPage }) {
         <Text className="text-center text-sm text-danger">
           {add.error.message}
         </Text>
+      ) : null}
+
+      {/* Typed in by another reader: user content, so it can be reported */}
+      {book.canReport ? (
+        <Pressable
+          onPress={() => report(ReportTarget.BOOK, book.id)}
+          accessibilityRole="button"
+          className="items-center active:opacity-60"
+        >
+          <Text variant="muted" className="text-sm">
+            {t('report.book')}
+          </Text>
+        </Pressable>
       ) : null}
 
       <Text variant="heading">

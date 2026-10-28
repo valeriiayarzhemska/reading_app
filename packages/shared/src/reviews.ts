@@ -49,4 +49,6 @@ export interface BookPage {
   reviewsCount: number;
   // Your shelf entry for this book, to open it instead of adding it again
   myEntryId: string | null;
+  // Typed in by another reader: user content, so it can be reported
+  canReport: boolean;
 }

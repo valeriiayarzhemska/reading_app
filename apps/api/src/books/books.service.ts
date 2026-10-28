@@ -63,6 +63,7 @@ export class BooksService {
           pageCount: true,
           ratingAvg: true,
           ratingCount: true,
+          createdById: true,
         },
       }),
       this.prisma.review.count({ where: { userBook: { bookId: id } } }),
@@ -76,7 +77,15 @@ export class BooksService {
       throw new NotFoundException('Book not found');
     }
 
-    return { ...book, reviewsCount, myEntryId: myEntry?.id ?? null };
+    const { createdById, ...details } = book;
+
+    return {
+      ...details,
+      reviewsCount,
+      myEntryId: myEntry?.id ?? null,
+      // Hand-added by someone else (the same rule ReportsService checks)
+      canReport: createdById !== null && createdById !== viewerId,
+    };
   }
 
   // Open Library ranks by popularity (Google only by word match); Google

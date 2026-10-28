@@ -29,6 +29,15 @@ export default function SettingsScreen() {
   const { signOut } = useAuth();
   const { preference, setPreference } = useTheme();
   const [isSigningOut, setIsSigningOut] = useState(false);
+  // State, not currentLanguage() read during render: that value isn't React
+  // state, so the selection only moved if i18next happened to re-render this
+  // screen. Now it moves on tap, then the app's language follows.
+  const [language, setSelectedLanguage] = useState(currentLanguage);
+
+  function changeLanguage(next: Language) {
+    setSelectedLanguage(next);
+    void setLanguage(next);
+  }
 
   async function handleSignOut() {
     setIsSigningOut(true);
@@ -43,8 +52,8 @@ export default function SettingsScreen() {
 
           <SegmentedControl
             options={LANGUAGE_OPTIONS}
-            value={currentLanguage()}
-            onChange={setLanguage}
+            value={language}
+            onChange={changeLanguage}
           />
         </View>
 

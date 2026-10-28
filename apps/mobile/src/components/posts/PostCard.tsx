@@ -6,9 +6,10 @@ import { router } from 'expo-router';
 
 import { useQueryClient } from '@tanstack/react-query';
 
-import type { PostItem } from '@reading/shared';
+import { ReportTarget, type PostItem } from '@reading/shared';
 
 import { QuoteCard } from '@/components/quotes/QuoteCard';
+import { useReport } from '@/components/reports/ReportProvider';
 import { Avatar } from '@/components/ui/Avatar';
 import { BookCover } from '@/components/ui/BookCover';
 import { RemoteImage } from '@/components/ui/RemoteImage';
@@ -34,6 +35,7 @@ export function PostCard({ post, now, variant }: PostCardProps) {
   const { t } = useTranslation();
   const toggleLike = useTogglePostLike(post);
   const remove = useDeletePost(post.id);
+  const report = useReport();
 
   function open() {
     router.push({ pathname: '/posts/[id]', params: { id: post.id } });
@@ -83,21 +85,22 @@ export function PostCard({ post, now, variant }: PostCardProps) {
           </Text>
 
           {/* Report for others' posts comes with the Report story */}
-          {post.isMine ? (
-            <Pressable
-              onPress={confirmDelete}
-              accessibilityRole="button"
-              accessibilityLabel={t('posts.delete')}
-              hitSlop={8}
-              className="active:opacity-60"
-            >
-              <Feather
-                name="more-horizontal"
-                size={18}
-                color={colors.fgFaint}
-              />
-            </Pressable>
-          ) : null}
+          {/* Yours: delete. Someone else's: report. */}
+          <Pressable
+            onPress={
+              post.isMine
+                ? confirmDelete
+                : () => report(ReportTarget.POST, post.id)
+            }
+            accessibilityRole="button"
+            accessibilityLabel={t(
+              post.isMine ? 'posts.delete' : 'report.title',
+            )}
+            hitSlop={8}
+            className="active:opacity-60"
+          >
+            <Feather name="more-horizontal" size={18} color={colors.fgFaint} />
+          </Pressable>
         </View>
 
         <Pressable

@@ -81,6 +81,7 @@ model User {
   notifications   Notification[]    @relation("recipient")
   sentNotices     Notification[]    @relation("actor")
   achievements    UserAchievement[]
+  reports         Report[]
 }
 
 // One row per signed-in device. Only the refresh token's hash is stored.
@@ -517,4 +518,42 @@ model AchievementStat {
   // Readers counted (with at least one book on their shelf)
   readers   Int
   updatedAt DateTime @updatedAt
+}
+
+// Keep in sync with packages/shared/src/reports.ts
+enum ReportTarget {
+  BOOK
+  POST
+  COMMENT
+  MESSAGE
+  REVIEW
+}
+
+enum ReportReason {
+  SPAM
+  OFFENSIVE
+  WRONG_INFO
+  OTHER
+}
+
+// "This is spam / offensive / wrong" about anything users publish (App
+// Store guideline 1.2). One table for every kind: what's reported is a type
+// plus an id, not a foreign key per kind.
+model Report {
+  id         String       @id @default(uuid())
+  reporterId String
+  targetType ReportTarget
+  targetId   String
+  reason     ReportReason
+  note       String?
+  createdAt  DateTime     @default(now())
+  // Set by moderation, once there is a tool for it
+  resolvedAt DateTime?
+
+  reporter User @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+
+  // One report per reader per item: reporting again updates it
+  @@unique([reporterId, targetType, targetId])
+  // "All reports about this item", for moderation
+  @@index([targetType, targetId])
 }

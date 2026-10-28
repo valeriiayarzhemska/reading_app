@@ -16,6 +16,8 @@ import { StatusBar } from 'expo-status-bar';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { QueryClientProvider } from '@tanstack/react-query';
 
+import { ReportProvider } from '@/components/reports/ReportProvider';
+
 import { createQueryClient } from '@/api/queryClient';
 import { AuthProvider, useAuth } from '@/auth/AuthContext';
 import { useClubActivity } from '@/chat/useClubActivity';
@@ -66,7 +68,10 @@ export default function RootLayout() {
             <BottomSheetModalProvider>
               <ThemedStatusBar />
 
-              <RootNavigator />
+              {/* One Report sheet for every screen */}
+              <ReportProvider>
+                <RootNavigator />
+              </ReportProvider>
             </BottomSheetModalProvider>
           </ThemeProvider>
         </AuthProvider>

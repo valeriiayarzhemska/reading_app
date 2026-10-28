@@ -331,6 +331,27 @@ const uk: Translation = {
     delete: 'Видалити',
     deleteTitle: 'Видалити цитату?',
   },
+  report: {
+    title: 'Поскаржитися',
+    book: 'Поскаржитися на книжку',
+    targets: {
+      BOOK: 'Книжка, яку додав читач',
+      POST: 'Допис',
+      COMMENT: 'Коментар',
+      MESSAGE: 'Повідомлення в чаті',
+      REVIEW: 'Рецензія',
+    },
+    reasons: {
+      SPAM: 'Спам або реклама',
+      OFFENSIVE: 'Образливо або грубо',
+      WRONG_INFO: 'Неправильна інформація',
+      OTHER: 'Щось інше',
+    },
+    notePlaceholder: 'Що ще нам варто знати? (необовʼязково)',
+    send: 'Надіслати скаргу',
+    thanksTitle: 'Дякуємо, що повідомили',
+    thanksMessage: 'Ми переглянемо.',
+  },
   notifications: {
     title: 'Сповіщення',
     follow: 'підписується на вас',
